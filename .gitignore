@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.sav
 *.log
+.gemini/
 .venv/
 .idea/
 __pycache__/
