@@ -1233,3 +1233,13 @@ Las pruebas de reversión usan el `Historial` real (`iniciar_accion`, `confirmar
 - No existe `cancelar_modificador_velocidad`: el enunciado solo pide que el efecto termine solo. Si hiciera falta, se puede agregar con el mismo patrón que `cancelar_veneno`.
 - Falta definir cómo una trampa o un enemigo aplicaría veneno directamente. `aplicar_veneno` ya recibe esos datos, pero ninguna ficha del catálogo actual (por ejemplo, `trp_dardos`) tiene un campo de daño por veneno, así que no se inventó la regla.
 - Al usar un objeto, `Partida.usar_objeto` consume las pociones y los antídotos; la antorcha no se consume al encenderse (`modelo/partida.py:344-361`).
+
+## Registro de cambio de especificación
+
+### Terreno y cazador (2026-11-04)
+
+Se especificó la capacidad de costos de terreno y movimiento del cazador en
+`specs/001-terreno-cazador/spec.md`. La especificación define costos de salida, tiempos de
+movimiento, decisiones del cazador ante rutas y puertas, y los escenarios trazables del
+Apéndice B. La referencia P1 §2.3 para ajustar el tiempo restante al cambiar la velocidad se
+conserva como regla previa; esta especificación no la redefine.
