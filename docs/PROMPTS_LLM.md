@@ -74,6 +74,24 @@ Las entradas de esa etapa reconstruyen los temas tratados y la finalidad de las 
 
 Para el desarrollo de las actividades se utilizaron ChatGPT y Claude como herramientas de asistencia.
 
+### 04 de noviembre de 2026, 16:36 — Implementación del spec-kit
+
+**Prompt para inicializar el constitution.md**
+/speckit-constitution Proyecto CRIPTA, parte II del curso de Estructuras de Datos. Principios:
+1. Estructuras de datos propias: las estructuras de los problemas evaluados se implementan a mano. Prohibido dict como índice o caché, y las implementaciones equivalentes de bibliotecas: heapq, bisect, collections (deque, OrderedDict, defaultdict, Counter), networkx o cualquier librería de grafos o búsqueda de rutas. set queda prohibido en las mismas condiciones que dict.
+2. Determinismo: misma cripta, misma semilla y mismas acciones producen siempre la misma partida.
+3. Separación MVC: --replay y --bench no instancian la vista.
+4. Ningún dato de una cripta concreta escrito en el código.
+5. Se respeta presupuesto_solicitudes.
+6. Toda afirmación de rendimiento se respalda con --bench.
+7. La especificación precede a la implementación (no negociable): el historial de Git muestra la especificación confirmada antes que el código; si la especificación estaba mal, se corrige primero y en un commit aparte.
+Trazabilidad: cada requisito funcional tiene un id estable (FR-001), cada caso del Apéndice B es un escenario de aceptación con al menos una prueba que cita el id, y cada tarea de tasks.md referencia los requisitos que atiende.
+Gobierno: la constitución prevalece sobre otras prácticas; si un plan o tarea la contradice, el error es del equipo. Los cambios se documentan en docs/DECISIONES.md. Versión 1.0.0, fecha de ratificación 2026-11-04.
+Escribe el documento en español.
+
+**Uso registrado:** Se le solicitó al agente implementar el esqueleto del proyecto.
+
+Se utilizó Github Copilot, utilizando el modelo GPT Luna 6.
 ---
 
 ## Daniel Centeno
