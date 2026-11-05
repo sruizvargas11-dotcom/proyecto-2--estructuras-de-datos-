@@ -134,6 +134,14 @@ def _carpeta_cache_por_defecto():
     return os.path.join(raiz, "partidas", "cache")
 
 
+class CacheFichasLlenaError(RuntimeError):
+    """No cabe una ficha que debe quedar protegida: todas las de memoria están en uso.
+
+    Se lanza antes de publicar el lote (_proteger_lote es todo o nada), así que
+    el reintento de incorporar_listas no deja salas a medias ni duplica
+    enemigos, y main.py lo informa como cualquier otro fallo de carga."""
+
+
 def _contiene(vector, valor):
     """Búsqueda lineal O(n) en un Vector propio (no se usa dict ni set)."""
     for elemento in vector:
@@ -208,6 +216,9 @@ class ControladorRed:
         self._numero_en_curso = None      # solicitud de contenido que se incorpora
         self._sub_catalogo = 0
         self._fichas = ListaLRU(capacidad = cache_size)
+        # tipo_ids que la LRU rechazó por estar llena de fichas protegidas: ya
+        # están en disco y ficha() las lee de ahí. Normalmente queda vacío.
+        self._sin_espacio = Vector()
         self._tipos_descubiertos = Vector()
 
         self._pers_contenido = PersistenciaContenido(self._cache, cripta.version)
@@ -247,9 +258,38 @@ class ControladorRed:
         return copia
 
     def ficha(self, tipo_id):
-        """Ficha ya resuelta, o None. O(k) acotado por cache_size: busca en
-        la ListaLRU sin recorrer todo el catálogo, solo lo que está en memoria."""
-        return self._fichas.buscar(tipo_id)
+        """Ficha ya resuelta, o None. O(1) esperado: índice hash de la ListaLRU.
+
+        Si la LRU no pudo guardarla porque todas sus fichas estaban protegidas,
+        se lee de la caché persistente (ya resuelta, cuesta una lectura de
+        disco y ninguna solicitud de red)."""
+        ficha = self._fichas.buscar(tipo_id)
+        if ficha is None and len(self._sin_espacio) and _contiene(self._sin_espacio, tipo_id):
+            ficha = self._ficha_desde_disco(tipo_id)
+        return ficha
+
+    def _ficha_desde_disco(self, tipo_id):
+        ficha = self._persistencia_catalogo().cargar_ficha(tipo_id)
+        if ficha is None:
+            return None
+        try:
+            self._validar_ficha(tipo_id, ficha)
+        except ValueError:
+            return None
+        self.contador_fichas_desde_disco += 1
+        return ficha
+
+    def _guardar_en_memoria(self, tipo_id, ficha):
+        """Inserta en la LRU. Si está llena de fichas protegidas, recuerda el
+        tipo_id para leerlo de disco en vez de perderlo (antes producía un
+        RuntimeError más adelante, al incorporar la sala)."""
+        if self._fichas.insertar(tipo_id, ficha):
+            for i in range(len(self._sin_espacio)):
+                if self._sin_espacio.obtenerValor(i) == tipo_id:
+                    self._sin_espacio.eliminar(i)
+                    break
+        elif not _contiene(self._sin_espacio, tipo_id):
+            self._sin_espacio.agregarValor(tipo_id)
     
     def notificar_muerte_enemigo(self, enemigo):
         self._fichas.desmarcar_en_uso(enemigo.tipo_id)
@@ -285,7 +325,7 @@ class ControladorRed:
             else:
                 # Si se desalojó al morir, resolver_catalogo la recupera de disco.
                 self.resolver_catalogo([enemigo.tipo_id])
-                self._fichas.marcar_en_uso(enemigo.tipo_id)
+                self._proteger_ficha_enemigo(enemigo.tipo_id)
 
     def proteger_fichas(self, tipo_ids):
         """Marca en_uso las fichas de objetos/trampas de la sala actual e inventario."""
@@ -329,14 +369,19 @@ class ControladorRed:
         ) + self._buffer.contadores()
 
     def estadisticas_cache(self):
-        """Cifras de la LRU de fichas para el reporte de red (no alteran su orden)."""
+        """Cifras de la LRU de fichas para el reporte de red (no alteran su orden).
+
+        Las claves indice_* describen la tabla hash; rechazos_capacidad cuenta
+        las fichas que no cupieron porque todas las de memoria estaban en uso."""
         lru = self._fichas
         return (("aciertos", lru.contador_aciertos),
                 ("fallos", lru.contador_fallos),
                 ("desalojos", lru.contador_desalojos),
                 ("capacidad", lru._capacidad),
                 ("en_memoria", len(lru)),
-                ("salas_incorporadas", len(self._incorporadas)))
+                ("salas_incorporadas", len(self._incorporadas)),
+                ("rechazos_capacidad", lru.contador_rechazos_capacidad),
+                ) + lru.estadisticas_indice()
 
     def cerrar(self, tiempo_maximo=None):
         """Espera los hilos de red pendientes (al terminar la sesión)."""
@@ -500,7 +545,9 @@ class ControladorRed:
         sin_memoria = Vector()
         for tipo_id in tipo_ids:
             validar_identificador(tipo_id)
-            if self.ficha(tipo_id) is None and not _contiene(sin_memoria, tipo_id):
+            # Solo memoria: una ficha rechazada por capacidad se vuelve a
+            # intentar guardar en la LRU en cuanto haya espacio.
+            if self._fichas.buscar(tipo_id) is None and not _contiene(sin_memoria, tipo_id):
                 sin_memoria.agregarValor(tipo_id)
         if len(sin_memoria) == 0:
             return 0
@@ -516,7 +563,7 @@ class ControladorRed:
                     ficha = None
             if ficha is not None:
                 self.contador_fichas_desde_disco += 1
-                self._fichas.insertar(tipo_id, ficha)
+                self._guardar_en_memoria(tipo_id, ficha)
             else:
                 a_red.append(tipo_id)
 
@@ -530,7 +577,7 @@ class ControladorRed:
             for tipo_id in lote:
                 ficha = self._buscar_ficha_en_respuesta(respuesta, tipo_id)
                 pers.guardar_ficha(tipo_id, ficha)
-                self._fichas.insertar(tipo_id, ficha)
+                self._guardar_en_memoria(tipo_id, ficha)
             inicio += self.MAX_LOTE
 
         return len(a_red)
@@ -608,12 +655,13 @@ class ControladorRed:
             # Todas las fichas del lote se resuelven juntas: menos solicitudes.
             self.resolver_catalogo(self._descubrir_tipos(datos_lote))
             preparadas = self._preparar(datos_lote, solicitud.faltantes)
+            # Proteger antes de publicar: si una ficha no cabe, no queda nada a medias.
+            self._proteger_lote(preparadas)
             for sala, (enemigos, objetos, trampas) in preparadas:
                 sala.enemigos_dormidos = enemigos
                 sala.objetos_suelo = objetos
                 sala.trampas = trampas
                 self._incorporadas.agregarValor(sala.id)
-                self._marcar_enemigos_en_uso(enemigos)
             solicitud.incorporadas = len(preparadas)
             self._resolver_botin(preparadas)
         finally:
@@ -642,10 +690,39 @@ class ControladorRed:
             raise
         return preparadas
 
-    def _marcar_enemigos_en_uso(self, enemigos):
-        # Un enemigo vivo protege su ficha sin importar la sala
-        for enemigo in enemigos:
-            self._fichas.marcar_en_uso(enemigo.tipo_id)
+    def _proteger_lote(self, preparadas):
+        """Marca en_uso las fichas de todos los enemigos del lote, o ninguna.
+        Un enemigo vivo protege su ficha sin importar la sala."""
+        marcadas = Vector()
+        try:
+            for _, (enemigos, _, _) in preparadas:
+                for enemigo in enemigos:
+                    self._proteger_ficha_enemigo(enemigo.tipo_id)
+                    marcadas.agregarValor(enemigo.tipo_id)
+        except Exception:
+            for tipo_id in marcadas:
+                self._fichas.desmarcar_en_uso(tipo_id)
+            raise
+
+    def _proteger_ficha_enemigo(self, tipo_id):
+        """Un enemigo vivo necesita su ficha protegida en memoria. Si la LRU la
+        rechazó por estar llena de fichas protegidas, no hay forma de cumplir a
+        la vez el tope y la protección: se informa con un error claro."""
+        try:
+            self._fichas.marcar_en_uso(tipo_id)
+            return
+        except KeyError:
+            # Desalojada mientras se resolvía un lote más grande que la caché.
+            self.resolver_catalogo([tipo_id])
+        try:
+            self._fichas.marcar_en_uso(tipo_id)
+        except KeyError:
+            if _contiene(self._sin_espacio, tipo_id):
+                raise CacheFichasLlenaError(
+                    f"Caché de fichas llena: las {len(self._fichas)} fichas en memoria "
+                    f"están en uso y no se puede proteger {tipo_id}. "
+                    "Aumente --cache-size.") from None
+            raise
 
     def _resolver_botin(self, preparadas):
         """Deja en memoria/disco las fichas de 'suelta' de los enemigos del lote."""
@@ -789,7 +866,7 @@ class ControladorRed:
             ficha = self._ficha_de_clase(e["tipo"], ("enemigo",))
             enemigo = Enemigo.desde_ficha(e["instancia"], ficha, sala, e.get("vida"))
             enemigos.insertar_al_final(enemigo)
-            # en_uso se marca al publicar el lote (_marcar_enemigos_en_uso), así un
+            # en_uso se marca al publicar el lote (_proteger_lote), así un
             # lote que falla a medias no deja fichas protegidas para siempre.
 
         for tipo_id in datos["objetos"]:
@@ -806,6 +883,12 @@ class ControladorRed:
 
     def _ficha_de_clase(self, tipo_id, clases):
         ficha = self.ficha(tipo_id)
+        if ficha is None:
+            # Un lote puede traer más tipos que --cache-size: la ficha ya se
+            # resolvió pero se desalojó. Se recupera por la ruta normal
+            # (memoria -> disco); solo iría a la red si nunca se persistió.
+            self.resolver_catalogo([tipo_id])
+            ficha = self.ficha(tipo_id)
         if ficha is None:
             raise RuntimeError(f"La ficha {tipo_id} no se resolvió antes de incorporar.")
         clase = ficha.get("clase")
