@@ -1242,4 +1242,52 @@ Se especificó la capacidad de costos de terreno y movimiento del cazador en
 `specs/001-terreno-cazador/spec.md`. La especificación define costos de salida, tiempos de
 movimiento, decisiones del cazador ante rutas y puertas, y los escenarios trazables del
 Apéndice B. La referencia P1 §2.3 para ajustar el tiempo restante al cambiar la velocidad se
-conserva como regla previa; esta especificación no la redefine.
+conserva como regla previa; esta especificación no la redefine. El historial de Clarifications
+se ordenó en cuatro bloques cronológicos para distinguir las rondas y facilitar su revisión; no
+se alteraron las decisiones acordadas.
+
+### Plan técnico (2026-11-04)
+
+El plan propone Dijkstra con cola de prioridad propia sobre `Vector`, y una búsqueda desde
+el jugador sobre aristas entrantes para compartir distancias entre cazadores. El snapshot
+compartido solo es vigente mientras no cambien la sala del jugador ni el estado de puertas;
+cada decisión se contrasta con un recálculo sin caché. El costo efectivo se normaliza al
+cargar datos y se propaga desde la salida elegida hasta el reloj, manteniendo intactos los
+costos de acciones no relacionadas. `--bench` medirá sin red ni vistas.
+
+La aclaración posterior establece que una salida sin representación inversa se acepta como
+unidireccional y que el objetivo de rendimiento se mide sobre un mapa fijo/versionado de
+mayor tamaño que la cripta offline disponible. Como no hay un dataset apropiado en el
+repositorio, el Plan elige el fixture sintético `bench-terreno-cazador-grid-16x16` v1.0.0:
+256 salas en grilla ortogonal y 480 conexiones bidireccionales. Su topología, costos,
+puertas, posiciones y protocolo están definidos en
+`specs/001-terreno-cazador/contracts/datos-entrada-y-benchmark.md`; no representa una cripta
+real y queda fuera de la lógica de producción. La disponibilidad de fichas de catálogo
+compatibles sigue siendo una dependencia externa. No se modificó código.
+
+### Conservación del reporte de benchmark (2026-11-04)
+
+Los benchmarks existentes exportan evidencia como JSON UTF-8 mediante `--salida`, y
+`docs/evidencia/` conserva resultados reproducibles versionados; se adopta esa convención
+para «Terreno y cazador». El reporte se escribirá en
+`docs/evidencia/2026-11-04-terreno-cazador-benchmark.json` e incluirá el checksum del
+fixture, metadatos del equipo/entorno, las ocho combinaciones, 30 repeticiones por
+combinación, las 1000 duraciones por repetición, su máximo y todas las discrepancias de
+corrección. Se conserva el reporte aunque el umbral de 20 ms o la comparación con la
+referencia falle; así el resultado negativo también es auditable. Las afirmaciones y
+conclusiones se documentan aquí, no en el JSON.
+
+Para evitar variación no documentada del estado inicial, el contrato fija también atributos
+completos del jugador y los cazadores: jugador con vida actual/máxima 1 000 000 000, ataque
+10, defensa 5, velocidad 100 e inventario máximo 10 vacío; cada cazador con vida
+actual/máxima 100, ataque 1, defensa 0, velocidad 100, regeneración 0, botín vacío,
+comportamiento cazador y sin efectos pendientes. Todos comienzan vivos; la semilla es 42 y
+las salas, IDs, tipo y nombre están fijados en el contrato. Estos valores pertenecen
+exclusivamente al fixture sintético de benchmark y no son parámetros de producción. El Plan
+refleja además la opción `--salida RUTA`, el reporte JSON UTF-8 y su ruta versionada de
+evidencia; el contrato conserva la definición detallada del esquema.
+
+Se ajustó `tasks.md` para reflejar esta configuración completa en T016 y T018 y para retirar
+la marca de paralelismo de T018, que depende de T014 y T017. T019 conserva su posibilidad
+de preparación paralela con T018 una vez completadas ambas dependencias; no se marcaron
+tareas como completadas ni se modificó código.
