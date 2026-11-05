@@ -1,6 +1,6 @@
 # CRIPTA
 
-CRIPTA es un juego de exploración por consola desarrollado para el curso de Estructuras de Datos. El jugador recorre salas, combate enemigos, recoge objetos y busca la salida de una cripta. Cada acción tiene un costo de tiempo, y un reloj virtual organiza los turnos de los actores y los efectos del entorno.
+CRIPTA es un juego de exploración con interfaz de consola y gráfica (Pygame), desarrollado para el curso de Estructuras de Datos. El jugador recorre salas, combate enemigos, recoge objetos y busca la salida de una cripta. Cada acción tiene un costo de tiempo, y un reloj virtual organiza los turnos de los actores y los efectos del entorno.
 
 El proyecto utiliza estructuras de datos propias para resolver problemas del juego: una agenda de eventos con heap mínimo, un inventario con lista doble, una caché LRU para el catálogo y un historial de cambios que permite deshacer acciones. Puede obtener los datos desde un servicio HTTP o trabajar con los archivos locales incluidos en el repositorio.
 
@@ -9,6 +9,7 @@ El proyecto utiliza estructuras de datos propias para resolver problemas del jue
 - [Instalación](#instalación)
 - [Primera partida](#primera-partida)
 - [Comandos del juego](#comandos-del-juego)
+- [Vista gráfica (Pygame)](#vista-gráfica-pygame)
 - [Opciones de ejecución](#opciones-de-ejecución)
 - [Guardado y reproducción](#guardado-y-reproducción)
 - [Datos, caché y solicitudes](#datos-caché-y-solicitudes)
@@ -26,8 +27,8 @@ El entorno de referencia es **Python 3.12**. La última validación local se rea
 Clona el repositorio y entra en su carpeta:
 
 ```console
-git clone https://github.com/sruizvargas11-dotcom/proyecto-1-estructuras-de-datos-.git
-cd proyecto-1-estructuras-de-datos-
+git clone https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-.git
+cd proyecto-2--estructuras-de-datos-
 ```
 
 En Windows, desde PowerShell:
@@ -38,7 +39,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe main.py --offline
 ```
 
-Puedes usar el intérprete del entorno directamente, como en el ejemplo, sin activar scripts de PowerShell. Si ya tienes el entorno activado, los comandos siguientes funcionan con `python`.
+Puedes usar el intérprete del entorno directamente, como en el ejemplo, sin activar scripts de PowerShell. En los ejemplos posteriores, `python` representa ese mismo intérprete. En PowerShell puedes sustituirlo por `.\.venv\Scripts\python.exe`; si activas el entorno, también puedes escribir `python`.
 
 En Linux o macOS, con Python 3.12 instalado:
 
@@ -135,7 +136,7 @@ El primer comando consulta la API; el segundo usa los datos descargados.
 de las opciones (`--offline`, `--cache-dir`, `--cache-size`, `--partidas-dir`...) se
 aplican igual. `--gui` no se puede combinar con `--replay`, `--bench` ni
 `--solo-mapa`: esos modos nunca cargan pygame (ver [vista_pygame/](vista_pygame/) y
-[ANALISIS_ARQUITECTURA.md](ANALISIS_ARQUITECTURA.md)).
+[ANALISIS_ARQUITECTURA.md](docs/ANALISIS_ARQUITECTURA.md)).
 
 El modelo del juego es exactamente el mismo que usa la consola: corre en un hilo de
 fondo detrás de un controlador que traduce las teclas a los mismos comandos de texto
@@ -214,7 +215,6 @@ python main.py --help
 | `--silencioso` | Omitir el detalle de acciones durante el replay. |
 | `--reportes ARCHIVO` | Cambiar el archivo del historial de reportes de red. |
 | `--bench` | Ejecutar las mediciones de estructuras y persistencia. |
-| `--gui` | Jugar con la vista Pygame en vez de la consola. No se combina con `--replay`, `--bench` ni `--solo-mapa`. |
 
 `--bench` y `--replay` son modos excluyentes. El benchmark utiliza sus propios datos y tamaños; las opciones de partida, como `--cache-size`, no configuran sus casos. La opción `--hilos` de `main.py` se aplica a partidas nuevas; los ensayos de replay con latencias se ejecutan mediante la herramienta de determinismo.
 
@@ -348,15 +348,17 @@ main.py
 ├── tests/          Pruebas unitarias, de integración y de regresión
 │   └── vista/      Pruebas de vista_pygame (SDL_VIDEODRIVER/AUDIODRIVER=dummy)
 ├── datos_offline/  Datos incluidos para jugar sin conexión
-└── docs/           Decisiones técnicas, informes y evidencias
+├── DECISIONES.md   Documento principal de decisiones (conserva la Parte I)
+├── PROMPTS_LLM.md  Bitácora del equipo (conserva el registro anterior)
+└── docs/           Informes, anexos, referencias históricas y evidencias
 ```
 
 La vista Pygame no toca el modelo directamente: `controlador/controlador_pygame.py`
 corre el mismo `ControladorJuego` de la consola en un hilo de fondo (una "vista"
 suya más, con el mismo protocolo) y publica fotos de solo lectura del estado para que
 la ventana las dibuje. El diseño completo, con sus condiciones de seguridad entre
-hilos, está en [ANALISIS_ARQUITECTURA.md](ANALISIS_ARQUITECTURA.md) y
-[CONTRATOS.md](CONTRATOS.md).
+hilos, está en [ANALISIS_ARQUITECTURA.md](docs/ANALISIS_ARQUITECTURA.md) y
+[contratos de la vista gráfica](vista_pygame/contratos.py).
 
 ### Estructuras y dónde se usan
 
@@ -381,7 +383,7 @@ El controlador consulta el evento mínimo, ejecuta la acción del jugador, del e
 
 Los efectos incluyen veneno, regeneración, cambios temporales de velocidad, antorchas, rearme de trampas y cierre de puertas. El historial registra cambios puntuales mediante deltas, en lugar de copiar el estado completo en cada acción. El reloj y las entidades comparten el mismo historial, y las decisiones aleatorias utilizan el generador de la partida.
 
-El detalle del ciclo y de las reglas reversibles está en [ROL3_BLOQUE3.md](docs/ROL3_BLOQUE3.md).
+El detalle del ciclo y de las reglas reversibles está en [DECISIONES.md](DECISIONES.md), secciones 4.1, 4.6 y 4.12.
 
 ## Pruebas y mediciones
 
@@ -424,7 +426,7 @@ Para medir los algoritmos reales de ordenamiento y guardar el resultado:
 python -m bench.calibrar_ordenamiento --salida docs/evidencia/ordenamiento-local.json
 ```
 
-Esta calibración utiliza datos aleatorios y casi ordenados, semillas fijas, calentamiento y siete repeticiones. El umbral actual es **50**. Su justificación y sus límites están en [la decisión de ordenamiento](docs/decisiones/4.09.txt).
+Esta calibración utiliza datos aleatorios y casi ordenados, semillas fijas, calentamiento y siete repeticiones. El umbral actual es **50**. Su justificación y sus límites están en [la decisión de ordenamiento](DECISIONES.md#49-ordenamiento).
 
 ### Determinismo con latencias
 
@@ -462,7 +464,7 @@ El generador exige una carpeta nueva. Copia los datos a esa ubicación y prepara
 
 ## Evidencias
 
-[docs/evidencia](docs/evidencia/) conserva resultados de mediciones y el guion que permite repetir una partida. Los JSON son archivos de datos; las explicaciones y conclusiones están en [docs/decisiones](docs/decisiones/).
+[docs/evidencia](docs/evidencia/) conserva resultados de mediciones y el guion que permite repetir una partida. Los JSON son archivos de datos; las explicaciones y conclusiones están en [DECISIONES.md](DECISIONES.md).
 
 | Archivo | Qué contiene y de dónde sale |
 | --- | --- |
@@ -474,7 +476,7 @@ El generador exige una carpeta nueva. Copia los datos a esa ubicación y prepara
 
 Por ejemplo, un registro de ordenamiento con `n: 50` y `ms: 0.299` indica una mediana de aproximadamente 0.299 milisegundos por ordenamiento de 50 elementos. Las semillas permiten repetir las entradas, pero los tiempos pueden cambiar según la máquina y su carga.
 
-El informe [ROL2_BLOQUE4.md](docs/ROL2_BLOQUE4.md) relaciona las pruebas con los casos borde del plan. Las decisiones [4.3](docs/decisiones/4.03.txt), [4.5](docs/decisiones/4.05.txt) y [4.9](docs/decisiones/4.09.txt) explican el catálogo, el inventario y el ordenamiento. [DECISIONES.md](docs/DECISIONES.md) identifica el documento y sus autores; las secciones detalladas se mantienen por separado.
+Las secciones 4.3, 4.5 y 4.9 de [DECISIONES.md](DECISIONES.md) explican el catálogo, el inventario y el ordenamiento. El documento principal conserva los autores y las secciones detalladas de la Parte I. La bitácora está en [PROMPTS_LLM.md](PROMPTS_LLM.md).
 
 ## Problemas frecuentes
 
@@ -491,17 +493,37 @@ El informe [ROL2_BLOQUE4.md](docs/ROL2_BLOQUE4.md) relaciona las pruebas con los
 
 ## Estado del proyecto
 
-La versión actual permite jugar por consola, guardar y cargar una sesión, reproducir bitácoras y ejecutar los benchmarks. También incluye pruebas de los ocho casos borde del rol 2 y ensayos de determinismo con latencias.
+Este repositorio de la Parte II continúa la base de la Parte I. La versión actual permite jugar por consola o con Pygame, guardar y cargar una sesión, reproducir bitácoras y ejecutar los benchmarks. También incluye pruebas de los ocho casos borde del rol 2 y ensayos de determinismo con latencias.
 
 Quedan aspectos del cierre del plan que deben validarse o integrarse con el equipo:
 
 - Probar una partida completa y los casos borde con una cripta desconocida del servicio. La validación local no equivale a esa prueba.
 - Completar la medición integral del ciclo y del escalado x1, x10 y x50. Los benchmarks actuales no demuestran por sí solos que el máximo de cada ciclo sea menor de 20 ms.
 - El reporte de red ya está integrado en `--bench`; repetir las mediciones en los equipos del grupo.
-- Completar la pantalla gráfica de puntajes. La consola ya muestra la tabla al finalizar; Pygame recibe sus filas con `tabla_puntajes()`. Ambos usan el mismo archivo y agrupan por cripta y versión.
+- Validar manualmente la pantalla gráfica de puntajes ya implementada en `vista_pygame/escenas/fin_partida.py`. La consola y Pygame utilizan el mismo almacenamiento y agrupan por cripta y versión.
 - Revisar y consolidar entre los roles las secciones del Documento de Decisiones.
 
 La calibración de ordenamiento llega hasta 500 elementos y no cubre comparadores costosos. Los tiempos publicados corresponden al equipo de la medición. El entorno probado es Windows 11 con Python 3.12.14; las instrucciones para otros sistemas no representan una validación adicional de la suite en ellos.
+
+### Organización de la Parte II
+
+La fase A mejora la base existente. José actualiza esta documentación; Centeno trabaja en caché y diagnóstico de red; Sebastián en mediciones; Daniel en perfilado y revisión de compatibilidad. La fase se cierra cuando los cambios del equipo estén integrados y la suite completa pase.
+
+Las capacidades de terreno/cazador, niebla e `ir a`, resolubilidad y línea de tiempo se especifican antes de implementarse. No se presentan sus comandos como disponibles en esta base.
+
+Para la fase B, el equipo acordó **Spec Kit 1.2.3**. Daniel prepara una sola configuración de la integración Antigravity (`agy`) y la constitución en `setup/spec-kit`; los demás no reinicializan sus clones. José utiliza Antigravity con modelos Claude. La versión exacta del editor y el modelo utilizado en cada sesión se registran al ejecutar esa fase, junto con sus prompts reales. Esta actualización documental no acredita que la configuración ya esté integrada.
+
+### Comprobación rápida en PowerShell
+
+Desde la raíz del clon y con las dependencias instaladas:
+
+```powershell
+.\.venv\Scripts\python.exe main.py --help
+.\.venv\Scripts\python.exe main.py --offline --solo-mapa
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+El primer comando muestra las opciones existentes; el segundo carga el mapa local sin iniciar interacción; el tercero ejecuta la suite. Para comprobar una partida y la GUI se utilizan los comandos de las secciones anteriores. La validación offline no certifica el servicio HTTP real.
 
 ## Trabajo en el repositorio
 
@@ -515,4 +537,4 @@ Para desarrollar una función o corregir un error:
 
 Los comentarios deben explicar una regla, una limitación o una decisión que no sea evidente al leer el código. Las notas históricas sobre lo que se agregó o corrigió pertenecen a la descripción del cambio, no a instrucciones permanentes dentro del módulo.
 
-Según el [Documento de Decisiones](docs/DECISIONES.md), el equipo está formado por Jose Daniel Morales Moreno, Sebastián Ruiz Vargas, Daniel Centeno y Jose Fabio.
+Según el [Documento de Decisiones](DECISIONES.md), el equipo está formado por Jose Daniel Morales Moreno, Sebastián Ruiz Vargas, Daniel Centeno y Jose Fabio.
