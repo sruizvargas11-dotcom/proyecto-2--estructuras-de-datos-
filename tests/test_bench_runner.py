@@ -8,7 +8,7 @@ from bench.medicion import Fila, mediana, medir
 
 def test_mediana_y_medir():
     assert mediana([5, 1, 3, 9, 2]) == 3
-    assert medir(sum, [1, 2, 3], repeticiones=3) >= 0
+    assert medir(sum, [1, 2, 3], repeticiones=3).ms_med >= 0
 
 
 def test_cada_caso_devuelve_filas_bien_formadas(monkeypatch):

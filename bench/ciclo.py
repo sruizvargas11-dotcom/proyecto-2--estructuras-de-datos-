@@ -6,7 +6,6 @@ Los datos sintéticos no cambian ninguna cripta oficial.
 import argparse
 import cProfile
 import json
-import math
 import platform
 import tempfile
 from pathlib import Path
@@ -16,8 +15,8 @@ from bitacora_partida import BitacoraPartida
 from controlador.controlador_juego import ControladorJuego
 from controlador.inicio_partida import SesionPartida
 from estructuras.array_circular import ArrayCircular
+from bench.medicion import estadisticas as _estadisticas
 from estructuras.vector_dinamico import Vector
-from estructuras.ordenamientos import ordenar
 from modelo.mundo.cripta_modelo import CriptaModelo
 from modelo.mundo.sala import Sala
 from modelo.mundo.salida import Salida
@@ -125,25 +124,11 @@ def ejecutar_intervalo(controlador):
     raise RuntimeError('El escenario terminó antes de completar la medición.')
 
 
-def comparar_numeros(a, b):
-    return (a > b) - (a < b)
-
-
 def resumen(tiempos):
-    if not len(tiempos):
-        raise ValueError('Se necesita al menos una muestra.')
-    ordenados = Vector()
-    for tiempo in tiempos:
-        ordenados.agregarValor(tiempo)
-    ordenar(ordenados, comparar_numeros)
-    n = len(ordenados)
-    mediana = ordenados.obtenerValor(n // 2)
-    if n % 2 == 0:
-        mediana = (mediana + ordenados.obtenerValor(n // 2 - 1)) / 2
-    return {'min_ms': ordenados.obtenerValor(0), 'mediana_ms': mediana,
-            'p95_ms': ordenados.obtenerValor(math.ceil(n * .95) - 1),
-            'max_ms': ordenados.obtenerValor(n - 1),
-            'cumple_max_20_ms': ordenados.obtenerValor(n - 1) < 20}
+    m = _estadisticas(tiempos)
+    return {'min_ms': m.ms_min, 'mediana_ms': m.ms_med,
+            'p95_ms': m.ms_p95, 'max_ms': m.ms_max,
+            'cumple_max_20_ms': m.ms_max < 20}
 
 
 def medir_escala(escala=1, ciclos=1000, repeticiones=5, salas_base=200, semilla=42,

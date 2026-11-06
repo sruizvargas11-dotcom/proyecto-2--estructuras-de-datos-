@@ -79,7 +79,7 @@ def test_bench_headless_con_reporte_y_sin_puntaje(tmp_path, monkeypatch, capsys)
     monkeypatch.setattr(VistaConsola, '__init__', prohibido)
     monkeypatch.setattr(main, 'crear_fuente', prohibido)
     monkeypatch.setattr(bench.runner, 'main_bench', lambda: [
-        Fila('cache', 'ListaLRU', 1000, 1, contadores=(('aciertos', 600), ('fallos', 400)))])
+        Fila('cache', 'hash', 25, 1, contadores=(('aciertos', 600), ('fallos', 400)))])
     reporte = tmp_path / 'red.txt'
     assert main.main(['--bench', '--reportes', str(reporte), '--partidas-dir', str(tmp_path)]) == 0
     texto = capsys.readouterr().out
