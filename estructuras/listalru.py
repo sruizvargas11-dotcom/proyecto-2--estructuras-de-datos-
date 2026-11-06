@@ -21,6 +21,7 @@ from estructuras.lista_doble import ListaDoble
 from estructuras.tabla_hash import TablaHash
 
 INDICES = ("hash", "lineal")
+CAPACIDAD_DEFECTO = 25
 
 
 class _EntradaCatalogo:
@@ -31,7 +32,7 @@ class _EntradaCatalogo:
 
 
 class ListaLRU:
-    def __init__(self, capacidad=25, indice="hash"):
+    def __init__(self, capacidad=CAPACIDAD_DEFECTO, indice="hash"):
         if type(capacidad) is not int or capacidad <= 0:
             raise ValueError(
                 "La capacidad debe ser un entero positivo."
