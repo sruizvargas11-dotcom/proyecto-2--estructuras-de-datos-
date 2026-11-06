@@ -31,6 +31,6 @@ def correr():
         assert circular(n) == desplazar(n)
         for nombre, funcion in (("circular", circular), ("desplazamiento", desplazar)):
             movimientos = 0 if nombre == "circular" else max(0, n - CAPACIDAD) * (CAPACIDAD - 1)
-            filas.append(Fila("mensajes", nombre, n, medir(funcion, n),
-                              f"agregados={n}; desplazamientos={movimientos}"))
+            filas.append(Fila.desde_medicion("mensajes", nombre, n, medir(funcion, n),
+                                             f"agregados={n}; desplazamientos={movimientos}"))
     return filas

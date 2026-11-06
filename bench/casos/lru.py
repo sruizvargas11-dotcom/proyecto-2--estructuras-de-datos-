@@ -47,7 +47,8 @@ def correr():
     filas = []
     for nombre, funcion in (("ListaLRU", _con_lru), ("lista_plana", _con_lista_plana)):
         aciertos = funcion(claves)
-        ms = medir(funcion, claves)
-        filas.append(Fila("cache", nombre, BUSQUEDAS, ms, f"aciertos={aciertos}; fallos={len(claves)-aciertos}",
-                          (("aciertos", aciertos), ("fallos", len(claves)-aciertos))))
+        m = medir(funcion, claves)
+        filas.append(Fila.desde_medicion("cache", nombre, BUSQUEDAS, m,
+                                         f"aciertos={aciertos}; fallos={len(claves)-aciertos}",
+                                         (("aciertos", aciertos), ("fallos", len(claves)-aciertos))))
     return filas

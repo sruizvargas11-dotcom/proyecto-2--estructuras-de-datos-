@@ -79,15 +79,15 @@ def correr():
     for n in TAMANOS:
         valores = [rnd.randint(0, 1_000_000) for _ in range(n)]
         for nombre, funcion in (("HeapMinimo", _con_heap), ("lista_lineal", _con_lista)):
-            filas.append(Fila("agenda_eventos", nombre, n, medir(funcion, valores),
-                              f"extracciones={EXTRACCIONES}; inserciones={n + EXTRACCIONES}"))
+            filas.append(Fila.desde_medicion("agenda_eventos", nombre, n, medir(funcion, valores),
+                                             f"extracciones={EXTRACCIONES}; inserciones={n + EXTRACCIONES}"))
     rnd_vista = random.Random(43)
     for n in TAMANOS:
         heap = _preparar_heap(n, rnd_vista)
-        filas.append(Fila("proximos_turnos", f"vista_ordenada({N_VISTA})", n,
-                          medir(_vista_ordenada, heap),
-                          extra=f"{REPETICIONES_VISTA} llamadas/repetición"))
-        filas.append(Fila("proximos_turnos", "copiar_y_ordenar", n,
-                          medir(_copiar_y_ordenar, heap),
-                          extra=f"{REPETICIONES_VISTA} llamadas/repetición"))
+        filas.append(Fila.desde_medicion("proximos_turnos", f"vista_ordenada({N_VISTA})", n,
+                                         medir(_vista_ordenada, heap),
+                                         f"{REPETICIONES_VISTA} llamadas/repetición"))
+        filas.append(Fila.desde_medicion("proximos_turnos", "copiar_y_ordenar", n,
+                                         medir(_copiar_y_ordenar, heap),
+                                         f"{REPETICIONES_VISTA} llamadas/repetición"))
     return filas

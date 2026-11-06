@@ -52,10 +52,10 @@ def correr():
             estado = [_Celda(i) for i in range(tam)]
             reloj = Reloj(42, Historial())
             azar_inicial = reloj.azar.getstate()
-            ms = medir(funcion, estado, reloj)
+            m = medir(funcion, estado, reloj)
             assert all(celda.valor == i for i, celda in enumerate(estado))
             assert reloj.azar.getstate() == azar_inicial
             guardados = RETROCESOS if nombre == 'deltas' else RETROCESOS * tam
-            filas.append(Fila('historial', nombre, tam, ms,
-                              f'valores_guardados={guardados}; cambios=5; reversiones=5; PRNG incluido'))
+            filas.append(Fila.desde_medicion('historial', nombre, tam, m,
+                                             f'valores_guardados={guardados}; cambios=5; reversiones=5; PRNG incluido'))
     return filas

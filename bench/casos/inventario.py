@@ -27,5 +27,5 @@ def correr():
     filas = []
     for n in TAMANOS:
         for nombre, funcion in (("ListaDoble", _con_lista_doble), ("list", _con_list)):
-            filas.append(Fila("inventario", nombre, n, medir(funcion, n)))
+            filas.append(Fila.desde_medicion("inventario", nombre, n, medir(funcion, n)))
     return filas
