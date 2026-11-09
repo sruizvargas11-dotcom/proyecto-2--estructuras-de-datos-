@@ -78,7 +78,7 @@ Como jugador, quiero reproducir una partida hasta un instante sin abrir la inter
 
 - **FR-001**: Para un instante `t`, la historia refleja todos los eventos de la partida cuyo tiempo sea menor o igual que `t`. Si en `t` corresponde una decisión del jugador, el estado mostrado es justo antes de tomarla.
 - **FR-002**: El jugador MUST poder consultar un instante del reloj virtual mediante `historia t` y el estado previo a una acción mediante `historia #k`; la primera acción vigente se consulta como `historia #1` y solo se numeran acciones vigentes.
-- **FR-003**: El historial consultable empieza en el estado inicial. `historia #k` muestra el estado tras los eventos que correspondan y justo antes de la acción vigente número `k`. Una acción inexistente, un instante previo al inicio o un instante posterior al reloj actual interactivo se rechaza con un mensaje claro.
+- **FR-003**: El historial consultable empieza en el estado inicial. `historia #k` muestra el estado tras los eventos que correspondan y justo antes de la acción vigente número `k`. Una acción inexistente o un instante previo al inicio se rechaza con un mensaje claro.
 - **FR-004**: Cada resumen MUST incluir como mínimo el reloj, la sala del jugador, su vida y estadísticas, inventario, efectos activos, enemigos de esa sala con su vida y el mapa conocido en el instante consultado.
 - **FR-005**: Una consulta interactiva a un instante posterior al reloj actual se rechaza; no presenta un estado futuro como si fuera historia disponible.
 - **FR-006**: Consultar historia no consume tiempo, no se registra como acción, no cambia el estado actual y no modifica ningún dato de la partida.
@@ -120,7 +120,7 @@ Como jugador, quiero reproducir una partida hasta un instante sin abrir la inter
 
 ### G18 — Rechazar un instante futuro interactivo
 
-**Given** una partida activa cuyo reloj actual es `t_actual`, **When** el jugador solicita `historia t` con `t > t_actual`, **Then** se rechaza la consulta, se informa que ese instante aún no existe y la partida no cambia. (**FR-003, FR-005, FR-006**)
+**Given** una partida activa cuyo reloj actual es `t_actual`, **When** el jugador solicita `historia t` con `t > t_actual`, **Then** se rechaza la consulta, se informa que ese instante aún no existe y la partida no cambia. (**FR-005, FR-006**)
 
 ### G19 — Excluir acciones revertidas
 
@@ -146,7 +146,7 @@ Como jugador, quiero reproducir una partida hasta un instante sin abrir la inter
 
 | Caso | Escenario de aceptación | Requisitos funcionales |
 | --- | --- | --- |
-| G18 | Rechazar un instante futuro interactivo | FR-003, FR-005, FR-006 |
+| G18 | Rechazar un instante futuro interactivo | FR-005, FR-006 |
 | G19 | Excluir acciones revertidas | FR-002, FR-008 |
 | G20 | Incluir todos los eventos simultáneos | FR-001, FR-004 |
 | G21 | No alterar la partida al consultar | FR-006, FR-007 |
