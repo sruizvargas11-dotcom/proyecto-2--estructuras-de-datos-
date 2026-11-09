@@ -11,7 +11,7 @@
 - `persistencia/estado_partida.py` contiene la codificación/decodificación del estado actual, incluido `getstate()`/`setstate()` del generador aleatorio.
 - `controlador/controlador_replay.py` reproduce comandos en una partida nueva; la ruta actual no es una reconstrucción desde puntos de control.
 - `bench/bench_bloque3.py` ya mide escenarios de persistencia, pero sus casos actuales no equivalen a medir una reconstrucción histórica completa.
-- No se encontró en este checkout `docs/equipo/revision_persistencia.md`, citado en la solicitud. El valor de aproximadamente 72 ms para cargar 5.000 salas se trata aquí como dato comunicado por el solicitante, no como una medición reproducida durante esta planificación.
+- La cifra de ~72 ms para cargar 5.000 salas corresponde a la "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025". Es una referencia pendiente, no una medición verificada en esta rama.
 
 ## Decisiones de diseño
 
@@ -62,7 +62,7 @@
 **Rationale**: La ruta actual de carga reconstruye el grafo completo de salas. Los bloques direccionables permiten medir el costo real de restaurar un punto sin volver a decodificar toda la partida.
 
 **Alternatives considered**:
-- Reutilizar la carga completa existente por consulta: referencia de corrección, pero el dato comunicado de ~72 ms para 5.000 salas ya supera el umbral y requiere verificación.
+- Reutilizar la carga completa existente por consulta: referencia de corrección; comparar su costo con la línea base citada arriba al volver a medir en T024/T025.
 - Serializar todo el historial dentro de un único bloque global: obliga a decodificar datos no requeridos para localizar el punto y no facilita medir la restauración de un solo punto.
 
 **Validation required**: Medir por separado la lectura del índice, lectura/decodificación/restauración de un punto y la consulta completa. No se presupone que los bloques propuestos alcancen SC-001 hasta obtener resultados de `--bench`.

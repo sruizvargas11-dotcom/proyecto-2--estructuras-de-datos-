@@ -6,9 +6,9 @@
 
 ## Summary
 
-Implementar consultas históricas sin alterar la partida activa, usando un registro permanente de acciones y puntos de control cada `K` acciones. La consulta por tiempo localizará el punto anterior mediante búsqueda binaria propia sobre un arreglo ordenado; la consulta por acción usará el índice `(k - 1) // K` para respetar la numeración desde uno y el estado inmediatamente anterior a la acción. La reconstrucción ocurrirá en una partida temporal aislada. Se compararán reconstrucción hacia adelante e inversión de cambios mediante `--bench`; el K predeterminado será el mayor valor probado que cumpla SC-001.
+Implementar consultas históricas sin alterar la partida activa, usando un registro permanente de acciones y puntos de control cada `K` acciones. Se compararán reconstrucción hacia adelante e inversión de cambios mediante `--bench`; el K predeterminado será el mayor valor probado que cumpla SC-001.
 
-Los puntos de control serializados deberán poder restaurarse sin cargar el grafo completo de la partida en cada consulta. La selección del formato y su costo se validarán con mediciones; no se presupone que una codificación específica cumpla el objetivo de latencia.
+**Decisiones de implementación (no criterios de aceptación adicionales)**: se propone localizar el punto de control de `historia t` con búsqueda binaria propia sobre un arreglo ordenado, seleccionar el punto para `historia #k` mediante `(k - 1) // K` y reconstruir en una partida temporal aislada. También se evaluará restaurar puntos de control sin cargar el grafo completo por consulta y validar en la integración con Niebla la conservación del conocimiento, y con Terreno la paridad de movimientos y costos. La selección del formato de persistencia y el costo de restaurar un punto se medirán; estas decisiones no añaden criterios de aceptación a los de `spec.md`.
 
 ## Technical Context
 
@@ -24,25 +24,27 @@ Los puntos de control serializados deberán poder restaurarse sin cargar el graf
 
 **Project Type**: Juego de consola con arquitectura MVC y persistencia local.
 
-**Performance Goals**: En al menos 5.000 acciones, para al menos 30 puntos medidos 30 veces cada uno, p95 de todas las mediciones de consulta menor de 50 ms; documentar también el máximo observado. Comparar mediana, p95, máximo y memoria según SC-001/002 y las mediciones planificadas.
+**Performance Goals**: Aplicar los criterios de `spec.md`: con al menos 5.000 acciones y 30 puntos medidos 30 veces cada uno, p95 de todas las mediciones menor de 50 ms y máximo documentado (SC-001); comparar percentiles 50 y 95 y volumen conservado para elegir `K` (SC-002). La memoria puede registrarse como métrica informativa, no como criterio de aceptación.
+
+**Baseline Note**: La cifra de ~72 ms corresponde a la "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025"; se cita como referencia pendiente, no como medición verificada en esta rama.
 
 **Constraints**:
 - `K` debe ser positivo. Comparar `K = 10, 50, 100` y otros valores, y elegir el mayor probado que cumpla SC-001.
 - No aplicar ni deshacer más de `K` acciones por consulta.
 - La consulta no debe mutar la partida real, consumir el pergamino, alterar la caché LRU ni realizar solicitudes de red.
-- Usar arreglos/estructuras propias y búsqueda binaria propia; no usar `bisect`, `heapq`, `dict` o `set` como índice o caché.
+- La agenda de eventos usa el `HeapMinimo` propio del proyecto (`estructuras/heap_minimo.py`). Por constitución, `heapq`, `bisect` y `collections` (y sus equivalentes para las estructuras evaluadas) están prohibidos; `dict` y `set` no se usan como índice o caché.
 - Mantener determinismo, incluyendo el estado del generador aleatorio y el orden de la agenda de eventos.
 - Los archivos de la Parte I se rechazan con un mensaje claro de incompatibilidad.
 
 **Scale/Scope**: Historia fija de al menos 5.000 acciones; al menos 30 consultas distribuidas por la historia, 30 repeticiones por consulta; almacenamiento de acciones, cambios y puntos de control desde el inicio de la línea de tiempo vigente.
 
-**Integrations/Dependencies**: El conocimiento del mapa de Niebla (José) forma parte del punto de control; los movimientos y costos de Terreno (Daniel) deben reconstruirse igual que en la partida original.
+**Integrations/Dependencies — decisiones de implementación**: Se propone incluir el conocimiento del mapa de Niebla (José) en los puntos de control y validar en pruebas que los movimientos y costos de Terreno (Daniel) se reconstruyan igual que en la partida original. Son detalles de integración para satisfacer los requisitos aplicables de `spec.md`, no criterios de aceptación nuevos.
 
 ## Constitution Check
 
 | Principio | Estado | Aplicación al diseño |
 |---|---|---|
-| I. Estructuras de datos implementadas a mano | PASS | Arreglos propios para acciones e índices; búsqueda binaria propia; no se usa `bisect`, `heapq` ni estructuras prohibidas como índice o caché. |
+| I. Estructuras de datos implementadas a mano | PASS | La agenda usa `HeapMinimo` propio. `heapq`, `bisect` y `collections` están prohibidos por constitución; `dict`/`set` no se usan como índice o caché. |
 | II. Determinismo de las partidas | PASS | El punto de control incluye `random.Random.getstate()` y la agenda de eventos con su secuencia; se conservan orden y estado de niebla/conocimiento. |
 | III. Separación MVC en modos sin interfaz | PASS | `--replay` reutiliza la reconstrucción sin instanciar la vista; `--bench` también permanece sin vista. |
 | IV. Datos de criptas externos al código | PASS | El diseño persiste estado de partida y referencias a datos de cripta; no incorpora datos de una cripta concreta al código. |
