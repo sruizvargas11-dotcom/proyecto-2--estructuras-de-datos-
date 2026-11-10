@@ -125,6 +125,15 @@ def construir_reporte(fuente, sesion, modo, motivo, ahora=None, bitacora=None, m
             f"{_valor(contadores, 'fichas_desde_red')} desde la fuente")
     agregar(f"fichas_lru: {_valor(cache, 'en_memoria')} en memoria de "
             f"{_valor(cache, 'capacidad')}, {_valor(cache, 'desalojos')} desalojos")
+    if _valor(cache, "indice_modo", None) == "hash":
+        agregar(f"indice_hash: {_valor(cache, 'indice_cubetas')} cubetas, "
+                f"carga {_valor(cache, 'indice_factor_carga')}, "
+                f"cadena máx {_valor(cache, 'indice_cadena_maxima')}, "
+                f"{_valor(cache, 'indice_colisiones')} colisiones, "
+                f"{_valor(cache, 'indice_redimensionamientos')} crecimientos, "
+                f"{_valor(cache, 'indice_comparaciones_por_busqueda')} comparaciones/búsqueda")
+    agregar(f"fichas_lru_protegidas: {_valor(cache, 'indice_protegidas_saltadas')} saltadas al desalojar, "
+            f"{_valor(cache, 'rechazos_capacidad')} rechazos por capacidad")
 
     agregar("-- Precarga --")
     agregar(f"esperas_bloqueantes: {_valor(contadores, 'esperas_bloqueantes')}")

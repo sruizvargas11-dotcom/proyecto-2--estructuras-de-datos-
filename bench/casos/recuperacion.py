@@ -52,6 +52,8 @@ def correr():
     carpeta = tempfile.mkdtemp()
     pers = _preparar_disco(carpeta)
     return [
-        Fila("recuperacion", "en_memoria", FICHAS, medir(_desde_memoria, pers, CAPACIDAD_MEMORIA)),
-        Fila("recuperacion", "desde_disco", FICHAS, medir(_desde_disco, pers, CAPACIDAD_DISCO)),
+        Fila.desde_medicion("recuperacion", "en_memoria", FICHAS,
+                            medir(_desde_memoria, pers, CAPACIDAD_MEMORIA)),
+        Fila.desde_medicion("recuperacion", "desde_disco", FICHAS,
+                            medir(_desde_disco, pers, CAPACIDAD_DISCO)),
     ]

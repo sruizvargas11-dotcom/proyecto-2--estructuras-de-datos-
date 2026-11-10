@@ -1,7 +1,7 @@
 """Mide los algoritmos reales sobre Vector, sin incluir preparación ni E/S."""
 import random
 from time import perf_counter
-from bench.medicion import Fila, mediana
+from bench.medicion import Fila, estadisticas
 from estructuras.ordenamientos import insertion_sort, merge_sort
 from estructuras.vector_dinamico import Vector
 
@@ -57,6 +57,7 @@ def correr():
         for n in TAMANOS:
             tiempos = medir_par(n, forma == "casi_ordenado")
             for nombre, muestras in zip(("insertion_sort", "merge_sort"), tiempos):
-                filas.append(Fila("ordenamiento", nombre, n, mediana(muestras),
-                                  f"{forma}; rep={REPETICIONES}; muestras={MUESTRAS}"))
+                m = estadisticas(muestras)
+                filas.append(Fila.desde_medicion("ordenamiento", nombre, n, m,
+                                                 f"{forma}; rep={REPETICIONES}; muestras={MUESTRAS}"))
     return filas

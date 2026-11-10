@@ -10,6 +10,7 @@ from pathlib import Path
 from vista.vista_consola import informar
 from controlador.controlador_red import cargar_cripta
 from controlador.reporte_red import motivo_error, motivo_partida, registrar_reporte
+from estructuras.listalru import CAPACIDAD_DEFECTO
 
 
 def crear_fuente(argumentos):
@@ -28,8 +29,8 @@ def main(argumentos=None):
     parser.add_argument('--cache-dir', help='Carpeta alternativa para la caché')
     parser.add_argument('--solo-mapa', action='store_true',
                         help='Solo cargar y verificar el mapa, sin jugar')
-    parser.add_argument('--cache-size', type=int, default=25,
-                        help='Fichas de catálogo en memoria (LRU), por defecto 25')
+    parser.add_argument('--cache-size', type=int, default=CAPACIDAD_DEFECTO,
+                        help=f'Fichas de catálogo en memoria (LRU), por defecto {CAPACIDAD_DEFECTO}')
     parser.add_argument('--hilos', action='store_true',
                         help='Precarga de salas en segundo plano')
     parser.add_argument('--replay', metavar='LOG',
@@ -56,7 +57,7 @@ def main(argumentos=None):
         filas = main_bench()
         metricas = ()
         for fila in filas:
-            if fila.caso == 'cache' and fila.variante == 'ListaLRU':
+            if fila.caso == 'cache' and fila.variante == 'hash' and fila.n == opciones.cache_size:
                 metricas = fila.contadores
                 break
         informar(registrar_reporte(None, None, 'bench', 'mediciones locales completadas',

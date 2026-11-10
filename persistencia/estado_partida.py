@@ -19,7 +19,8 @@ from modelo.mundo.sala import Sala
 MODULOS = (
     'estructuras.vector_dinamico', 'estructuras.lista_simple',
     'estructuras.lista_doble', 'estructuras.pila', 'estructuras.heap_minimo',
-    'estructuras.cola', 'estructuras.listalru', 'estructuras.array_ordenado',
+    'estructuras.cola', 'estructuras.listalru', 'estructuras.tabla_hash',
+    'estructuras.array_ordenado',
     'modelo.partida', 'modelo.reloj', 'modelo.rastro', 'modelo.historial',
     'modelo.deltas', 'modelo.entorno', 'modelo.efectos', 'modelo.ejecutor_evento',
     'modelo.mundo.cripta_modelo', 'modelo.mundo.sala', 'modelo.mundo.salida',
