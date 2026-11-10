@@ -6,9 +6,11 @@
 
 ## Summary
 
-Implementar consultas históricas sin alterar la partida activa, usando un registro permanente de acciones y puntos de control cada `K` acciones. Se compararán reconstrucción hacia adelante e inversión de cambios mediante `--bench`; el K predeterminado será el mayor valor probado que cumpla SC-001.
+Implementar consultas históricas sin alterar la partida activa, usando un registro permanente de acciones y puntos de control cada `K` acciones. El `K` predeterminado será el mayor valor probado que cumpla SC-001.
 
 **Decisiones de implementación (no criterios de aceptación adicionales)**: se propone localizar el punto de control de `historia t` con búsqueda binaria propia sobre un arreglo ordenado, seleccionar el punto para `historia #k` mediante `(k - 1) // K` y reconstruir en una partida temporal aislada. También se evaluará restaurar puntos de control sin cargar el grafo completo por consulta y validar en la integración con Niebla la conservación del conocimiento, y con Terreno la paridad de movimientos y costos. La selección del formato de persistencia y el costo de restaurar un punto se medirán; estas decisiones no añaden criterios de aceptación a los de `spec.md`.
+
+**Protocolo exploratorio de benchmark**: comparar la reconstrucción hacia adelante con la inversión de cambios y evaluar `K = 10, 50, 100` y otros valores. Estas variantes y valores son exploratorios; el criterio formal sigue siendo SC-002: comparar al menos tres valores positivos de `K` y elegir el mayor probado que cumpla SC-001.
 
 ## Technical Context
 
@@ -24,14 +26,14 @@ Implementar consultas históricas sin alterar la partida activa, usando un regis
 
 **Project Type**: Juego de consola con arquitectura MVC y persistencia local.
 
-**Performance Goals**: Aplicar los criterios de `spec.md`: con al menos 5.000 acciones y 30 puntos medidos 30 veces cada uno, p95 de todas las mediciones menor de 50 ms y máximo documentado (SC-001); comparar percentiles 50 y 95 y volumen conservado para elegir `K` (SC-002). La memoria puede registrarse como métrica informativa, no como criterio de aceptación.
+**Performance Goals**: Aplicar los criterios de `spec.md`: con al menos 5.000 acciones y 30 puntos medidos 30 veces cada uno, p95 de todas las mediciones menor de 50 ms y máximo documentado (SC-001); comparar percentiles 50 y 95 y bytes persistidos de registros y puntos de control para cada `K` evaluado (SC-002). La memoria de ejecución puede registrarse como métrica informativa, no como criterio de aceptación.
 
 **Baseline Note**: La cifra de ~72 ms corresponde a la "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025"; se cita como referencia pendiente, no como medición verificada en esta rama.
 
 **Constraints**:
-- `K` debe ser positivo. Comparar `K = 10, 50, 100` y otros valores, y elegir el mayor probado que cumpla SC-001.
+- `K` debe ser positivo; aplicar SC-002 para comparar al menos tres valores positivos y elegir el mayor probado que cumpla SC-001.
 - No aplicar ni deshacer más de `K` acciones por consulta.
-- La consulta no debe mutar la partida real, consumir el pergamino, alterar la caché LRU ni realizar solicitudes de red.
+- La consulta no debe mutar la partida real ni realizar solicitudes de red (FR-006, FR-010), ni alterar el pergamino (FR-007). Preservar la caché LRU es un detalle interno de la reconstrucción aislada vinculado a FR-006, no un criterio de aceptación nuevo.
 - La agenda de eventos usa el `HeapMinimo` propio del proyecto (`estructuras/heap_minimo.py`). Por constitución, `heapq`, `bisect` y `collections` (y sus equivalentes para las estructuras evaluadas) están prohibidos; `dict` y `set` no se usan como índice o caché.
 - Mantener determinismo, incluyendo el estado del generador aleatorio y el orden de la agenda de eventos.
 - Los archivos de la Parte I se rechazan con un mensaje claro de incompatibilidad.
