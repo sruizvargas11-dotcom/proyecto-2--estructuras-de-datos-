@@ -103,7 +103,7 @@ Como jugador, quiero reproducir una partida hasta un instante sin abrir la inter
 ### Measurable Outcomes
 
 - **SC-001**: Sobre una historia fija de al menos 5.000 acciones y con el valor predeterminado de `K`, se eligen al menos 30 puntos de consulta distribuidos por la historia y se mide cada uno 30 veces; el p95 de todas las mediciones es menor de 50 ms y también se documenta el máximo observado.
-- **SC-002**: Antes de fijar el valor predeterminado, se comparan al menos tres valores positivos de `K` sobre la misma historia y los mismos puntos de consulta; se documentan sus percentiles 50 y 95 y el volumen conservado, y se elige el `K` mayor probado que cumpla SC-001.
+- **SC-002**: Antes de fijar el valor predeterminado, se comparan al menos tres valores positivos de `K` sobre la misma historia y los mismos puntos de consulta; se documentan sus percentiles 50 y 95 y los bytes persistidos de los registros y puntos de control para cada `K` evaluado, y se elige el `K` mayor probado que cumpla SC-001.
 - **SC-003**: En el 100 % de las pruebas de no alteración, los valores observables de la partida, el reloj, el conteo de acciones y el pergamino son idénticos antes y después de una consulta.
 - **SC-004**: En todas las pruebas de paridad, `--replay ... --hasta t` y `historia t` presentan el mismo resumen cuando la partida alcanza `t`; en el 100 % de pruebas de finalización anticipada, el replay muestra el estado final y el aviso correspondiente.
 - **SC-005**: En el 100 % de las pruebas de guardado y carga, se puede consultar desde el inicio la misma historia vigente y el mismo mapa conocido que antes de guardar.
