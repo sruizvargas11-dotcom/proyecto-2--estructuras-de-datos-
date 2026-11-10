@@ -20,16 +20,16 @@ De acuerdo con el principio VII de la constitución, `spec.md`, `plan.md` y `tas
 
 **Purpose**: Preparar fixtures deterministas que puedan reutilizar las pruebas de todas las historias.
 
-- [ ] T001 Crear el constructor de partidas e historias deterministas en `tests/fixtures/linea_tiempo.py` y comprobar sus invariantes en `tests/test_linea_tiempo_fixtures.py`. [Responsable: Sebastián; Depende de: ninguna; Atiende: FR-001, SC-001; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_linea_tiempo_fixtures.py`]
+- [X] T001 Crear el constructor de partidas e historias deterministas en `tests/fixtures/linea_tiempo.py` y comprobar sus invariantes en `tests/test_linea_tiempo_fixtures.py`. [Responsable: Sebastián; Depende de: ninguna; Atiende: FR-001, SC-001; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_linea_tiempo_fixtures.py`]
 
 ## Phase 2: Foundational Components
 
 **Purpose**: Construir los registros y la reconstrucción aislada que requieren todas las historias.
 
-- [ ] T002 Crear el archivo nuevo `modelo/historia.py` con los arreglos propios de acciones vigentes y metadatos de puntos de control, numeración desde 1 y validación de `K > 0`. [Responsable: Sebastián; Depende de: T001; Atiende: FR-002, FR-009, FR-014; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_historia_modelo.py`]
-- [ ] T003 Crear el archivo nuevo `modelo/punto_control.py` para capturar/restaurar el estado completo, incluido reloj, estado de `random.Random`, agenda ordenada de eventos y conocimiento del mapa; excluir caché LRU e historial del pergamino. [Responsable: Sebastián; Depende de: T002; Atiende: FR-009, FR-012; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_punto_control.py`]
-- [ ] T004 Añadir en el archivo nuevo `modelo/historia.py` el registro permanente e invertible de cambios, separado de los deltas consumibles del pergamino. [Responsable: Sebastián; Depende de: T002; Atiende: FR-008, FR-009, FR-010; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_registro_cambios_linea_tiempo.py`]
-- [ ] T005 Crear el archivo nuevo `modelo/reconstructor_historia.py` para reconstruir sobre estado temporal aislado desde un punto de control, sin mutar la partida real. [Responsable: Sebastián; Depende de: T003, T004; Atiende: FR-006, FR-010; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_reconstructor_historia.py`]
+- [X] T002 Crear el archivo nuevo `modelo/historia.py` con los arreglos propios de acciones vigentes y metadatos de puntos de control, numeración desde 1 y validación de `K > 0`. [Responsable: Sebastián; Depende de: T001; Atiende: FR-002, FR-009, FR-014; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_historia_modelo.py`]
+- [X] T003 Crear el archivo nuevo `modelo/punto_control.py` para capturar/restaurar el estado completo, incluido reloj, estado de `random.Random`, agenda ordenada de eventos y conocimiento del mapa; excluir caché LRU e historial del pergamino. [Responsable: Sebastián; Depende de: T002; Atiende: FR-009, FR-012; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_punto_control.py`]
+- [X] T004 Añadir en el archivo nuevo `modelo/historia.py` el registro permanente e invertible de cambios, separado de los deltas consumibles del pergamino. [Responsable: Sebastián; Depende de: T002; Atiende: FR-008, FR-009, FR-010; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_registro_cambios_linea_tiempo.py`]
+- [X] T005 Crear el archivo nuevo `modelo/reconstructor_historia.py` para reconstruir sobre estado temporal aislado desde un punto de control, sin mutar la partida real. [Responsable: Sebastián; Depende de: T003, T004; Atiende: FR-006, FR-010; Cierre: `.\.venv\Scripts\python.exe -m pytest -q tests\test_reconstructor_historia.py`]
 
 ## Phase 3: User Story 1 - Consultar un instante pasado (Priority: P1)
 
