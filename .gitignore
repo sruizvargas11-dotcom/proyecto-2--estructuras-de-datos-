@@ -4,6 +4,7 @@ __pycache__/
 *.sav
 *.log
 .venv/
+.venv312/
 .idea/
 __pycache__/
 .pytest_cache/

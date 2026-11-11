@@ -102,6 +102,52 @@ class FuenteGrilla:
         return {'version': 'c1'}
 
 
+class FuenteCostos:
+    def __init__(self, primero=None, segundo=None):
+        self.primero = primero
+        self.segundo = segundo
+
+    def datos_cripta(self, cripta_id):
+        return {'id': cripta_id, 'version': 'c1', 'salas_total': 2,
+                'paginas': 1, 'sala_inicial': 1, 'sala_salida': 2,
+                'llave_salida': None, 'presupuesto_solicitudes': 0,
+                'inventario_max': 0}
+
+    def esqueleto_cripta(self, cripta_id, pagina):
+        a = {'sala': 2}
+        b = {'sala': 1}
+        if self.primero != 'ausente':
+            a['costo'] = self.primero
+        if self.segundo != 'ausente':
+            b['costo'] = self.segundo
+        return {'pagina': 1, 'total_paginas': 1, 'salas': [
+            {'id': 1, 'nombre': 'uno', 'salidas': {'E': a}},
+            {'id': 2, 'nombre': 'dos', 'salidas': {'O': b}},
+        ]}
+
+    def version_cripta(self, cripta_id):
+        return {'id': cripta_id, 'version': 'c1'}
+
+
+@pytest.mark.parametrize('primero,segundo', [
+    ('ausente', 'ausente'),
+    ('ausente', 100),
+])
+def test_costos_efectivos_ausentes_o_cien_se_aceptan(primero, segundo):
+    cripta = cargar_esqueleto_completo(FuenteCostos(primero, segundo), 'c')
+    assert cripta.sala_por_id(1).salida_hacia('E').costo == 100
+
+
+@pytest.mark.parametrize('primero,segundo', [
+    ('ausente', 101),
+    (3, 4),
+    (None, 100),
+])
+def test_costos_invalidos_o_desiguales_rechazan_la_cripta(primero, segundo):
+    with pytest.raises(ValueError):
+        cargar_esqueleto_completo(FuenteCostos(primero, segundo), 'c')
+
+
 @pytest.fixture
 def offline():
     fuente = FuenteContada(DatosOffline())

@@ -9,7 +9,10 @@ class Salida:
         cerrada=False,
         llave=None,
         cierre_automatico=None,
+        costo=100,
     ):
+        if type(costo) is not int or costo < 1:
+            raise ValueError("El costo de una salida debe ser un entero >= 1.")
         self.direccion = direccion
         self.sala_destino_id = sala_destino_id
 
@@ -20,4 +23,4 @@ class Salida:
         self.llave = llave
         self.cierre_automatico = cierre_automatico
         self.evento_cierre = None
-
+        self.costo = costo

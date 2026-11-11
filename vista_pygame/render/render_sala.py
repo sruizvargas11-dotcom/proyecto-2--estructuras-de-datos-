@@ -56,6 +56,10 @@ def dibujar_sala(pantalla, assets, estado, tiempo_ms=0, puerta=None, objeto_ocul
             imagen = assets.sprite_entorno(nombre)
             centro = ((a[0]+b[0])//2, (a[1]+b[1])//2)
             pantalla.blit(imagen, imagen.get_rect(center=centro))
+            etiqueta = assets.fuente(14).render(
+                f"{salida.direccion}: {salida.costo}", True, COLOR_TEXTO
+            )
+            pantalla.blit(etiqueta, (centro[0] - 22, centro[1] + 12))
 
     fuente = assets.fuente(22)
     nombre_cripta=getattr(estado,'cripta_nombre','')

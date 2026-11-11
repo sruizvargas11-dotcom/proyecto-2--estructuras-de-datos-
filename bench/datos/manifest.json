@@ -1,0 +1,10 @@
+{
+  "identidad": "bench-terreno-cazador-grid-16x16",
+  "version": "1.0.0",
+  "filas": 16,
+  "columnas": 16,
+  "salas": 256,
+  "conexiones": 480,
+  "sha256": "1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4",
+  "archivo": "bench-terreno-cazador-grid-16x16-v1.0.0.json"
+}

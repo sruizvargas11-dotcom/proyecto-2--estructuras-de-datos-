@@ -61,6 +61,7 @@ class SalidaVisual:
     cerrada: bool
     tiene_llave: bool
     llave_tipo_id: str | None = None
+    costo: int = 100
 
 
 @dataclass
@@ -176,6 +177,7 @@ def construir_estado(partida, proximos_turnos=None, cargando=False):
             cerrada=salida.cerrada,
             tiene_llave=partida.llave_para(salida) is not None if salida.cerrada else False,
             llave_tipo_id=salida.llave,
+            costo=salida.costo,
         ))
 
     def actor_visual(actor, comportamiento=""):

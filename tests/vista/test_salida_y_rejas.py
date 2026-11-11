@@ -82,3 +82,12 @@ def test_puerta_sin_cierre_automatico_sigue_abierta_al_volver(app):
     assert c.estado().sala_id==2
     assert not next(s for s in c.estado().salidas if s.direccion=='E').cerrada
     assert llaves==[o.instancia_id for o in c.estado().inventario if o.clase=='llave']
+
+
+def test_snapshot_pygame_conserva_costo_de_salida_y_cazador(app):
+    c = app._contexto.controlador
+    c.iniciar_partida('cripta-prueba', 'Ada', 999)
+    esperar(lambda: c.estado() is not None and not c.esperando_red())
+    assert all(type(s.costo) is int and s.costo >= 1 for s in c.estado().salidas)
+    assert all(hasattr(actor, 'comportamiento')
+               for actor in c.estado().enemigos_activos)

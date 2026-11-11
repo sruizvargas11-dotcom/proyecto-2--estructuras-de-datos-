@@ -47,6 +47,7 @@ class PersistenciaEsqueleto:
                     "cerrada": salida.cerrada,
                     "llave": salida.llave,
                     "cierre_automatico": salida.cierre_automatico,
+                    "costo": salida.costo,
                 })
 
             datos["salas"].append({
@@ -122,6 +123,7 @@ class PersistenciaEsqueleto:
                     dato_salida["cerrada"],
                     dato_salida["llave"],
                     dato_salida["cierre_automatico"],
+                    dato_salida.get("costo", 100),
                 )
 
                 sala.salidas.insertar_al_inicio(salida)
@@ -189,5 +191,8 @@ class PersistenciaEsqueleto:
                     return False
                 cierre = salida["cierre_automatico"]
                 if cierre is not None and (type(cierre) is not int or cierre < 0):
+                    return False
+                if "costo" in salida and (
+                        type(salida["costo"]) is not int or salida["costo"] < 1):
                     return False
         return True

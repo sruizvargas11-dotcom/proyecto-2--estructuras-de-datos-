@@ -67,6 +67,7 @@ def test_estado_muestra_lo_necesario_para_decidir(tmp_path):
     assert "Pasillo de las urnas (sala 2)" in texto
     assert "Vida" in texto and "/300" in texto
     assert "E  Nicho sellado (cerrada, sin llave)" in texto
+    assert "[costo 100]" in texto
     # Enemigos identificables por instancia_id.
     assert "1. Rata gigante #e-201" in texto and "2. Rata gigante #e-202" in texto
     assert "1. Daga oxidada (+3 ataque)" in texto

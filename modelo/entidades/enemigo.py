@@ -17,15 +17,17 @@ class Enemigo(Actor):
         comportamiento,
         sala_actual=None,
         vida=None,
+        rango=None,
     ):
         if comportamiento not in (
             "guardián",
             "errante",
             "rastreador",
+            "cazador",
         ):
             raise ValueError(
                 "Comportamiento desconocido: "
-                "usa guardián, errante o rastreador."
+                "usa guardián, errante, rastreador o cazador."
             )
 
         super().__init__(
@@ -45,6 +47,11 @@ class Enemigo(Actor):
         self.suelta = Vector()
         self.regeneracion = 0
         self.evento_regeneracion = None
+        if comportamiento == "cazador":
+            if type(rango) is not int or rango < 1:
+                raise ValueError("El rango del cazador debe ser un entero >= 1.")
+        self.rango = rango
+        self.costo_ultima_accion = 100
 
     @classmethod
     def desde_ficha(
@@ -65,6 +72,7 @@ class Enemigo(Actor):
             ficha["comportamiento"],
             sala_actual,
             vida,
+            rango=ficha.get("rango"),
         )
 
         # Conservamos los tipos de objetos que puede soltar.
@@ -76,7 +84,8 @@ class Enemigo(Actor):
 
         return enemigo
 
-    def decidir_accion(self, jugador, tiempo_actual, azar):
+    def decidir_accion(self, jugador, tiempo_actual, azar, distancias=None,
+                       entrantes=None):
         """
         Devuelve (acción, objetivo), sin ejecutar la acción.
 
@@ -97,6 +106,10 @@ class Enemigo(Actor):
 
         if self.sala_actual is jugador.sala_actual:
             return ("atacar", jugador)
+
+        if self.comportamiento == "cazador":
+            from modelo.buscador_rutas import decidir_cazador
+            return decidir_cazador(self, jugador, distancias, entrantes)
 
         if self.comportamiento == "guardián":
             return ("esperar", None)

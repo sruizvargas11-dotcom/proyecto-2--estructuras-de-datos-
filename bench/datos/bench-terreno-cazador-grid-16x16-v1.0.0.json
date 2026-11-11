@@ -1,0 +1,5590 @@
+{
+  "identidad": "bench-terreno-cazador-grid-16x16",
+  "version": "1.0.0",
+  "filas": 16,
+  "columnas": 16,
+  "salas": [
+    {
+      "id": 1,
+      "nombre": "Sala benchmark 1",
+      "salidas": {
+        "E": {
+          "sala": 2,
+          "costo": 30
+        },
+        "S": {
+          "sala": 17,
+          "costo": 95
+        }
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "Sala benchmark 2",
+      "salidas": {
+        "O": {
+          "sala": 1,
+          "costo": 30
+        },
+        "E": {
+          "sala": 3,
+          "costo": 48
+        },
+        "S": {
+          "sala": 18,
+          "costo": 13
+        }
+      }
+    },
+    {
+      "id": 3,
+      "nombre": "Sala benchmark 3",
+      "salidas": {
+        "O": {
+          "sala": 2,
+          "costo": 48
+        },
+        "E": {
+          "sala": 4,
+          "costo": 66
+        },
+        "S": {
+          "sala": 19,
+          "costo": 31
+        }
+      }
+    },
+    {
+      "id": 4,
+      "nombre": "Sala benchmark 4",
+      "salidas": {
+        "O": {
+          "sala": 3,
+          "costo": 66
+        },
+        "E": {
+          "sala": 5,
+          "costo": 84
+        },
+        "S": {
+          "sala": 20,
+          "costo": 49
+        }
+      }
+    },
+    {
+      "id": 5,
+      "nombre": "Sala benchmark 5",
+      "salidas": {
+        "O": {
+          "sala": 4,
+          "costo": 84
+        },
+        "E": {
+          "sala": 6,
+          "costo": 2
+        },
+        "S": {
+          "sala": 21,
+          "costo": 67
+        }
+      }
+    },
+    {
+      "id": 6,
+      "nombre": "Sala benchmark 6",
+      "salidas": {
+        "O": {
+          "sala": 5,
+          "costo": 2
+        },
+        "E": {
+          "sala": 7,
+          "costo": 20
+        },
+        "S": {
+          "sala": 22,
+          "costo": 85
+        }
+      }
+    },
+    {
+      "id": 7,
+      "nombre": "Sala benchmark 7",
+      "salidas": {
+        "O": {
+          "sala": 6,
+          "costo": 20
+        },
+        "E": {
+          "sala": 8,
+          "costo": 38
+        },
+        "S": {
+          "sala": 23,
+          "costo": 3
+        }
+      }
+    },
+    {
+      "id": 8,
+      "nombre": "Sala benchmark 8",
+      "salidas": {
+        "O": {
+          "sala": 7,
+          "costo": 38
+        },
+        "E": {
+          "sala": 9,
+          "costo": 56
+        },
+        "S": {
+          "sala": 24,
+          "costo": 21
+        }
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "Sala benchmark 9",
+      "salidas": {
+        "O": {
+          "sala": 8,
+          "costo": 56
+        },
+        "E": {
+          "sala": 10,
+          "costo": 74
+        },
+        "S": {
+          "sala": 25,
+          "costo": 39
+        }
+      }
+    },
+    {
+      "id": 10,
+      "nombre": "Sala benchmark 10",
+      "salidas": {
+        "O": {
+          "sala": 9,
+          "costo": 74
+        },
+        "E": {
+          "sala": 11,
+          "costo": 92
+        },
+        "S": {
+          "sala": 26,
+          "costo": 57
+        }
+      }
+    },
+    {
+      "id": 11,
+      "nombre": "Sala benchmark 11",
+      "salidas": {
+        "O": {
+          "sala": 10,
+          "costo": 92
+        },
+        "E": {
+          "sala": 12,
+          "costo": 10
+        },
+        "S": {
+          "sala": 27,
+          "costo": 75
+        }
+      }
+    },
+    {
+      "id": 12,
+      "nombre": "Sala benchmark 12",
+      "salidas": {
+        "O": {
+          "sala": 11,
+          "costo": 10
+        },
+        "E": {
+          "sala": 13,
+          "costo": 28
+        },
+        "S": {
+          "sala": 28,
+          "costo": 93
+        }
+      }
+    },
+    {
+      "id": 13,
+      "nombre": "Sala benchmark 13",
+      "salidas": {
+        "O": {
+          "sala": 12,
+          "costo": 28
+        },
+        "E": {
+          "sala": 14,
+          "costo": 46
+        },
+        "S": {
+          "sala": 29,
+          "costo": 11
+        }
+      }
+    },
+    {
+      "id": 14,
+      "nombre": "Sala benchmark 14",
+      "salidas": {
+        "O": {
+          "sala": 13,
+          "costo": 46
+        },
+        "E": {
+          "sala": 15,
+          "costo": 64
+        },
+        "S": {
+          "sala": 30,
+          "costo": 29
+        }
+      }
+    },
+    {
+      "id": 15,
+      "nombre": "Sala benchmark 15",
+      "salidas": {
+        "O": {
+          "sala": 14,
+          "costo": 64
+        },
+        "E": {
+          "sala": 16,
+          "costo": 82
+        },
+        "S": {
+          "sala": 31,
+          "costo": 47
+        }
+      }
+    },
+    {
+      "id": 16,
+      "nombre": "Sala benchmark 16",
+      "salidas": {
+        "O": {
+          "sala": 15,
+          "costo": 82
+        },
+        "S": {
+          "sala": 32,
+          "costo": 65
+        }
+      }
+    },
+    {
+      "id": 17,
+      "nombre": "Sala benchmark 17",
+      "salidas": {
+        "E": {
+          "sala": 18,
+          "costo": 18
+        },
+        "N": {
+          "sala": 1,
+          "costo": 95
+        },
+        "S": {
+          "sala": 33,
+          "costo": 83
+        }
+      }
+    },
+    {
+      "id": 18,
+      "nombre": "Sala benchmark 18",
+      "salidas": {
+        "O": {
+          "sala": 17,
+          "costo": 18
+        },
+        "E": {
+          "sala": 19,
+          "costo": 36
+        },
+        "N": {
+          "sala": 2,
+          "costo": 13
+        },
+        "S": {
+          "sala": 34,
+          "costo": 1
+        }
+      }
+    },
+    {
+      "id": 19,
+      "nombre": "Sala benchmark 19",
+      "salidas": {
+        "O": {
+          "sala": 18,
+          "costo": 36
+        },
+        "E": {
+          "sala": 20,
+          "costo": 54
+        },
+        "N": {
+          "sala": 3,
+          "costo": 31
+        },
+        "S": {
+          "sala": 35,
+          "costo": 19
+        }
+      }
+    },
+    {
+      "id": 20,
+      "nombre": "Sala benchmark 20",
+      "salidas": {
+        "O": {
+          "sala": 19,
+          "costo": 54
+        },
+        "E": {
+          "sala": 21,
+          "costo": 72
+        },
+        "N": {
+          "sala": 4,
+          "costo": 49
+        },
+        "S": {
+          "sala": 36,
+          "costo": 37
+        }
+      }
+    },
+    {
+      "id": 21,
+      "nombre": "Sala benchmark 21",
+      "salidas": {
+        "O": {
+          "sala": 20,
+          "costo": 72
+        },
+        "E": {
+          "sala": 22,
+          "costo": 90
+        },
+        "N": {
+          "sala": 5,
+          "costo": 67
+        },
+        "S": {
+          "sala": 37,
+          "costo": 55
+        }
+      }
+    },
+    {
+      "id": 22,
+      "nombre": "Sala benchmark 22",
+      "salidas": {
+        "O": {
+          "sala": 21,
+          "costo": 90
+        },
+        "E": {
+          "sala": 23,
+          "costo": 8
+        },
+        "N": {
+          "sala": 6,
+          "costo": 85
+        },
+        "S": {
+          "sala": 38,
+          "costo": 73
+        }
+      }
+    },
+    {
+      "id": 23,
+      "nombre": "Sala benchmark 23",
+      "salidas": {
+        "O": {
+          "sala": 22,
+          "costo": 8
+        },
+        "E": {
+          "sala": 24,
+          "costo": 26
+        },
+        "N": {
+          "sala": 7,
+          "costo": 3
+        },
+        "S": {
+          "sala": 39,
+          "costo": 91
+        }
+      }
+    },
+    {
+      "id": 24,
+      "nombre": "Sala benchmark 24",
+      "salidas": {
+        "O": {
+          "sala": 23,
+          "costo": 26
+        },
+        "E": {
+          "sala": 25,
+          "costo": 44
+        },
+        "N": {
+          "sala": 8,
+          "costo": 21
+        },
+        "S": {
+          "sala": 40,
+          "costo": 9
+        }
+      }
+    },
+    {
+      "id": 25,
+      "nombre": "Sala benchmark 25",
+      "salidas": {
+        "O": {
+          "sala": 24,
+          "costo": 44
+        },
+        "E": {
+          "sala": 26,
+          "costo": 62
+        },
+        "N": {
+          "sala": 9,
+          "costo": 39
+        },
+        "S": {
+          "sala": 41,
+          "costo": 27
+        }
+      }
+    },
+    {
+      "id": 26,
+      "nombre": "Sala benchmark 26",
+      "salidas": {
+        "O": {
+          "sala": 25,
+          "costo": 62
+        },
+        "E": {
+          "sala": 27,
+          "costo": 80
+        },
+        "N": {
+          "sala": 10,
+          "costo": 57
+        },
+        "S": {
+          "sala": 42,
+          "costo": 45
+        }
+      }
+    },
+    {
+      "id": 27,
+      "nombre": "Sala benchmark 27",
+      "salidas": {
+        "O": {
+          "sala": 26,
+          "costo": 80
+        },
+        "E": {
+          "sala": 28,
+          "costo": 98
+        },
+        "N": {
+          "sala": 11,
+          "costo": 75
+        },
+        "S": {
+          "sala": 43,
+          "costo": 63
+        }
+      }
+    },
+    {
+      "id": 28,
+      "nombre": "Sala benchmark 28",
+      "salidas": {
+        "O": {
+          "sala": 27,
+          "costo": 98
+        },
+        "E": {
+          "sala": 29,
+          "costo": 16
+        },
+        "N": {
+          "sala": 12,
+          "costo": 93
+        },
+        "S": {
+          "sala": 44,
+          "costo": 81
+        }
+      }
+    },
+    {
+      "id": 29,
+      "nombre": "Sala benchmark 29",
+      "salidas": {
+        "O": {
+          "sala": 28,
+          "costo": 16
+        },
+        "E": {
+          "sala": 30,
+          "costo": 34
+        },
+        "N": {
+          "sala": 13,
+          "costo": 11
+        },
+        "S": {
+          "sala": 45,
+          "costo": 99
+        }
+      }
+    },
+    {
+      "id": 30,
+      "nombre": "Sala benchmark 30",
+      "salidas": {
+        "O": {
+          "sala": 29,
+          "costo": 34
+        },
+        "E": {
+          "sala": 31,
+          "costo": 52
+        },
+        "N": {
+          "sala": 14,
+          "costo": 29
+        },
+        "S": {
+          "sala": 46,
+          "costo": 17
+        }
+      }
+    },
+    {
+      "id": 31,
+      "nombre": "Sala benchmark 31",
+      "salidas": {
+        "O": {
+          "sala": 30,
+          "costo": 52
+        },
+        "E": {
+          "sala": 32,
+          "costo": 70
+        },
+        "N": {
+          "sala": 15,
+          "costo": 47
+        },
+        "S": {
+          "sala": 47,
+          "costo": 35
+        }
+      }
+    },
+    {
+      "id": 32,
+      "nombre": "Sala benchmark 32",
+      "salidas": {
+        "O": {
+          "sala": 31,
+          "costo": 70
+        },
+        "N": {
+          "sala": 16,
+          "costo": 65
+        },
+        "S": {
+          "sala": 48,
+          "costo": 53
+        }
+      }
+    },
+    {
+      "id": 33,
+      "nombre": "Sala benchmark 33",
+      "salidas": {
+        "E": {
+          "sala": 34,
+          "costo": 6
+        },
+        "N": {
+          "sala": 17,
+          "costo": 83
+        },
+        "S": {
+          "sala": 49,
+          "costo": 71
+        }
+      }
+    },
+    {
+      "id": 34,
+      "nombre": "Sala benchmark 34",
+      "salidas": {
+        "O": {
+          "sala": 33,
+          "costo": 6
+        },
+        "E": {
+          "sala": 35,
+          "costo": 24
+        },
+        "N": {
+          "sala": 18,
+          "costo": 1
+        },
+        "S": {
+          "sala": 50,
+          "costo": 89
+        }
+      }
+    },
+    {
+      "id": 35,
+      "nombre": "Sala benchmark 35",
+      "salidas": {
+        "O": {
+          "sala": 34,
+          "costo": 24
+        },
+        "E": {
+          "sala": 36,
+          "costo": 42
+        },
+        "N": {
+          "sala": 19,
+          "costo": 19
+        },
+        "S": {
+          "sala": 51,
+          "costo": 7
+        }
+      }
+    },
+    {
+      "id": 36,
+      "nombre": "Sala benchmark 36",
+      "salidas": {
+        "O": {
+          "sala": 35,
+          "costo": 42
+        },
+        "E": {
+          "sala": 37,
+          "costo": 60
+        },
+        "N": {
+          "sala": 20,
+          "costo": 37
+        },
+        "S": {
+          "sala": 52,
+          "costo": 25
+        }
+      }
+    },
+    {
+      "id": 37,
+      "nombre": "Sala benchmark 37",
+      "salidas": {
+        "O": {
+          "sala": 36,
+          "costo": 60
+        },
+        "E": {
+          "sala": 38,
+          "costo": 78
+        },
+        "N": {
+          "sala": 21,
+          "costo": 55
+        },
+        "S": {
+          "sala": 53,
+          "costo": 43
+        }
+      }
+    },
+    {
+      "id": 38,
+      "nombre": "Sala benchmark 38",
+      "salidas": {
+        "O": {
+          "sala": 37,
+          "costo": 78
+        },
+        "E": {
+          "sala": 39,
+          "costo": 96
+        },
+        "N": {
+          "sala": 22,
+          "costo": 73
+        },
+        "S": {
+          "sala": 54,
+          "costo": 61
+        }
+      }
+    },
+    {
+      "id": 39,
+      "nombre": "Sala benchmark 39",
+      "salidas": {
+        "O": {
+          "sala": 38,
+          "costo": 96
+        },
+        "E": {
+          "sala": 40,
+          "costo": 14
+        },
+        "N": {
+          "sala": 23,
+          "costo": 91
+        },
+        "S": {
+          "sala": 55,
+          "costo": 79
+        }
+      }
+    },
+    {
+      "id": 40,
+      "nombre": "Sala benchmark 40",
+      "salidas": {
+        "O": {
+          "sala": 39,
+          "costo": 14
+        },
+        "E": {
+          "sala": 41,
+          "costo": 32
+        },
+        "N": {
+          "sala": 24,
+          "costo": 9
+        },
+        "S": {
+          "sala": 56,
+          "costo": 97
+        }
+      }
+    },
+    {
+      "id": 41,
+      "nombre": "Sala benchmark 41",
+      "salidas": {
+        "O": {
+          "sala": 40,
+          "costo": 32
+        },
+        "E": {
+          "sala": 42,
+          "costo": 50
+        },
+        "N": {
+          "sala": 25,
+          "costo": 27
+        },
+        "S": {
+          "sala": 57,
+          "costo": 15
+        }
+      }
+    },
+    {
+      "id": 42,
+      "nombre": "Sala benchmark 42",
+      "salidas": {
+        "O": {
+          "sala": 41,
+          "costo": 50
+        },
+        "E": {
+          "sala": 43,
+          "costo": 68
+        },
+        "N": {
+          "sala": 26,
+          "costo": 45
+        },
+        "S": {
+          "sala": 58,
+          "costo": 33
+        }
+      }
+    },
+    {
+      "id": 43,
+      "nombre": "Sala benchmark 43",
+      "salidas": {
+        "O": {
+          "sala": 42,
+          "costo": 68
+        },
+        "E": {
+          "sala": 44,
+          "costo": 86
+        },
+        "N": {
+          "sala": 27,
+          "costo": 63
+        },
+        "S": {
+          "sala": 59,
+          "costo": 51
+        }
+      }
+    },
+    {
+      "id": 44,
+      "nombre": "Sala benchmark 44",
+      "salidas": {
+        "O": {
+          "sala": 43,
+          "costo": 86
+        },
+        "E": {
+          "sala": 45,
+          "costo": 4
+        },
+        "N": {
+          "sala": 28,
+          "costo": 81
+        },
+        "S": {
+          "sala": 60,
+          "costo": 69
+        }
+      }
+    },
+    {
+      "id": 45,
+      "nombre": "Sala benchmark 45",
+      "salidas": {
+        "O": {
+          "sala": 44,
+          "costo": 4
+        },
+        "E": {
+          "sala": 46,
+          "costo": 22
+        },
+        "N": {
+          "sala": 29,
+          "costo": 99
+        },
+        "S": {
+          "sala": 61,
+          "costo": 87
+        }
+      }
+    },
+    {
+      "id": 46,
+      "nombre": "Sala benchmark 46",
+      "salidas": {
+        "O": {
+          "sala": 45,
+          "costo": 22
+        },
+        "E": {
+          "sala": 47,
+          "costo": 40
+        },
+        "N": {
+          "sala": 30,
+          "costo": 17
+        },
+        "S": {
+          "sala": 62,
+          "costo": 5
+        }
+      }
+    },
+    {
+      "id": 47,
+      "nombre": "Sala benchmark 47",
+      "salidas": {
+        "O": {
+          "sala": 46,
+          "costo": 40
+        },
+        "E": {
+          "sala": 48,
+          "costo": 58
+        },
+        "N": {
+          "sala": 31,
+          "costo": 35
+        },
+        "S": {
+          "sala": 63,
+          "costo": 23
+        }
+      }
+    },
+    {
+      "id": 48,
+      "nombre": "Sala benchmark 48",
+      "salidas": {
+        "O": {
+          "sala": 47,
+          "costo": 58
+        },
+        "N": {
+          "sala": 32,
+          "costo": 53
+        },
+        "S": {
+          "sala": 64,
+          "costo": 41
+        }
+      }
+    },
+    {
+      "id": 49,
+      "nombre": "Sala benchmark 49",
+      "salidas": {
+        "E": {
+          "sala": 50,
+          "costo": 94
+        },
+        "N": {
+          "sala": 33,
+          "costo": 71
+        },
+        "S": {
+          "sala": 65,
+          "costo": 59
+        }
+      }
+    },
+    {
+      "id": 50,
+      "nombre": "Sala benchmark 50",
+      "salidas": {
+        "O": {
+          "sala": 49,
+          "costo": 94
+        },
+        "E": {
+          "sala": 51,
+          "costo": 12
+        },
+        "N": {
+          "sala": 34,
+          "costo": 89
+        },
+        "S": {
+          "sala": 66,
+          "costo": 77
+        }
+      }
+    },
+    {
+      "id": 51,
+      "nombre": "Sala benchmark 51",
+      "salidas": {
+        "O": {
+          "sala": 50,
+          "costo": 12
+        },
+        "E": {
+          "sala": 52,
+          "costo": 30
+        },
+        "N": {
+          "sala": 35,
+          "costo": 7
+        },
+        "S": {
+          "sala": 67,
+          "costo": 95
+        }
+      }
+    },
+    {
+      "id": 52,
+      "nombre": "Sala benchmark 52",
+      "salidas": {
+        "O": {
+          "sala": 51,
+          "costo": 30
+        },
+        "E": {
+          "sala": 53,
+          "costo": 48
+        },
+        "N": {
+          "sala": 36,
+          "costo": 25
+        },
+        "S": {
+          "sala": 68,
+          "costo": 13
+        }
+      }
+    },
+    {
+      "id": 53,
+      "nombre": "Sala benchmark 53",
+      "salidas": {
+        "O": {
+          "sala": 52,
+          "costo": 48
+        },
+        "E": {
+          "sala": 54,
+          "costo": 66
+        },
+        "N": {
+          "sala": 37,
+          "costo": 43
+        },
+        "S": {
+          "sala": 69,
+          "costo": 31
+        }
+      }
+    },
+    {
+      "id": 54,
+      "nombre": "Sala benchmark 54",
+      "salidas": {
+        "O": {
+          "sala": 53,
+          "costo": 66
+        },
+        "E": {
+          "sala": 55,
+          "costo": 84
+        },
+        "N": {
+          "sala": 38,
+          "costo": 61
+        },
+        "S": {
+          "sala": 70,
+          "costo": 49
+        }
+      }
+    },
+    {
+      "id": 55,
+      "nombre": "Sala benchmark 55",
+      "salidas": {
+        "O": {
+          "sala": 54,
+          "costo": 84
+        },
+        "E": {
+          "sala": 56,
+          "costo": 2
+        },
+        "N": {
+          "sala": 39,
+          "costo": 79
+        },
+        "S": {
+          "sala": 71,
+          "costo": 67
+        }
+      }
+    },
+    {
+      "id": 56,
+      "nombre": "Sala benchmark 56",
+      "salidas": {
+        "O": {
+          "sala": 55,
+          "costo": 2
+        },
+        "E": {
+          "sala": 57,
+          "costo": 20
+        },
+        "N": {
+          "sala": 40,
+          "costo": 97
+        },
+        "S": {
+          "sala": 72,
+          "costo": 85
+        }
+      }
+    },
+    {
+      "id": 57,
+      "nombre": "Sala benchmark 57",
+      "salidas": {
+        "O": {
+          "sala": 56,
+          "costo": 20
+        },
+        "E": {
+          "sala": 58,
+          "costo": 38
+        },
+        "N": {
+          "sala": 41,
+          "costo": 15
+        },
+        "S": {
+          "sala": 73,
+          "costo": 3
+        }
+      }
+    },
+    {
+      "id": 58,
+      "nombre": "Sala benchmark 58",
+      "salidas": {
+        "O": {
+          "sala": 57,
+          "costo": 38
+        },
+        "E": {
+          "sala": 59,
+          "costo": 56
+        },
+        "N": {
+          "sala": 42,
+          "costo": 33
+        },
+        "S": {
+          "sala": 74,
+          "costo": 21
+        }
+      }
+    },
+    {
+      "id": 59,
+      "nombre": "Sala benchmark 59",
+      "salidas": {
+        "O": {
+          "sala": 58,
+          "costo": 56
+        },
+        "E": {
+          "sala": 60,
+          "costo": 74
+        },
+        "N": {
+          "sala": 43,
+          "costo": 51
+        },
+        "S": {
+          "sala": 75,
+          "costo": 39
+        }
+      }
+    },
+    {
+      "id": 60,
+      "nombre": "Sala benchmark 60",
+      "salidas": {
+        "O": {
+          "sala": 59,
+          "costo": 74
+        },
+        "E": {
+          "sala": 61,
+          "costo": 92
+        },
+        "N": {
+          "sala": 44,
+          "costo": 69
+        },
+        "S": {
+          "sala": 76,
+          "costo": 57
+        }
+      }
+    },
+    {
+      "id": 61,
+      "nombre": "Sala benchmark 61",
+      "salidas": {
+        "O": {
+          "sala": 60,
+          "costo": 92
+        },
+        "E": {
+          "sala": 62,
+          "costo": 10
+        },
+        "N": {
+          "sala": 45,
+          "costo": 87
+        },
+        "S": {
+          "sala": 77,
+          "costo": 75
+        }
+      }
+    },
+    {
+      "id": 62,
+      "nombre": "Sala benchmark 62",
+      "salidas": {
+        "O": {
+          "sala": 61,
+          "costo": 10
+        },
+        "E": {
+          "sala": 63,
+          "costo": 28
+        },
+        "N": {
+          "sala": 46,
+          "costo": 5
+        },
+        "S": {
+          "sala": 78,
+          "costo": 93
+        }
+      }
+    },
+    {
+      "id": 63,
+      "nombre": "Sala benchmark 63",
+      "salidas": {
+        "O": {
+          "sala": 62,
+          "costo": 28
+        },
+        "E": {
+          "sala": 64,
+          "costo": 46
+        },
+        "N": {
+          "sala": 47,
+          "costo": 23
+        },
+        "S": {
+          "sala": 79,
+          "costo": 11
+        }
+      }
+    },
+    {
+      "id": 64,
+      "nombre": "Sala benchmark 64",
+      "salidas": {
+        "O": {
+          "sala": 63,
+          "costo": 46
+        },
+        "N": {
+          "sala": 48,
+          "costo": 41
+        },
+        "S": {
+          "sala": 80,
+          "costo": 29
+        }
+      }
+    },
+    {
+      "id": 65,
+      "nombre": "Sala benchmark 65",
+      "salidas": {
+        "E": {
+          "sala": 66,
+          "costo": 82
+        },
+        "N": {
+          "sala": 49,
+          "costo": 59
+        },
+        "S": {
+          "sala": 81,
+          "costo": 47
+        }
+      }
+    },
+    {
+      "id": 66,
+      "nombre": "Sala benchmark 66",
+      "salidas": {
+        "O": {
+          "sala": 65,
+          "costo": 82
+        },
+        "E": {
+          "sala": 67,
+          "costo": 100
+        },
+        "N": {
+          "sala": 50,
+          "costo": 77
+        },
+        "S": {
+          "sala": 82,
+          "costo": 65
+        }
+      }
+    },
+    {
+      "id": 67,
+      "nombre": "Sala benchmark 67",
+      "salidas": {
+        "O": {
+          "sala": 66,
+          "costo": 100
+        },
+        "E": {
+          "sala": 68,
+          "costo": 18
+        },
+        "N": {
+          "sala": 51,
+          "costo": 95
+        },
+        "S": {
+          "sala": 83,
+          "costo": 83
+        }
+      }
+    },
+    {
+      "id": 68,
+      "nombre": "Sala benchmark 68",
+      "salidas": {
+        "O": {
+          "sala": 67,
+          "costo": 18
+        },
+        "E": {
+          "sala": 69,
+          "costo": 36
+        },
+        "N": {
+          "sala": 52,
+          "costo": 13
+        },
+        "S": {
+          "sala": 84,
+          "costo": 1
+        }
+      }
+    },
+    {
+      "id": 69,
+      "nombre": "Sala benchmark 69",
+      "salidas": {
+        "O": {
+          "sala": 68,
+          "costo": 36
+        },
+        "E": {
+          "sala": 70,
+          "costo": 54
+        },
+        "N": {
+          "sala": 53,
+          "costo": 31
+        },
+        "S": {
+          "sala": 85,
+          "costo": 19
+        }
+      }
+    },
+    {
+      "id": 70,
+      "nombre": "Sala benchmark 70",
+      "salidas": {
+        "O": {
+          "sala": 69,
+          "costo": 54
+        },
+        "E": {
+          "sala": 71,
+          "costo": 72
+        },
+        "N": {
+          "sala": 54,
+          "costo": 49
+        },
+        "S": {
+          "sala": 86,
+          "costo": 37
+        }
+      }
+    },
+    {
+      "id": 71,
+      "nombre": "Sala benchmark 71",
+      "salidas": {
+        "O": {
+          "sala": 70,
+          "costo": 72
+        },
+        "E": {
+          "sala": 72,
+          "costo": 90
+        },
+        "N": {
+          "sala": 55,
+          "costo": 67
+        },
+        "S": {
+          "sala": 87,
+          "costo": 55
+        }
+      }
+    },
+    {
+      "id": 72,
+      "nombre": "Sala benchmark 72",
+      "salidas": {
+        "O": {
+          "sala": 71,
+          "costo": 90
+        },
+        "E": {
+          "sala": 73,
+          "costo": 8
+        },
+        "N": {
+          "sala": 56,
+          "costo": 85
+        },
+        "S": {
+          "sala": 88,
+          "costo": 73
+        }
+      }
+    },
+    {
+      "id": 73,
+      "nombre": "Sala benchmark 73",
+      "salidas": {
+        "O": {
+          "sala": 72,
+          "costo": 8
+        },
+        "E": {
+          "sala": 74,
+          "costo": 26
+        },
+        "N": {
+          "sala": 57,
+          "costo": 3
+        },
+        "S": {
+          "sala": 89,
+          "costo": 91
+        }
+      }
+    },
+    {
+      "id": 74,
+      "nombre": "Sala benchmark 74",
+      "salidas": {
+        "O": {
+          "sala": 73,
+          "costo": 26
+        },
+        "E": {
+          "sala": 75,
+          "costo": 44
+        },
+        "N": {
+          "sala": 58,
+          "costo": 21
+        },
+        "S": {
+          "sala": 90,
+          "costo": 9
+        }
+      }
+    },
+    {
+      "id": 75,
+      "nombre": "Sala benchmark 75",
+      "salidas": {
+        "O": {
+          "sala": 74,
+          "costo": 44
+        },
+        "E": {
+          "sala": 76,
+          "costo": 62
+        },
+        "N": {
+          "sala": 59,
+          "costo": 39
+        },
+        "S": {
+          "sala": 91,
+          "costo": 27
+        }
+      }
+    },
+    {
+      "id": 76,
+      "nombre": "Sala benchmark 76",
+      "salidas": {
+        "O": {
+          "sala": 75,
+          "costo": 62
+        },
+        "E": {
+          "sala": 77,
+          "costo": 80
+        },
+        "N": {
+          "sala": 60,
+          "costo": 57
+        },
+        "S": {
+          "sala": 92,
+          "costo": 45
+        }
+      }
+    },
+    {
+      "id": 77,
+      "nombre": "Sala benchmark 77",
+      "salidas": {
+        "O": {
+          "sala": 76,
+          "costo": 80
+        },
+        "E": {
+          "sala": 78,
+          "costo": 98
+        },
+        "N": {
+          "sala": 61,
+          "costo": 75
+        },
+        "S": {
+          "sala": 93,
+          "costo": 63
+        }
+      }
+    },
+    {
+      "id": 78,
+      "nombre": "Sala benchmark 78",
+      "salidas": {
+        "O": {
+          "sala": 77,
+          "costo": 98
+        },
+        "E": {
+          "sala": 79,
+          "costo": 16
+        },
+        "N": {
+          "sala": 62,
+          "costo": 93
+        },
+        "S": {
+          "sala": 94,
+          "costo": 81
+        }
+      }
+    },
+    {
+      "id": 79,
+      "nombre": "Sala benchmark 79",
+      "salidas": {
+        "O": {
+          "sala": 78,
+          "costo": 16
+        },
+        "E": {
+          "sala": 80,
+          "costo": 34
+        },
+        "N": {
+          "sala": 63,
+          "costo": 11
+        },
+        "S": {
+          "sala": 95,
+          "costo": 99
+        }
+      }
+    },
+    {
+      "id": 80,
+      "nombre": "Sala benchmark 80",
+      "salidas": {
+        "O": {
+          "sala": 79,
+          "costo": 34
+        },
+        "N": {
+          "sala": 64,
+          "costo": 29
+        },
+        "S": {
+          "sala": 96,
+          "costo": 17
+        }
+      }
+    },
+    {
+      "id": 81,
+      "nombre": "Sala benchmark 81",
+      "salidas": {
+        "E": {
+          "sala": 82,
+          "costo": 70
+        },
+        "N": {
+          "sala": 65,
+          "costo": 47
+        },
+        "S": {
+          "sala": 97,
+          "costo": 35
+        }
+      }
+    },
+    {
+      "id": 82,
+      "nombre": "Sala benchmark 82",
+      "salidas": {
+        "O": {
+          "sala": 81,
+          "costo": 70
+        },
+        "E": {
+          "sala": 83,
+          "costo": 88
+        },
+        "N": {
+          "sala": 66,
+          "costo": 65
+        },
+        "S": {
+          "sala": 98,
+          "costo": 53
+        }
+      }
+    },
+    {
+      "id": 83,
+      "nombre": "Sala benchmark 83",
+      "salidas": {
+        "O": {
+          "sala": 82,
+          "costo": 88
+        },
+        "E": {
+          "sala": 84,
+          "costo": 6
+        },
+        "N": {
+          "sala": 67,
+          "costo": 83
+        },
+        "S": {
+          "sala": 99,
+          "costo": 71
+        }
+      }
+    },
+    {
+      "id": 84,
+      "nombre": "Sala benchmark 84",
+      "salidas": {
+        "O": {
+          "sala": 83,
+          "costo": 6
+        },
+        "E": {
+          "sala": 85,
+          "costo": 24
+        },
+        "N": {
+          "sala": 68,
+          "costo": 1
+        },
+        "S": {
+          "sala": 100,
+          "costo": 89
+        }
+      }
+    },
+    {
+      "id": 85,
+      "nombre": "Sala benchmark 85",
+      "salidas": {
+        "O": {
+          "sala": 84,
+          "costo": 24
+        },
+        "E": {
+          "sala": 86,
+          "costo": 42
+        },
+        "N": {
+          "sala": 69,
+          "costo": 19
+        },
+        "S": {
+          "sala": 101,
+          "costo": 7
+        }
+      }
+    },
+    {
+      "id": 86,
+      "nombre": "Sala benchmark 86",
+      "salidas": {
+        "O": {
+          "sala": 85,
+          "costo": 42
+        },
+        "E": {
+          "sala": 87,
+          "costo": 60
+        },
+        "N": {
+          "sala": 70,
+          "costo": 37
+        },
+        "S": {
+          "sala": 102,
+          "costo": 25
+        }
+      }
+    },
+    {
+      "id": 87,
+      "nombre": "Sala benchmark 87",
+      "salidas": {
+        "O": {
+          "sala": 86,
+          "costo": 60
+        },
+        "E": {
+          "sala": 88,
+          "costo": 78
+        },
+        "N": {
+          "sala": 71,
+          "costo": 55
+        },
+        "S": {
+          "sala": 103,
+          "costo": 43
+        }
+      }
+    },
+    {
+      "id": 88,
+      "nombre": "Sala benchmark 88",
+      "salidas": {
+        "O": {
+          "sala": 87,
+          "costo": 78
+        },
+        "E": {
+          "sala": 89,
+          "costo": 96
+        },
+        "N": {
+          "sala": 72,
+          "costo": 73
+        },
+        "S": {
+          "sala": 104,
+          "costo": 61
+        }
+      }
+    },
+    {
+      "id": 89,
+      "nombre": "Sala benchmark 89",
+      "salidas": {
+        "O": {
+          "sala": 88,
+          "costo": 96
+        },
+        "E": {
+          "sala": 90,
+          "costo": 14
+        },
+        "N": {
+          "sala": 73,
+          "costo": 91
+        },
+        "S": {
+          "sala": 105,
+          "costo": 79
+        }
+      }
+    },
+    {
+      "id": 90,
+      "nombre": "Sala benchmark 90",
+      "salidas": {
+        "O": {
+          "sala": 89,
+          "costo": 14
+        },
+        "E": {
+          "sala": 91,
+          "costo": 32
+        },
+        "N": {
+          "sala": 74,
+          "costo": 9
+        },
+        "S": {
+          "sala": 106,
+          "costo": 97
+        }
+      }
+    },
+    {
+      "id": 91,
+      "nombre": "Sala benchmark 91",
+      "salidas": {
+        "O": {
+          "sala": 90,
+          "costo": 32
+        },
+        "E": {
+          "sala": 92,
+          "costo": 50
+        },
+        "N": {
+          "sala": 75,
+          "costo": 27
+        },
+        "S": {
+          "sala": 107,
+          "costo": 15
+        }
+      }
+    },
+    {
+      "id": 92,
+      "nombre": "Sala benchmark 92",
+      "salidas": {
+        "O": {
+          "sala": 91,
+          "costo": 50
+        },
+        "E": {
+          "sala": 93,
+          "costo": 68
+        },
+        "N": {
+          "sala": 76,
+          "costo": 45
+        },
+        "S": {
+          "sala": 108,
+          "costo": 33
+        }
+      }
+    },
+    {
+      "id": 93,
+      "nombre": "Sala benchmark 93",
+      "salidas": {
+        "O": {
+          "sala": 92,
+          "costo": 68
+        },
+        "E": {
+          "sala": 94,
+          "costo": 86
+        },
+        "N": {
+          "sala": 77,
+          "costo": 63
+        },
+        "S": {
+          "sala": 109,
+          "costo": 51
+        }
+      }
+    },
+    {
+      "id": 94,
+      "nombre": "Sala benchmark 94",
+      "salidas": {
+        "O": {
+          "sala": 93,
+          "costo": 86
+        },
+        "E": {
+          "sala": 95,
+          "costo": 4
+        },
+        "N": {
+          "sala": 78,
+          "costo": 81
+        },
+        "S": {
+          "sala": 110,
+          "costo": 69
+        }
+      }
+    },
+    {
+      "id": 95,
+      "nombre": "Sala benchmark 95",
+      "salidas": {
+        "O": {
+          "sala": 94,
+          "costo": 4
+        },
+        "E": {
+          "sala": 96,
+          "costo": 22
+        },
+        "N": {
+          "sala": 79,
+          "costo": 99
+        },
+        "S": {
+          "sala": 111,
+          "costo": 87
+        }
+      }
+    },
+    {
+      "id": 96,
+      "nombre": "Sala benchmark 96",
+      "salidas": {
+        "O": {
+          "sala": 95,
+          "costo": 22
+        },
+        "N": {
+          "sala": 80,
+          "costo": 17
+        },
+        "S": {
+          "sala": 112,
+          "costo": 5
+        }
+      }
+    },
+    {
+      "id": 97,
+      "nombre": "Sala benchmark 97",
+      "salidas": {
+        "E": {
+          "sala": 98,
+          "costo": 58
+        },
+        "N": {
+          "sala": 81,
+          "costo": 35
+        },
+        "S": {
+          "sala": 113,
+          "costo": 23
+        }
+      }
+    },
+    {
+      "id": 98,
+      "nombre": "Sala benchmark 98",
+      "salidas": {
+        "O": {
+          "sala": 97,
+          "costo": 58
+        },
+        "E": {
+          "sala": 99,
+          "costo": 76
+        },
+        "N": {
+          "sala": 82,
+          "costo": 53
+        },
+        "S": {
+          "sala": 114,
+          "costo": 41
+        }
+      }
+    },
+    {
+      "id": 99,
+      "nombre": "Sala benchmark 99",
+      "salidas": {
+        "O": {
+          "sala": 98,
+          "costo": 76
+        },
+        "E": {
+          "sala": 100,
+          "costo": 94
+        },
+        "N": {
+          "sala": 83,
+          "costo": 71
+        },
+        "S": {
+          "sala": 115,
+          "costo": 59
+        }
+      }
+    },
+    {
+      "id": 100,
+      "nombre": "Sala benchmark 100",
+      "salidas": {
+        "O": {
+          "sala": 99,
+          "costo": 94
+        },
+        "E": {
+          "sala": 101,
+          "costo": 12
+        },
+        "N": {
+          "sala": 84,
+          "costo": 89
+        },
+        "S": {
+          "sala": 116,
+          "costo": 77
+        }
+      }
+    },
+    {
+      "id": 101,
+      "nombre": "Sala benchmark 101",
+      "salidas": {
+        "O": {
+          "sala": 100,
+          "costo": 12
+        },
+        "E": {
+          "sala": 102,
+          "costo": 30
+        },
+        "N": {
+          "sala": 85,
+          "costo": 7
+        },
+        "S": {
+          "sala": 117,
+          "costo": 95
+        }
+      }
+    },
+    {
+      "id": 102,
+      "nombre": "Sala benchmark 102",
+      "salidas": {
+        "O": {
+          "sala": 101,
+          "costo": 30
+        },
+        "E": {
+          "sala": 103,
+          "costo": 48
+        },
+        "N": {
+          "sala": 86,
+          "costo": 25
+        },
+        "S": {
+          "sala": 118,
+          "costo": 13
+        }
+      }
+    },
+    {
+      "id": 103,
+      "nombre": "Sala benchmark 103",
+      "salidas": {
+        "O": {
+          "sala": 102,
+          "costo": 48
+        },
+        "E": {
+          "sala": 104,
+          "costo": 66
+        },
+        "N": {
+          "sala": 87,
+          "costo": 43
+        },
+        "S": {
+          "sala": 119,
+          "costo": 31
+        }
+      }
+    },
+    {
+      "id": 104,
+      "nombre": "Sala benchmark 104",
+      "salidas": {
+        "O": {
+          "sala": 103,
+          "costo": 66
+        },
+        "E": {
+          "sala": 105,
+          "costo": 84
+        },
+        "N": {
+          "sala": 88,
+          "costo": 61
+        },
+        "S": {
+          "sala": 120,
+          "costo": 49
+        }
+      }
+    },
+    {
+      "id": 105,
+      "nombre": "Sala benchmark 105",
+      "salidas": {
+        "O": {
+          "sala": 104,
+          "costo": 84
+        },
+        "E": {
+          "sala": 106,
+          "costo": 2
+        },
+        "N": {
+          "sala": 89,
+          "costo": 79
+        },
+        "S": {
+          "sala": 121,
+          "costo": 67
+        }
+      }
+    },
+    {
+      "id": 106,
+      "nombre": "Sala benchmark 106",
+      "salidas": {
+        "O": {
+          "sala": 105,
+          "costo": 2
+        },
+        "E": {
+          "sala": 107,
+          "costo": 20
+        },
+        "N": {
+          "sala": 90,
+          "costo": 97
+        },
+        "S": {
+          "sala": 122,
+          "costo": 85
+        }
+      }
+    },
+    {
+      "id": 107,
+      "nombre": "Sala benchmark 107",
+      "salidas": {
+        "O": {
+          "sala": 106,
+          "costo": 20
+        },
+        "E": {
+          "sala": 108,
+          "costo": 38
+        },
+        "N": {
+          "sala": 91,
+          "costo": 15
+        },
+        "S": {
+          "sala": 123,
+          "costo": 3
+        }
+      }
+    },
+    {
+      "id": 108,
+      "nombre": "Sala benchmark 108",
+      "salidas": {
+        "O": {
+          "sala": 107,
+          "costo": 38
+        },
+        "E": {
+          "sala": 109,
+          "costo": 56
+        },
+        "N": {
+          "sala": 92,
+          "costo": 33
+        },
+        "S": {
+          "sala": 124,
+          "costo": 21
+        }
+      }
+    },
+    {
+      "id": 109,
+      "nombre": "Sala benchmark 109",
+      "salidas": {
+        "O": {
+          "sala": 108,
+          "costo": 56
+        },
+        "E": {
+          "sala": 110,
+          "costo": 74
+        },
+        "N": {
+          "sala": 93,
+          "costo": 51
+        },
+        "S": {
+          "sala": 125,
+          "costo": 39
+        }
+      }
+    },
+    {
+      "id": 110,
+      "nombre": "Sala benchmark 110",
+      "salidas": {
+        "O": {
+          "sala": 109,
+          "costo": 74
+        },
+        "E": {
+          "sala": 111,
+          "costo": 92
+        },
+        "N": {
+          "sala": 94,
+          "costo": 69
+        },
+        "S": {
+          "sala": 126,
+          "costo": 57
+        }
+      }
+    },
+    {
+      "id": 111,
+      "nombre": "Sala benchmark 111",
+      "salidas": {
+        "O": {
+          "sala": 110,
+          "costo": 92
+        },
+        "E": {
+          "sala": 112,
+          "costo": 10
+        },
+        "N": {
+          "sala": 95,
+          "costo": 87
+        },
+        "S": {
+          "sala": 127,
+          "costo": 75
+        }
+      }
+    },
+    {
+      "id": 112,
+      "nombre": "Sala benchmark 112",
+      "salidas": {
+        "O": {
+          "sala": 111,
+          "costo": 10
+        },
+        "N": {
+          "sala": 96,
+          "costo": 5
+        },
+        "S": {
+          "sala": 128,
+          "costo": 93
+        }
+      }
+    },
+    {
+      "id": 113,
+      "nombre": "Sala benchmark 113",
+      "salidas": {
+        "E": {
+          "sala": 114,
+          "costo": 46
+        },
+        "N": {
+          "sala": 97,
+          "costo": 23
+        },
+        "S": {
+          "sala": 129,
+          "costo": 11
+        }
+      }
+    },
+    {
+      "id": 114,
+      "nombre": "Sala benchmark 114",
+      "salidas": {
+        "O": {
+          "sala": 113,
+          "costo": 46
+        },
+        "E": {
+          "sala": 115,
+          "costo": 64
+        },
+        "N": {
+          "sala": 98,
+          "costo": 41
+        },
+        "S": {
+          "sala": 130,
+          "costo": 29
+        }
+      }
+    },
+    {
+      "id": 115,
+      "nombre": "Sala benchmark 115",
+      "salidas": {
+        "O": {
+          "sala": 114,
+          "costo": 64
+        },
+        "E": {
+          "sala": 116,
+          "costo": 82
+        },
+        "N": {
+          "sala": 99,
+          "costo": 59
+        },
+        "S": {
+          "sala": 131,
+          "costo": 47
+        }
+      }
+    },
+    {
+      "id": 116,
+      "nombre": "Sala benchmark 116",
+      "salidas": {
+        "O": {
+          "sala": 115,
+          "costo": 82
+        },
+        "E": {
+          "sala": 117,
+          "costo": 100
+        },
+        "N": {
+          "sala": 100,
+          "costo": 77
+        },
+        "S": {
+          "sala": 132,
+          "costo": 65
+        }
+      }
+    },
+    {
+      "id": 117,
+      "nombre": "Sala benchmark 117",
+      "salidas": {
+        "O": {
+          "sala": 116,
+          "costo": 100
+        },
+        "E": {
+          "sala": 118,
+          "costo": 18
+        },
+        "N": {
+          "sala": 101,
+          "costo": 95
+        },
+        "S": {
+          "sala": 133,
+          "costo": 83
+        }
+      }
+    },
+    {
+      "id": 118,
+      "nombre": "Sala benchmark 118",
+      "salidas": {
+        "O": {
+          "sala": 117,
+          "costo": 18
+        },
+        "E": {
+          "sala": 119,
+          "costo": 36
+        },
+        "N": {
+          "sala": 102,
+          "costo": 13
+        },
+        "S": {
+          "sala": 134,
+          "costo": 1
+        }
+      }
+    },
+    {
+      "id": 119,
+      "nombre": "Sala benchmark 119",
+      "salidas": {
+        "O": {
+          "sala": 118,
+          "costo": 36
+        },
+        "E": {
+          "sala": 120,
+          "costo": 54
+        },
+        "N": {
+          "sala": 103,
+          "costo": 31
+        },
+        "S": {
+          "sala": 135,
+          "costo": 19
+        }
+      }
+    },
+    {
+      "id": 120,
+      "nombre": "Sala benchmark 120",
+      "salidas": {
+        "O": {
+          "sala": 119,
+          "costo": 54
+        },
+        "E": {
+          "sala": 121,
+          "costo": 72
+        },
+        "N": {
+          "sala": 104,
+          "costo": 49
+        },
+        "S": {
+          "sala": 136,
+          "costo": 37
+        }
+      }
+    },
+    {
+      "id": 121,
+      "nombre": "Sala benchmark 121",
+      "salidas": {
+        "O": {
+          "sala": 120,
+          "costo": 72
+        },
+        "E": {
+          "sala": 122,
+          "costo": 90
+        },
+        "N": {
+          "sala": 105,
+          "costo": 67
+        },
+        "S": {
+          "sala": 137,
+          "costo": 55
+        }
+      }
+    },
+    {
+      "id": 122,
+      "nombre": "Sala benchmark 122",
+      "salidas": {
+        "O": {
+          "sala": 121,
+          "costo": 90
+        },
+        "E": {
+          "sala": 123,
+          "costo": 8
+        },
+        "N": {
+          "sala": 106,
+          "costo": 85
+        },
+        "S": {
+          "sala": 138,
+          "costo": 73
+        }
+      }
+    },
+    {
+      "id": 123,
+      "nombre": "Sala benchmark 123",
+      "salidas": {
+        "O": {
+          "sala": 122,
+          "costo": 8
+        },
+        "E": {
+          "sala": 124,
+          "costo": 26
+        },
+        "N": {
+          "sala": 107,
+          "costo": 3
+        },
+        "S": {
+          "sala": 139,
+          "costo": 91
+        }
+      }
+    },
+    {
+      "id": 124,
+      "nombre": "Sala benchmark 124",
+      "salidas": {
+        "O": {
+          "sala": 123,
+          "costo": 26
+        },
+        "E": {
+          "sala": 125,
+          "costo": 44
+        },
+        "N": {
+          "sala": 108,
+          "costo": 21
+        },
+        "S": {
+          "sala": 140,
+          "costo": 9
+        }
+      }
+    },
+    {
+      "id": 125,
+      "nombre": "Sala benchmark 125",
+      "salidas": {
+        "O": {
+          "sala": 124,
+          "costo": 44
+        },
+        "E": {
+          "sala": 126,
+          "costo": 62
+        },
+        "N": {
+          "sala": 109,
+          "costo": 39
+        },
+        "S": {
+          "sala": 141,
+          "costo": 27
+        }
+      }
+    },
+    {
+      "id": 126,
+      "nombre": "Sala benchmark 126",
+      "salidas": {
+        "O": {
+          "sala": 125,
+          "costo": 62
+        },
+        "E": {
+          "sala": 127,
+          "costo": 80
+        },
+        "N": {
+          "sala": 110,
+          "costo": 57
+        },
+        "S": {
+          "sala": 142,
+          "costo": 45
+        }
+      }
+    },
+    {
+      "id": 127,
+      "nombre": "Sala benchmark 127",
+      "salidas": {
+        "O": {
+          "sala": 126,
+          "costo": 80
+        },
+        "E": {
+          "sala": 128,
+          "costo": 98
+        },
+        "N": {
+          "sala": 111,
+          "costo": 75
+        },
+        "S": {
+          "sala": 143,
+          "costo": 63
+        }
+      }
+    },
+    {
+      "id": 128,
+      "nombre": "Sala benchmark 128",
+      "salidas": {
+        "O": {
+          "sala": 127,
+          "costo": 98
+        },
+        "N": {
+          "sala": 112,
+          "costo": 93
+        },
+        "S": {
+          "sala": 144,
+          "costo": 81
+        }
+      }
+    },
+    {
+      "id": 129,
+      "nombre": "Sala benchmark 129",
+      "salidas": {
+        "E": {
+          "sala": 130,
+          "costo": 34
+        },
+        "N": {
+          "sala": 113,
+          "costo": 11
+        },
+        "S": {
+          "sala": 145,
+          "costo": 99
+        }
+      }
+    },
+    {
+      "id": 130,
+      "nombre": "Sala benchmark 130",
+      "salidas": {
+        "O": {
+          "sala": 129,
+          "costo": 34
+        },
+        "E": {
+          "sala": 131,
+          "costo": 52
+        },
+        "N": {
+          "sala": 114,
+          "costo": 29
+        },
+        "S": {
+          "sala": 146,
+          "costo": 17
+        }
+      }
+    },
+    {
+      "id": 131,
+      "nombre": "Sala benchmark 131",
+      "salidas": {
+        "O": {
+          "sala": 130,
+          "costo": 52
+        },
+        "E": {
+          "sala": 132,
+          "costo": 70
+        },
+        "N": {
+          "sala": 115,
+          "costo": 47
+        },
+        "S": {
+          "sala": 147,
+          "costo": 35
+        }
+      }
+    },
+    {
+      "id": 132,
+      "nombre": "Sala benchmark 132",
+      "salidas": {
+        "O": {
+          "sala": 131,
+          "costo": 70
+        },
+        "E": {
+          "sala": 133,
+          "costo": 88
+        },
+        "N": {
+          "sala": 116,
+          "costo": 65
+        },
+        "S": {
+          "sala": 148,
+          "costo": 53
+        }
+      }
+    },
+    {
+      "id": 133,
+      "nombre": "Sala benchmark 133",
+      "salidas": {
+        "O": {
+          "sala": 132,
+          "costo": 88
+        },
+        "E": {
+          "sala": 134,
+          "costo": 6
+        },
+        "N": {
+          "sala": 117,
+          "costo": 83
+        },
+        "S": {
+          "sala": 149,
+          "costo": 71
+        }
+      }
+    },
+    {
+      "id": 134,
+      "nombre": "Sala benchmark 134",
+      "salidas": {
+        "O": {
+          "sala": 133,
+          "costo": 6
+        },
+        "E": {
+          "sala": 135,
+          "costo": 24
+        },
+        "N": {
+          "sala": 118,
+          "costo": 1
+        },
+        "S": {
+          "sala": 150,
+          "costo": 89
+        }
+      }
+    },
+    {
+      "id": 135,
+      "nombre": "Sala benchmark 135",
+      "salidas": {
+        "O": {
+          "sala": 134,
+          "costo": 24
+        },
+        "E": {
+          "sala": 136,
+          "costo": 42
+        },
+        "N": {
+          "sala": 119,
+          "costo": 19
+        },
+        "S": {
+          "sala": 151,
+          "costo": 7
+        }
+      }
+    },
+    {
+      "id": 136,
+      "nombre": "Sala benchmark 136",
+      "salidas": {
+        "O": {
+          "sala": 135,
+          "costo": 42
+        },
+        "E": {
+          "sala": 137,
+          "costo": 60
+        },
+        "N": {
+          "sala": 120,
+          "costo": 37
+        },
+        "S": {
+          "sala": 152,
+          "costo": 25
+        }
+      }
+    },
+    {
+      "id": 137,
+      "nombre": "Sala benchmark 137",
+      "salidas": {
+        "O": {
+          "sala": 136,
+          "costo": 60
+        },
+        "E": {
+          "sala": 138,
+          "costo": 78
+        },
+        "N": {
+          "sala": 121,
+          "costo": 55
+        },
+        "S": {
+          "sala": 153,
+          "costo": 43
+        }
+      }
+    },
+    {
+      "id": 138,
+      "nombre": "Sala benchmark 138",
+      "salidas": {
+        "O": {
+          "sala": 137,
+          "costo": 78
+        },
+        "E": {
+          "sala": 139,
+          "costo": 96
+        },
+        "N": {
+          "sala": 122,
+          "costo": 73
+        },
+        "S": {
+          "sala": 154,
+          "costo": 61
+        }
+      }
+    },
+    {
+      "id": 139,
+      "nombre": "Sala benchmark 139",
+      "salidas": {
+        "O": {
+          "sala": 138,
+          "costo": 96
+        },
+        "E": {
+          "sala": 140,
+          "costo": 14
+        },
+        "N": {
+          "sala": 123,
+          "costo": 91
+        },
+        "S": {
+          "sala": 155,
+          "costo": 79
+        }
+      }
+    },
+    {
+      "id": 140,
+      "nombre": "Sala benchmark 140",
+      "salidas": {
+        "O": {
+          "sala": 139,
+          "costo": 14
+        },
+        "E": {
+          "sala": 141,
+          "costo": 32
+        },
+        "N": {
+          "sala": 124,
+          "costo": 9
+        },
+        "S": {
+          "sala": 156,
+          "costo": 97
+        }
+      }
+    },
+    {
+      "id": 141,
+      "nombre": "Sala benchmark 141",
+      "salidas": {
+        "O": {
+          "sala": 140,
+          "costo": 32
+        },
+        "E": {
+          "sala": 142,
+          "costo": 50
+        },
+        "N": {
+          "sala": 125,
+          "costo": 27
+        },
+        "S": {
+          "sala": 157,
+          "costo": 15
+        }
+      }
+    },
+    {
+      "id": 142,
+      "nombre": "Sala benchmark 142",
+      "salidas": {
+        "O": {
+          "sala": 141,
+          "costo": 50
+        },
+        "E": {
+          "sala": 143,
+          "costo": 68
+        },
+        "N": {
+          "sala": 126,
+          "costo": 45
+        },
+        "S": {
+          "sala": 158,
+          "costo": 33
+        }
+      }
+    },
+    {
+      "id": 143,
+      "nombre": "Sala benchmark 143",
+      "salidas": {
+        "O": {
+          "sala": 142,
+          "costo": 68
+        },
+        "E": {
+          "sala": 144,
+          "costo": 86
+        },
+        "N": {
+          "sala": 127,
+          "costo": 63
+        },
+        "S": {
+          "sala": 159,
+          "costo": 51
+        }
+      }
+    },
+    {
+      "id": 144,
+      "nombre": "Sala benchmark 144",
+      "salidas": {
+        "O": {
+          "sala": 143,
+          "costo": 86
+        },
+        "N": {
+          "sala": 128,
+          "costo": 81
+        },
+        "S": {
+          "sala": 160,
+          "costo": 69
+        }
+      }
+    },
+    {
+      "id": 145,
+      "nombre": "Sala benchmark 145",
+      "salidas": {
+        "E": {
+          "sala": 146,
+          "costo": 22
+        },
+        "N": {
+          "sala": 129,
+          "costo": 99
+        },
+        "S": {
+          "sala": 161,
+          "costo": 87
+        }
+      }
+    },
+    {
+      "id": 146,
+      "nombre": "Sala benchmark 146",
+      "salidas": {
+        "O": {
+          "sala": 145,
+          "costo": 22
+        },
+        "E": {
+          "sala": 147,
+          "costo": 40
+        },
+        "N": {
+          "sala": 130,
+          "costo": 17
+        },
+        "S": {
+          "sala": 162,
+          "costo": 5
+        }
+      }
+    },
+    {
+      "id": 147,
+      "nombre": "Sala benchmark 147",
+      "salidas": {
+        "O": {
+          "sala": 146,
+          "costo": 40
+        },
+        "E": {
+          "sala": 148,
+          "costo": 58
+        },
+        "N": {
+          "sala": 131,
+          "costo": 35
+        },
+        "S": {
+          "sala": 163,
+          "costo": 23
+        }
+      }
+    },
+    {
+      "id": 148,
+      "nombre": "Sala benchmark 148",
+      "salidas": {
+        "O": {
+          "sala": 147,
+          "costo": 58
+        },
+        "E": {
+          "sala": 149,
+          "costo": 76
+        },
+        "N": {
+          "sala": 132,
+          "costo": 53
+        },
+        "S": {
+          "sala": 164,
+          "costo": 41
+        }
+      }
+    },
+    {
+      "id": 149,
+      "nombre": "Sala benchmark 149",
+      "salidas": {
+        "O": {
+          "sala": 148,
+          "costo": 76
+        },
+        "E": {
+          "sala": 150,
+          "costo": 94
+        },
+        "N": {
+          "sala": 133,
+          "costo": 71
+        },
+        "S": {
+          "sala": 165,
+          "costo": 59
+        }
+      }
+    },
+    {
+      "id": 150,
+      "nombre": "Sala benchmark 150",
+      "salidas": {
+        "O": {
+          "sala": 149,
+          "costo": 94
+        },
+        "E": {
+          "sala": 151,
+          "costo": 12
+        },
+        "N": {
+          "sala": 134,
+          "costo": 89
+        },
+        "S": {
+          "sala": 166,
+          "costo": 77
+        }
+      }
+    },
+    {
+      "id": 151,
+      "nombre": "Sala benchmark 151",
+      "salidas": {
+        "O": {
+          "sala": 150,
+          "costo": 12
+        },
+        "E": {
+          "sala": 152,
+          "costo": 30
+        },
+        "N": {
+          "sala": 135,
+          "costo": 7
+        },
+        "S": {
+          "sala": 167,
+          "costo": 95
+        }
+      }
+    },
+    {
+      "id": 152,
+      "nombre": "Sala benchmark 152",
+      "salidas": {
+        "O": {
+          "sala": 151,
+          "costo": 30
+        },
+        "E": {
+          "sala": 153,
+          "costo": 48
+        },
+        "N": {
+          "sala": 136,
+          "costo": 25
+        },
+        "S": {
+          "sala": 168,
+          "costo": 13
+        }
+      }
+    },
+    {
+      "id": 153,
+      "nombre": "Sala benchmark 153",
+      "salidas": {
+        "O": {
+          "sala": 152,
+          "costo": 48
+        },
+        "E": {
+          "sala": 154,
+          "costo": 66
+        },
+        "N": {
+          "sala": 137,
+          "costo": 43
+        },
+        "S": {
+          "sala": 169,
+          "costo": 31
+        }
+      }
+    },
+    {
+      "id": 154,
+      "nombre": "Sala benchmark 154",
+      "salidas": {
+        "O": {
+          "sala": 153,
+          "costo": 66
+        },
+        "E": {
+          "sala": 155,
+          "costo": 84
+        },
+        "N": {
+          "sala": 138,
+          "costo": 61
+        },
+        "S": {
+          "sala": 170,
+          "costo": 49
+        }
+      }
+    },
+    {
+      "id": 155,
+      "nombre": "Sala benchmark 155",
+      "salidas": {
+        "O": {
+          "sala": 154,
+          "costo": 84
+        },
+        "E": {
+          "sala": 156,
+          "costo": 2
+        },
+        "N": {
+          "sala": 139,
+          "costo": 79
+        },
+        "S": {
+          "sala": 171,
+          "costo": 67
+        }
+      }
+    },
+    {
+      "id": 156,
+      "nombre": "Sala benchmark 156",
+      "salidas": {
+        "O": {
+          "sala": 155,
+          "costo": 2
+        },
+        "E": {
+          "sala": 157,
+          "costo": 20
+        },
+        "N": {
+          "sala": 140,
+          "costo": 97
+        },
+        "S": {
+          "sala": 172,
+          "costo": 85
+        }
+      }
+    },
+    {
+      "id": 157,
+      "nombre": "Sala benchmark 157",
+      "salidas": {
+        "O": {
+          "sala": 156,
+          "costo": 20
+        },
+        "E": {
+          "sala": 158,
+          "costo": 38
+        },
+        "N": {
+          "sala": 141,
+          "costo": 15
+        },
+        "S": {
+          "sala": 173,
+          "costo": 3
+        }
+      }
+    },
+    {
+      "id": 158,
+      "nombre": "Sala benchmark 158",
+      "salidas": {
+        "O": {
+          "sala": 157,
+          "costo": 38
+        },
+        "E": {
+          "sala": 159,
+          "costo": 56
+        },
+        "N": {
+          "sala": 142,
+          "costo": 33
+        },
+        "S": {
+          "sala": 174,
+          "costo": 21
+        }
+      }
+    },
+    {
+      "id": 159,
+      "nombre": "Sala benchmark 159",
+      "salidas": {
+        "O": {
+          "sala": 158,
+          "costo": 56
+        },
+        "E": {
+          "sala": 160,
+          "costo": 74
+        },
+        "N": {
+          "sala": 143,
+          "costo": 51
+        },
+        "S": {
+          "sala": 175,
+          "costo": 39
+        }
+      }
+    },
+    {
+      "id": 160,
+      "nombre": "Sala benchmark 160",
+      "salidas": {
+        "O": {
+          "sala": 159,
+          "costo": 74
+        },
+        "N": {
+          "sala": 144,
+          "costo": 69
+        },
+        "S": {
+          "sala": 176,
+          "costo": 57
+        }
+      }
+    },
+    {
+      "id": 161,
+      "nombre": "Sala benchmark 161",
+      "salidas": {
+        "E": {
+          "sala": 162,
+          "costo": 10
+        },
+        "N": {
+          "sala": 145,
+          "costo": 87
+        },
+        "S": {
+          "sala": 177,
+          "costo": 75
+        }
+      }
+    },
+    {
+      "id": 162,
+      "nombre": "Sala benchmark 162",
+      "salidas": {
+        "O": {
+          "sala": 161,
+          "costo": 10
+        },
+        "E": {
+          "sala": 163,
+          "costo": 28
+        },
+        "N": {
+          "sala": 146,
+          "costo": 5
+        },
+        "S": {
+          "sala": 178,
+          "costo": 93
+        }
+      }
+    },
+    {
+      "id": 163,
+      "nombre": "Sala benchmark 163",
+      "salidas": {
+        "O": {
+          "sala": 162,
+          "costo": 28
+        },
+        "E": {
+          "sala": 164,
+          "costo": 46
+        },
+        "N": {
+          "sala": 147,
+          "costo": 23
+        },
+        "S": {
+          "sala": 179,
+          "costo": 11
+        }
+      }
+    },
+    {
+      "id": 164,
+      "nombre": "Sala benchmark 164",
+      "salidas": {
+        "O": {
+          "sala": 163,
+          "costo": 46
+        },
+        "E": {
+          "sala": 165,
+          "costo": 64
+        },
+        "N": {
+          "sala": 148,
+          "costo": 41
+        },
+        "S": {
+          "sala": 180,
+          "costo": 29
+        }
+      }
+    },
+    {
+      "id": 165,
+      "nombre": "Sala benchmark 165",
+      "salidas": {
+        "O": {
+          "sala": 164,
+          "costo": 64
+        },
+        "E": {
+          "sala": 166,
+          "costo": 82
+        },
+        "N": {
+          "sala": 149,
+          "costo": 59
+        },
+        "S": {
+          "sala": 181,
+          "costo": 47
+        }
+      }
+    },
+    {
+      "id": 166,
+      "nombre": "Sala benchmark 166",
+      "salidas": {
+        "O": {
+          "sala": 165,
+          "costo": 82
+        },
+        "E": {
+          "sala": 167,
+          "costo": 100
+        },
+        "N": {
+          "sala": 150,
+          "costo": 77
+        },
+        "S": {
+          "sala": 182,
+          "costo": 65
+        }
+      }
+    },
+    {
+      "id": 167,
+      "nombre": "Sala benchmark 167",
+      "salidas": {
+        "O": {
+          "sala": 166,
+          "costo": 100
+        },
+        "E": {
+          "sala": 168,
+          "costo": 18
+        },
+        "N": {
+          "sala": 151,
+          "costo": 95
+        },
+        "S": {
+          "sala": 183,
+          "costo": 83
+        }
+      }
+    },
+    {
+      "id": 168,
+      "nombre": "Sala benchmark 168",
+      "salidas": {
+        "O": {
+          "sala": 167,
+          "costo": 18
+        },
+        "E": {
+          "sala": 169,
+          "costo": 36
+        },
+        "N": {
+          "sala": 152,
+          "costo": 13
+        },
+        "S": {
+          "sala": 184,
+          "costo": 1
+        }
+      }
+    },
+    {
+      "id": 169,
+      "nombre": "Sala benchmark 169",
+      "salidas": {
+        "O": {
+          "sala": 168,
+          "costo": 36
+        },
+        "E": {
+          "sala": 170,
+          "costo": 54
+        },
+        "N": {
+          "sala": 153,
+          "costo": 31
+        },
+        "S": {
+          "sala": 185,
+          "costo": 19
+        }
+      }
+    },
+    {
+      "id": 170,
+      "nombre": "Sala benchmark 170",
+      "salidas": {
+        "O": {
+          "sala": 169,
+          "costo": 54
+        },
+        "E": {
+          "sala": 171,
+          "costo": 72
+        },
+        "N": {
+          "sala": 154,
+          "costo": 49
+        },
+        "S": {
+          "sala": 186,
+          "costo": 37
+        }
+      }
+    },
+    {
+      "id": 171,
+      "nombre": "Sala benchmark 171",
+      "salidas": {
+        "O": {
+          "sala": 170,
+          "costo": 72
+        },
+        "E": {
+          "sala": 172,
+          "costo": 90
+        },
+        "N": {
+          "sala": 155,
+          "costo": 67
+        },
+        "S": {
+          "sala": 187,
+          "costo": 55
+        }
+      }
+    },
+    {
+      "id": 172,
+      "nombre": "Sala benchmark 172",
+      "salidas": {
+        "O": {
+          "sala": 171,
+          "costo": 90
+        },
+        "E": {
+          "sala": 173,
+          "costo": 8
+        },
+        "N": {
+          "sala": 156,
+          "costo": 85
+        },
+        "S": {
+          "sala": 188,
+          "costo": 73
+        }
+      }
+    },
+    {
+      "id": 173,
+      "nombre": "Sala benchmark 173",
+      "salidas": {
+        "O": {
+          "sala": 172,
+          "costo": 8
+        },
+        "E": {
+          "sala": 174,
+          "costo": 26
+        },
+        "N": {
+          "sala": 157,
+          "costo": 3
+        },
+        "S": {
+          "sala": 189,
+          "costo": 91
+        }
+      }
+    },
+    {
+      "id": 174,
+      "nombre": "Sala benchmark 174",
+      "salidas": {
+        "O": {
+          "sala": 173,
+          "costo": 26
+        },
+        "E": {
+          "sala": 175,
+          "costo": 44
+        },
+        "N": {
+          "sala": 158,
+          "costo": 21
+        },
+        "S": {
+          "sala": 190,
+          "costo": 9
+        }
+      }
+    },
+    {
+      "id": 175,
+      "nombre": "Sala benchmark 175",
+      "salidas": {
+        "O": {
+          "sala": 174,
+          "costo": 44
+        },
+        "E": {
+          "sala": 176,
+          "costo": 62
+        },
+        "N": {
+          "sala": 159,
+          "costo": 39
+        },
+        "S": {
+          "sala": 191,
+          "costo": 27
+        }
+      }
+    },
+    {
+      "id": 176,
+      "nombre": "Sala benchmark 176",
+      "salidas": {
+        "O": {
+          "sala": 175,
+          "costo": 62
+        },
+        "N": {
+          "sala": 160,
+          "costo": 57
+        },
+        "S": {
+          "sala": 192,
+          "costo": 45
+        }
+      }
+    },
+    {
+      "id": 177,
+      "nombre": "Sala benchmark 177",
+      "salidas": {
+        "E": {
+          "sala": 178,
+          "costo": 98
+        },
+        "N": {
+          "sala": 161,
+          "costo": 75
+        },
+        "S": {
+          "sala": 193,
+          "costo": 63
+        }
+      }
+    },
+    {
+      "id": 178,
+      "nombre": "Sala benchmark 178",
+      "salidas": {
+        "O": {
+          "sala": 177,
+          "costo": 98
+        },
+        "E": {
+          "sala": 179,
+          "costo": 16
+        },
+        "N": {
+          "sala": 162,
+          "costo": 93
+        },
+        "S": {
+          "sala": 194,
+          "costo": 81
+        }
+      }
+    },
+    {
+      "id": 179,
+      "nombre": "Sala benchmark 179",
+      "salidas": {
+        "O": {
+          "sala": 178,
+          "costo": 16
+        },
+        "E": {
+          "sala": 180,
+          "costo": 34
+        },
+        "N": {
+          "sala": 163,
+          "costo": 11
+        },
+        "S": {
+          "sala": 195,
+          "costo": 99
+        }
+      }
+    },
+    {
+      "id": 180,
+      "nombre": "Sala benchmark 180",
+      "salidas": {
+        "O": {
+          "sala": 179,
+          "costo": 34
+        },
+        "E": {
+          "sala": 181,
+          "costo": 52
+        },
+        "N": {
+          "sala": 164,
+          "costo": 29
+        },
+        "S": {
+          "sala": 196,
+          "costo": 17
+        }
+      }
+    },
+    {
+      "id": 181,
+      "nombre": "Sala benchmark 181",
+      "salidas": {
+        "O": {
+          "sala": 180,
+          "costo": 52
+        },
+        "E": {
+          "sala": 182,
+          "costo": 70
+        },
+        "N": {
+          "sala": 165,
+          "costo": 47
+        },
+        "S": {
+          "sala": 197,
+          "costo": 35
+        }
+      }
+    },
+    {
+      "id": 182,
+      "nombre": "Sala benchmark 182",
+      "salidas": {
+        "O": {
+          "sala": 181,
+          "costo": 70
+        },
+        "E": {
+          "sala": 183,
+          "costo": 88
+        },
+        "N": {
+          "sala": 166,
+          "costo": 65
+        },
+        "S": {
+          "sala": 198,
+          "costo": 53
+        }
+      }
+    },
+    {
+      "id": 183,
+      "nombre": "Sala benchmark 183",
+      "salidas": {
+        "O": {
+          "sala": 182,
+          "costo": 88
+        },
+        "E": {
+          "sala": 184,
+          "costo": 6
+        },
+        "N": {
+          "sala": 167,
+          "costo": 83
+        },
+        "S": {
+          "sala": 199,
+          "costo": 71
+        }
+      }
+    },
+    {
+      "id": 184,
+      "nombre": "Sala benchmark 184",
+      "salidas": {
+        "O": {
+          "sala": 183,
+          "costo": 6
+        },
+        "E": {
+          "sala": 185,
+          "costo": 24
+        },
+        "N": {
+          "sala": 168,
+          "costo": 1
+        },
+        "S": {
+          "sala": 200,
+          "costo": 89
+        }
+      }
+    },
+    {
+      "id": 185,
+      "nombre": "Sala benchmark 185",
+      "salidas": {
+        "O": {
+          "sala": 184,
+          "costo": 24
+        },
+        "E": {
+          "sala": 186,
+          "costo": 42
+        },
+        "N": {
+          "sala": 169,
+          "costo": 19
+        },
+        "S": {
+          "sala": 201,
+          "costo": 7
+        }
+      }
+    },
+    {
+      "id": 186,
+      "nombre": "Sala benchmark 186",
+      "salidas": {
+        "O": {
+          "sala": 185,
+          "costo": 42
+        },
+        "E": {
+          "sala": 187,
+          "costo": 60
+        },
+        "N": {
+          "sala": 170,
+          "costo": 37
+        },
+        "S": {
+          "sala": 202,
+          "costo": 25
+        }
+      }
+    },
+    {
+      "id": 187,
+      "nombre": "Sala benchmark 187",
+      "salidas": {
+        "O": {
+          "sala": 186,
+          "costo": 60
+        },
+        "E": {
+          "sala": 188,
+          "costo": 78
+        },
+        "N": {
+          "sala": 171,
+          "costo": 55
+        },
+        "S": {
+          "sala": 203,
+          "costo": 43
+        }
+      }
+    },
+    {
+      "id": 188,
+      "nombre": "Sala benchmark 188",
+      "salidas": {
+        "O": {
+          "sala": 187,
+          "costo": 78
+        },
+        "E": {
+          "sala": 189,
+          "costo": 96
+        },
+        "N": {
+          "sala": 172,
+          "costo": 73
+        },
+        "S": {
+          "sala": 204,
+          "costo": 61
+        }
+      }
+    },
+    {
+      "id": 189,
+      "nombre": "Sala benchmark 189",
+      "salidas": {
+        "O": {
+          "sala": 188,
+          "costo": 96
+        },
+        "E": {
+          "sala": 190,
+          "costo": 14
+        },
+        "N": {
+          "sala": 173,
+          "costo": 91
+        },
+        "S": {
+          "sala": 205,
+          "costo": 79
+        }
+      }
+    },
+    {
+      "id": 190,
+      "nombre": "Sala benchmark 190",
+      "salidas": {
+        "O": {
+          "sala": 189,
+          "costo": 14
+        },
+        "E": {
+          "sala": 191,
+          "costo": 32
+        },
+        "N": {
+          "sala": 174,
+          "costo": 9
+        },
+        "S": {
+          "sala": 206,
+          "costo": 97
+        }
+      }
+    },
+    {
+      "id": 191,
+      "nombre": "Sala benchmark 191",
+      "salidas": {
+        "O": {
+          "sala": 190,
+          "costo": 32
+        },
+        "E": {
+          "sala": 192,
+          "costo": 50
+        },
+        "N": {
+          "sala": 175,
+          "costo": 27
+        },
+        "S": {
+          "sala": 207,
+          "costo": 15
+        }
+      }
+    },
+    {
+      "id": 192,
+      "nombre": "Sala benchmark 192",
+      "salidas": {
+        "O": {
+          "sala": 191,
+          "costo": 50
+        },
+        "N": {
+          "sala": 176,
+          "costo": 45
+        },
+        "S": {
+          "sala": 208,
+          "costo": 33
+        }
+      }
+    },
+    {
+      "id": 193,
+      "nombre": "Sala benchmark 193",
+      "salidas": {
+        "E": {
+          "sala": 194,
+          "costo": 86
+        },
+        "N": {
+          "sala": 177,
+          "costo": 63
+        },
+        "S": {
+          "sala": 209,
+          "costo": 51
+        }
+      }
+    },
+    {
+      "id": 194,
+      "nombre": "Sala benchmark 194",
+      "salidas": {
+        "O": {
+          "sala": 193,
+          "costo": 86
+        },
+        "E": {
+          "sala": 195,
+          "costo": 4
+        },
+        "N": {
+          "sala": 178,
+          "costo": 81
+        },
+        "S": {
+          "sala": 210,
+          "costo": 69
+        }
+      }
+    },
+    {
+      "id": 195,
+      "nombre": "Sala benchmark 195",
+      "salidas": {
+        "O": {
+          "sala": 194,
+          "costo": 4
+        },
+        "E": {
+          "sala": 196,
+          "costo": 22
+        },
+        "N": {
+          "sala": 179,
+          "costo": 99
+        },
+        "S": {
+          "sala": 211,
+          "costo": 87
+        }
+      }
+    },
+    {
+      "id": 196,
+      "nombre": "Sala benchmark 196",
+      "salidas": {
+        "O": {
+          "sala": 195,
+          "costo": 22
+        },
+        "E": {
+          "sala": 197,
+          "costo": 40
+        },
+        "N": {
+          "sala": 180,
+          "costo": 17
+        },
+        "S": {
+          "sala": 212,
+          "costo": 5
+        }
+      }
+    },
+    {
+      "id": 197,
+      "nombre": "Sala benchmark 197",
+      "salidas": {
+        "O": {
+          "sala": 196,
+          "costo": 40
+        },
+        "E": {
+          "sala": 198,
+          "costo": 58
+        },
+        "N": {
+          "sala": 181,
+          "costo": 35
+        },
+        "S": {
+          "sala": 213,
+          "costo": 23
+        }
+      }
+    },
+    {
+      "id": 198,
+      "nombre": "Sala benchmark 198",
+      "salidas": {
+        "O": {
+          "sala": 197,
+          "costo": 58
+        },
+        "E": {
+          "sala": 199,
+          "costo": 76
+        },
+        "N": {
+          "sala": 182,
+          "costo": 53
+        },
+        "S": {
+          "sala": 214,
+          "costo": 41
+        }
+      }
+    },
+    {
+      "id": 199,
+      "nombre": "Sala benchmark 199",
+      "salidas": {
+        "O": {
+          "sala": 198,
+          "costo": 76
+        },
+        "E": {
+          "sala": 200,
+          "costo": 94
+        },
+        "N": {
+          "sala": 183,
+          "costo": 71
+        },
+        "S": {
+          "sala": 215,
+          "costo": 59
+        }
+      }
+    },
+    {
+      "id": 200,
+      "nombre": "Sala benchmark 200",
+      "salidas": {
+        "O": {
+          "sala": 199,
+          "costo": 94
+        },
+        "E": {
+          "sala": 201,
+          "costo": 12
+        },
+        "N": {
+          "sala": 184,
+          "costo": 89
+        },
+        "S": {
+          "sala": 216,
+          "costo": 77
+        }
+      }
+    },
+    {
+      "id": 201,
+      "nombre": "Sala benchmark 201",
+      "salidas": {
+        "O": {
+          "sala": 200,
+          "costo": 12
+        },
+        "E": {
+          "sala": 202,
+          "costo": 30
+        },
+        "N": {
+          "sala": 185,
+          "costo": 7
+        },
+        "S": {
+          "sala": 217,
+          "costo": 95
+        }
+      }
+    },
+    {
+      "id": 202,
+      "nombre": "Sala benchmark 202",
+      "salidas": {
+        "O": {
+          "sala": 201,
+          "costo": 30
+        },
+        "E": {
+          "sala": 203,
+          "costo": 48
+        },
+        "N": {
+          "sala": 186,
+          "costo": 25
+        },
+        "S": {
+          "sala": 218,
+          "costo": 13
+        }
+      }
+    },
+    {
+      "id": 203,
+      "nombre": "Sala benchmark 203",
+      "salidas": {
+        "O": {
+          "sala": 202,
+          "costo": 48
+        },
+        "E": {
+          "sala": 204,
+          "costo": 66
+        },
+        "N": {
+          "sala": 187,
+          "costo": 43
+        },
+        "S": {
+          "sala": 219,
+          "costo": 31
+        }
+      }
+    },
+    {
+      "id": 204,
+      "nombre": "Sala benchmark 204",
+      "salidas": {
+        "O": {
+          "sala": 203,
+          "costo": 66
+        },
+        "E": {
+          "sala": 205,
+          "costo": 84
+        },
+        "N": {
+          "sala": 188,
+          "costo": 61
+        },
+        "S": {
+          "sala": 220,
+          "costo": 49
+        }
+      }
+    },
+    {
+      "id": 205,
+      "nombre": "Sala benchmark 205",
+      "salidas": {
+        "O": {
+          "sala": 204,
+          "costo": 84
+        },
+        "E": {
+          "sala": 206,
+          "costo": 2
+        },
+        "N": {
+          "sala": 189,
+          "costo": 79
+        },
+        "S": {
+          "sala": 221,
+          "costo": 67
+        }
+      }
+    },
+    {
+      "id": 206,
+      "nombre": "Sala benchmark 206",
+      "salidas": {
+        "O": {
+          "sala": 205,
+          "costo": 2
+        },
+        "E": {
+          "sala": 207,
+          "costo": 20
+        },
+        "N": {
+          "sala": 190,
+          "costo": 97
+        },
+        "S": {
+          "sala": 222,
+          "costo": 85
+        }
+      }
+    },
+    {
+      "id": 207,
+      "nombre": "Sala benchmark 207",
+      "salidas": {
+        "O": {
+          "sala": 206,
+          "costo": 20
+        },
+        "E": {
+          "sala": 208,
+          "costo": 38
+        },
+        "N": {
+          "sala": 191,
+          "costo": 15
+        },
+        "S": {
+          "sala": 223,
+          "costo": 3
+        }
+      }
+    },
+    {
+      "id": 208,
+      "nombre": "Sala benchmark 208",
+      "salidas": {
+        "O": {
+          "sala": 207,
+          "costo": 38
+        },
+        "N": {
+          "sala": 192,
+          "costo": 33
+        },
+        "S": {
+          "sala": 224,
+          "costo": 21
+        }
+      }
+    },
+    {
+      "id": 209,
+      "nombre": "Sala benchmark 209",
+      "salidas": {
+        "E": {
+          "sala": 210,
+          "costo": 74
+        },
+        "N": {
+          "sala": 193,
+          "costo": 51
+        },
+        "S": {
+          "sala": 225,
+          "costo": 39
+        }
+      }
+    },
+    {
+      "id": 210,
+      "nombre": "Sala benchmark 210",
+      "salidas": {
+        "O": {
+          "sala": 209,
+          "costo": 74
+        },
+        "E": {
+          "sala": 211,
+          "costo": 92
+        },
+        "N": {
+          "sala": 194,
+          "costo": 69
+        },
+        "S": {
+          "sala": 226,
+          "costo": 57
+        }
+      }
+    },
+    {
+      "id": 211,
+      "nombre": "Sala benchmark 211",
+      "salidas": {
+        "O": {
+          "sala": 210,
+          "costo": 92
+        },
+        "E": {
+          "sala": 212,
+          "costo": 10
+        },
+        "N": {
+          "sala": 195,
+          "costo": 87
+        },
+        "S": {
+          "sala": 227,
+          "costo": 75
+        }
+      }
+    },
+    {
+      "id": 212,
+      "nombre": "Sala benchmark 212",
+      "salidas": {
+        "O": {
+          "sala": 211,
+          "costo": 10
+        },
+        "E": {
+          "sala": 213,
+          "costo": 28
+        },
+        "N": {
+          "sala": 196,
+          "costo": 5
+        },
+        "S": {
+          "sala": 228,
+          "costo": 93
+        }
+      }
+    },
+    {
+      "id": 213,
+      "nombre": "Sala benchmark 213",
+      "salidas": {
+        "O": {
+          "sala": 212,
+          "costo": 28
+        },
+        "E": {
+          "sala": 214,
+          "costo": 46
+        },
+        "N": {
+          "sala": 197,
+          "costo": 23
+        },
+        "S": {
+          "sala": 229,
+          "costo": 11
+        }
+      }
+    },
+    {
+      "id": 214,
+      "nombre": "Sala benchmark 214",
+      "salidas": {
+        "O": {
+          "sala": 213,
+          "costo": 46
+        },
+        "E": {
+          "sala": 215,
+          "costo": 64
+        },
+        "N": {
+          "sala": 198,
+          "costo": 41
+        },
+        "S": {
+          "sala": 230,
+          "costo": 29
+        }
+      }
+    },
+    {
+      "id": 215,
+      "nombre": "Sala benchmark 215",
+      "salidas": {
+        "O": {
+          "sala": 214,
+          "costo": 64
+        },
+        "E": {
+          "sala": 216,
+          "costo": 82
+        },
+        "N": {
+          "sala": 199,
+          "costo": 59
+        },
+        "S": {
+          "sala": 231,
+          "costo": 47
+        }
+      }
+    },
+    {
+      "id": 216,
+      "nombre": "Sala benchmark 216",
+      "salidas": {
+        "O": {
+          "sala": 215,
+          "costo": 82
+        },
+        "E": {
+          "sala": 217,
+          "costo": 100
+        },
+        "N": {
+          "sala": 200,
+          "costo": 77
+        },
+        "S": {
+          "sala": 232,
+          "costo": 65
+        }
+      }
+    },
+    {
+      "id": 217,
+      "nombre": "Sala benchmark 217",
+      "salidas": {
+        "O": {
+          "sala": 216,
+          "costo": 100
+        },
+        "E": {
+          "sala": 218,
+          "costo": 18
+        },
+        "N": {
+          "sala": 201,
+          "costo": 95
+        },
+        "S": {
+          "sala": 233,
+          "costo": 83
+        }
+      }
+    },
+    {
+      "id": 218,
+      "nombre": "Sala benchmark 218",
+      "salidas": {
+        "O": {
+          "sala": 217,
+          "costo": 18
+        },
+        "E": {
+          "sala": 219,
+          "costo": 36
+        },
+        "N": {
+          "sala": 202,
+          "costo": 13
+        },
+        "S": {
+          "sala": 234,
+          "costo": 1
+        }
+      }
+    },
+    {
+      "id": 219,
+      "nombre": "Sala benchmark 219",
+      "salidas": {
+        "O": {
+          "sala": 218,
+          "costo": 36
+        },
+        "E": {
+          "sala": 220,
+          "costo": 54
+        },
+        "N": {
+          "sala": 203,
+          "costo": 31
+        },
+        "S": {
+          "sala": 235,
+          "costo": 19
+        }
+      }
+    },
+    {
+      "id": 220,
+      "nombre": "Sala benchmark 220",
+      "salidas": {
+        "O": {
+          "sala": 219,
+          "costo": 54
+        },
+        "E": {
+          "sala": 221,
+          "costo": 72
+        },
+        "N": {
+          "sala": 204,
+          "costo": 49
+        },
+        "S": {
+          "sala": 236,
+          "costo": 37
+        }
+      }
+    },
+    {
+      "id": 221,
+      "nombre": "Sala benchmark 221",
+      "salidas": {
+        "O": {
+          "sala": 220,
+          "costo": 72
+        },
+        "E": {
+          "sala": 222,
+          "costo": 90
+        },
+        "N": {
+          "sala": 205,
+          "costo": 67
+        },
+        "S": {
+          "sala": 237,
+          "costo": 55
+        }
+      }
+    },
+    {
+      "id": 222,
+      "nombre": "Sala benchmark 222",
+      "salidas": {
+        "O": {
+          "sala": 221,
+          "costo": 90
+        },
+        "E": {
+          "sala": 223,
+          "costo": 8
+        },
+        "N": {
+          "sala": 206,
+          "costo": 85
+        },
+        "S": {
+          "sala": 238,
+          "costo": 73
+        }
+      }
+    },
+    {
+      "id": 223,
+      "nombre": "Sala benchmark 223",
+      "salidas": {
+        "O": {
+          "sala": 222,
+          "costo": 8
+        },
+        "E": {
+          "sala": 224,
+          "costo": 26
+        },
+        "N": {
+          "sala": 207,
+          "costo": 3
+        },
+        "S": {
+          "sala": 239,
+          "costo": 91
+        }
+      }
+    },
+    {
+      "id": 224,
+      "nombre": "Sala benchmark 224",
+      "salidas": {
+        "O": {
+          "sala": 223,
+          "costo": 26
+        },
+        "N": {
+          "sala": 208,
+          "costo": 21
+        },
+        "S": {
+          "sala": 240,
+          "costo": 9
+        }
+      }
+    },
+    {
+      "id": 225,
+      "nombre": "Sala benchmark 225",
+      "salidas": {
+        "E": {
+          "sala": 226,
+          "costo": 62
+        },
+        "N": {
+          "sala": 209,
+          "costo": 39
+        },
+        "S": {
+          "sala": 241,
+          "costo": 27
+        }
+      }
+    },
+    {
+      "id": 226,
+      "nombre": "Sala benchmark 226",
+      "salidas": {
+        "O": {
+          "sala": 225,
+          "costo": 62
+        },
+        "E": {
+          "sala": 227,
+          "costo": 80
+        },
+        "N": {
+          "sala": 210,
+          "costo": 57
+        },
+        "S": {
+          "sala": 242,
+          "costo": 45
+        }
+      }
+    },
+    {
+      "id": 227,
+      "nombre": "Sala benchmark 227",
+      "salidas": {
+        "O": {
+          "sala": 226,
+          "costo": 80
+        },
+        "E": {
+          "sala": 228,
+          "costo": 98
+        },
+        "N": {
+          "sala": 211,
+          "costo": 75
+        },
+        "S": {
+          "sala": 243,
+          "costo": 63
+        }
+      }
+    },
+    {
+      "id": 228,
+      "nombre": "Sala benchmark 228",
+      "salidas": {
+        "O": {
+          "sala": 227,
+          "costo": 98
+        },
+        "E": {
+          "sala": 229,
+          "costo": 16
+        },
+        "N": {
+          "sala": 212,
+          "costo": 93
+        },
+        "S": {
+          "sala": 244,
+          "costo": 81
+        }
+      }
+    },
+    {
+      "id": 229,
+      "nombre": "Sala benchmark 229",
+      "salidas": {
+        "O": {
+          "sala": 228,
+          "costo": 16
+        },
+        "E": {
+          "sala": 230,
+          "costo": 34
+        },
+        "N": {
+          "sala": 213,
+          "costo": 11
+        },
+        "S": {
+          "sala": 245,
+          "costo": 99
+        }
+      }
+    },
+    {
+      "id": 230,
+      "nombre": "Sala benchmark 230",
+      "salidas": {
+        "O": {
+          "sala": 229,
+          "costo": 34
+        },
+        "E": {
+          "sala": 231,
+          "costo": 52
+        },
+        "N": {
+          "sala": 214,
+          "costo": 29
+        },
+        "S": {
+          "sala": 246,
+          "costo": 17
+        }
+      }
+    },
+    {
+      "id": 231,
+      "nombre": "Sala benchmark 231",
+      "salidas": {
+        "O": {
+          "sala": 230,
+          "costo": 52
+        },
+        "E": {
+          "sala": 232,
+          "costo": 70
+        },
+        "N": {
+          "sala": 215,
+          "costo": 47
+        },
+        "S": {
+          "sala": 247,
+          "costo": 35
+        }
+      }
+    },
+    {
+      "id": 232,
+      "nombre": "Sala benchmark 232",
+      "salidas": {
+        "O": {
+          "sala": 231,
+          "costo": 70
+        },
+        "E": {
+          "sala": 233,
+          "costo": 88
+        },
+        "N": {
+          "sala": 216,
+          "costo": 65
+        },
+        "S": {
+          "sala": 248,
+          "costo": 53
+        }
+      }
+    },
+    {
+      "id": 233,
+      "nombre": "Sala benchmark 233",
+      "salidas": {
+        "O": {
+          "sala": 232,
+          "costo": 88
+        },
+        "E": {
+          "sala": 234,
+          "costo": 6
+        },
+        "N": {
+          "sala": 217,
+          "costo": 83
+        },
+        "S": {
+          "sala": 249,
+          "costo": 71
+        }
+      }
+    },
+    {
+      "id": 234,
+      "nombre": "Sala benchmark 234",
+      "salidas": {
+        "O": {
+          "sala": 233,
+          "costo": 6
+        },
+        "E": {
+          "sala": 235,
+          "costo": 24
+        },
+        "N": {
+          "sala": 218,
+          "costo": 1
+        },
+        "S": {
+          "sala": 250,
+          "costo": 89
+        }
+      }
+    },
+    {
+      "id": 235,
+      "nombre": "Sala benchmark 235",
+      "salidas": {
+        "O": {
+          "sala": 234,
+          "costo": 24
+        },
+        "E": {
+          "sala": 236,
+          "costo": 42
+        },
+        "N": {
+          "sala": 219,
+          "costo": 19
+        },
+        "S": {
+          "sala": 251,
+          "costo": 7
+        }
+      }
+    },
+    {
+      "id": 236,
+      "nombre": "Sala benchmark 236",
+      "salidas": {
+        "O": {
+          "sala": 235,
+          "costo": 42
+        },
+        "E": {
+          "sala": 237,
+          "costo": 60
+        },
+        "N": {
+          "sala": 220,
+          "costo": 37
+        },
+        "S": {
+          "sala": 252,
+          "costo": 25
+        }
+      }
+    },
+    {
+      "id": 237,
+      "nombre": "Sala benchmark 237",
+      "salidas": {
+        "O": {
+          "sala": 236,
+          "costo": 60
+        },
+        "E": {
+          "sala": 238,
+          "costo": 78
+        },
+        "N": {
+          "sala": 221,
+          "costo": 55
+        },
+        "S": {
+          "sala": 253,
+          "costo": 43
+        }
+      }
+    },
+    {
+      "id": 238,
+      "nombre": "Sala benchmark 238",
+      "salidas": {
+        "O": {
+          "sala": 237,
+          "costo": 78
+        },
+        "E": {
+          "sala": 239,
+          "costo": 96
+        },
+        "N": {
+          "sala": 222,
+          "costo": 73
+        },
+        "S": {
+          "sala": 254,
+          "costo": 61
+        }
+      }
+    },
+    {
+      "id": 239,
+      "nombre": "Sala benchmark 239",
+      "salidas": {
+        "O": {
+          "sala": 238,
+          "costo": 96
+        },
+        "E": {
+          "sala": 240,
+          "costo": 14
+        },
+        "N": {
+          "sala": 223,
+          "costo": 91
+        },
+        "S": {
+          "sala": 255,
+          "costo": 79
+        }
+      }
+    },
+    {
+      "id": 240,
+      "nombre": "Sala benchmark 240",
+      "salidas": {
+        "O": {
+          "sala": 239,
+          "costo": 14
+        },
+        "N": {
+          "sala": 224,
+          "costo": 9
+        },
+        "S": {
+          "sala": 256,
+          "costo": 97
+        }
+      }
+    },
+    {
+      "id": 241,
+      "nombre": "Sala benchmark 241",
+      "salidas": {
+        "E": {
+          "sala": 242,
+          "costo": 50
+        },
+        "N": {
+          "sala": 225,
+          "costo": 27
+        }
+      }
+    },
+    {
+      "id": 242,
+      "nombre": "Sala benchmark 242",
+      "salidas": {
+        "O": {
+          "sala": 241,
+          "costo": 50
+        },
+        "E": {
+          "sala": 243,
+          "costo": 68
+        },
+        "N": {
+          "sala": 226,
+          "costo": 45
+        }
+      }
+    },
+    {
+      "id": 243,
+      "nombre": "Sala benchmark 243",
+      "salidas": {
+        "O": {
+          "sala": 242,
+          "costo": 68
+        },
+        "E": {
+          "sala": 244,
+          "costo": 86
+        },
+        "N": {
+          "sala": 227,
+          "costo": 63
+        }
+      }
+    },
+    {
+      "id": 244,
+      "nombre": "Sala benchmark 244",
+      "salidas": {
+        "O": {
+          "sala": 243,
+          "costo": 86
+        },
+        "E": {
+          "sala": 245,
+          "costo": 4
+        },
+        "N": {
+          "sala": 228,
+          "costo": 81
+        }
+      }
+    },
+    {
+      "id": 245,
+      "nombre": "Sala benchmark 245",
+      "salidas": {
+        "O": {
+          "sala": 244,
+          "costo": 4
+        },
+        "E": {
+          "sala": 246,
+          "costo": 22
+        },
+        "N": {
+          "sala": 229,
+          "costo": 99
+        }
+      }
+    },
+    {
+      "id": 246,
+      "nombre": "Sala benchmark 246",
+      "salidas": {
+        "O": {
+          "sala": 245,
+          "costo": 22
+        },
+        "E": {
+          "sala": 247,
+          "costo": 40
+        },
+        "N": {
+          "sala": 230,
+          "costo": 17
+        }
+      }
+    },
+    {
+      "id": 247,
+      "nombre": "Sala benchmark 247",
+      "salidas": {
+        "O": {
+          "sala": 246,
+          "costo": 40
+        },
+        "E": {
+          "sala": 248,
+          "costo": 58
+        },
+        "N": {
+          "sala": 231,
+          "costo": 35
+        }
+      }
+    },
+    {
+      "id": 248,
+      "nombre": "Sala benchmark 248",
+      "salidas": {
+        "O": {
+          "sala": 247,
+          "costo": 58
+        },
+        "E": {
+          "sala": 249,
+          "costo": 76
+        },
+        "N": {
+          "sala": 232,
+          "costo": 53
+        }
+      }
+    },
+    {
+      "id": 249,
+      "nombre": "Sala benchmark 249",
+      "salidas": {
+        "O": {
+          "sala": 248,
+          "costo": 76
+        },
+        "E": {
+          "sala": 250,
+          "costo": 94
+        },
+        "N": {
+          "sala": 233,
+          "costo": 71
+        }
+      }
+    },
+    {
+      "id": 250,
+      "nombre": "Sala benchmark 250",
+      "salidas": {
+        "O": {
+          "sala": 249,
+          "costo": 94
+        },
+        "E": {
+          "sala": 251,
+          "costo": 12
+        },
+        "N": {
+          "sala": 234,
+          "costo": 89
+        }
+      }
+    },
+    {
+      "id": 251,
+      "nombre": "Sala benchmark 251",
+      "salidas": {
+        "O": {
+          "sala": 250,
+          "costo": 12
+        },
+        "E": {
+          "sala": 252,
+          "costo": 30
+        },
+        "N": {
+          "sala": 235,
+          "costo": 7
+        }
+      }
+    },
+    {
+      "id": 252,
+      "nombre": "Sala benchmark 252",
+      "salidas": {
+        "O": {
+          "sala": 251,
+          "costo": 30
+        },
+        "E": {
+          "sala": 253,
+          "costo": 48
+        },
+        "N": {
+          "sala": 236,
+          "costo": 25
+        }
+      }
+    },
+    {
+      "id": 253,
+      "nombre": "Sala benchmark 253",
+      "salidas": {
+        "O": {
+          "sala": 252,
+          "costo": 48
+        },
+        "E": {
+          "sala": 254,
+          "costo": 66
+        },
+        "N": {
+          "sala": 237,
+          "costo": 43
+        }
+      }
+    },
+    {
+      "id": 254,
+      "nombre": "Sala benchmark 254",
+      "salidas": {
+        "O": {
+          "sala": 253,
+          "costo": 66
+        },
+        "E": {
+          "sala": 255,
+          "costo": 84
+        },
+        "N": {
+          "sala": 238,
+          "costo": 61
+        }
+      }
+    },
+    {
+      "id": 255,
+      "nombre": "Sala benchmark 255",
+      "salidas": {
+        "O": {
+          "sala": 254,
+          "costo": 84
+        },
+        "E": {
+          "sala": 256,
+          "costo": 2
+        },
+        "N": {
+          "sala": 239,
+          "costo": 79
+        }
+      }
+    },
+    {
+      "id": 256,
+      "nombre": "Sala benchmark 256",
+      "salidas": {
+        "O": {
+          "sala": 255,
+          "costo": 2
+        },
+        "N": {
+          "sala": 240,
+          "costo": 97
+        }
+      }
+    }
+  ],
+  "puertas": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5",
+    "D6",
+    "D7",
+    "D8"
+  ],
+  "semilla": 42,
+  "estado_inicial": {
+    "jugador": {
+      "sala": 136,
+      "vida_max": 1000000000,
+      "vida": 1000000000,
+      "ataque": 10,
+      "defensa": 5,
+      "velocidad": 100,
+      "inventario_max": 10,
+      "inventario": []
+    },
+    "cazadores": {
+      "ids": [
+        "cazador-01",
+        "cazador-02",
+        "cazador-03",
+        "cazador-04",
+        "cazador-05",
+        "cazador-06",
+        "cazador-07",
+        "cazador-08",
+        "cazador-09",
+        "cazador-10",
+        "cazador-11",
+        "cazador-12",
+        "cazador-13",
+        "cazador-14",
+        "cazador-15",
+        "cazador-16",
+        "cazador-17",
+        "cazador-18",
+        "cazador-19",
+        "cazador-20"
+      ],
+      "salas": [
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        134,
+        135,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146
+      ],
+      "rangos_pequeno": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "rangos_grande": [
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        10000,
+        10000,
+        10000,
+        10000,
+        10000,
+        10000,
+        10000,
+        10000,
+        10000,
+        10000
+      ],
+      "vida_max": 100,
+      "vida": 100,
+      "ataque": 1,
+      "defensa": 0,
+      "velocidad": 100,
+      "comportamiento": "cazador",
+      "regeneracion": 0,
+      "suelta": [],
+      "efectos": [],
+      "tipo_id": "bench-cazador",
+      "nombre": "Cazador de benchmark"
+    }
+  },
+  "puertas_extremos": {
+    "D1": [
+      [
+        52,
+        53
+      ],
+      [
+        53,
+        52
+      ]
+    ],
+    "D2": [
+      [
+        60,
+        76
+      ],
+      [
+        76,
+        60
+      ]
+    ],
+    "D3": [
+      [
+        120,
+        121
+      ],
+      [
+        121,
+        120
+      ]
+    ],
+    "D4": [
+      [
+        196,
+        212
+      ],
+      [
+        212,
+        196
+      ]
+    ],
+    "D5": [
+      [
+        204,
+        205
+      ],
+      [
+        205,
+        204
+      ]
+    ],
+    "D6": [
+      [
+        24,
+        40
+      ],
+      [
+        40,
+        24
+      ]
+    ],
+    "D7": [
+      [
+        114,
+        115
+      ],
+      [
+        115,
+        114
+      ]
+    ],
+    "D8": [
+      [
+        232,
+        248
+      ],
+      [
+        248,
+        232
+      ]
+    ]
+  }
+}

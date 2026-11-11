@@ -219,7 +219,7 @@ class ControladorJuego:
         if actor is self.jugador:
             self.partida.programar_siguiente_jugador(costo)
         else:
-            self.partida.programar_siguiente_enemigo(actor)
+            self.partida.programar_siguiente_enemigo(actor, actor.costo_ultima_accion)
 
 
     def _turno_jugador(self):
@@ -387,12 +387,13 @@ class ControladorJuego:
         nombre, arg = comando.nombre, comando.argumento
 
         if nombre == "mover":
-            destino = self.partida.cripta.sala_por_id(sala.salida_hacia(arg).sala_destino_id)
+            salida = sala.salida_hacia(arg)
+            destino = self.partida.cripta.sala_por_id(salida.sala_destino_id)
             self.partida.entrar_a_sala(destino)
             # Precarga desde la nueva posición (vecinas y vecinas de vecinas).
             self.red.planificar_precarga(destino)
             self.red.procesar_cola()
-            return COSTO_MOVER
+            return salida.costo
 
         if nombre == "atacar":
             self.partida.atacar(_elemento(sala.enemigos_activos, arg))

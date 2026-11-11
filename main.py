@@ -40,6 +40,8 @@ def main(argumentos=None):
     parser.add_argument('--reportes', metavar='ARCHIVO',
                         help='Historial de reportes de red (por defecto partidas/reportes_red.txt)')
     parser.add_argument('--bench', action='store_true', help='Ejecutar benchmarks')
+    parser.add_argument('--salida', metavar='RUTA',
+                        help='Guardar el reporte JSON del benchmark en RUTA')
     parser.add_argument('--offline-dir', help='Datos locales alternativos; requiere --offline')
     parser.add_argument('--partidas-dir', default='partidas',
                         help='Guardados, bitácoras y tabla de puntajes')
@@ -54,7 +56,8 @@ def main(argumentos=None):
         parser.error('--offline-dir requiere --offline')
     if opciones.bench:
         from bench.runner import main_bench
-        filas = main_bench()
+        filas = (main_bench(opciones.salida) if opciones.salida
+                 else main_bench())
         metricas = ()
         for fila in filas:
             if fila.caso == 'cache' and fila.variante == 'hash' and fila.n == opciones.cache_size:

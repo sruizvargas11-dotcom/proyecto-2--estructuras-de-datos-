@@ -74,10 +74,20 @@ def _construir(fuente, d):
                 cerrada = s.get('cerrada', False)
                 llave = s.get('llave')
                 cierre = s.get('cierre_automatico')
+                if 'costo' not in s:
+                    costo = 100
+                else:
+                    costo = s['costo']
+                    _exigir(
+                        type(costo) is int and costo >= 1,
+                        f'costo inválido en {x["id"]}->{s["sala"]}: {costo!r}',
+                    )
                 _exigir(type(cerrada) is bool, 'cerrada debe ser booleano')
                 _exigir(llave is None or isinstance(llave, str), 'llave inválida')
                 _exigir(cierre is None or (type(cierre) is int and cierre >= 0), 'cierre inválido')
-                sala.salidas.insertar_al_inicio(Salida(direccion, s['sala'], cerrada, llave, cierre))
+                sala.salidas.insertar_al_inicio(
+                    Salida(direccion, s['sala'], cerrada, llave, cierre, costo)
+                )
             c.agregar_sala(sala)
             _exigir(len(c) <= d['salas_total'], 'más salas que las declaradas')
     _exigir(len(c) == d['salas_total'], 'cantidad de salas incompleta')
@@ -87,6 +97,20 @@ def _construir(fuente, d):
     for sala in c.recorrer_salas():
         for salida in sala.salidas.recorrer_valores():
             _exigir(c.sala_por_id(salida.sala_destino_id) is not None, 'conexión a sala inexistente')
+    for sala in c.recorrer_salas():
+        for salida in sala.salidas.recorrer_valores():
+            destino = salida.sala_destino
+            inversa = None
+            for candidata in destino.salidas.recorrer_valores():
+                if candidata.sala_destino_id == sala.id:
+                    inversa = candidata
+                    break
+            if inversa is not None:
+                _exigir(
+                    salida.costo == inversa.costo,
+                    f'costos efectivos distintos en conexión '
+                    f'{sala.id}<->{destino.id}: {salida.costo} y {inversa.costo}',
+                )
     version_final = fuente.version_cripta(c.id)
     _exigir(isinstance(version_final, dict) and version_final.get('version') == c.version,
             'la versión cambió durante la descarga; vuelva a intentar la carga')

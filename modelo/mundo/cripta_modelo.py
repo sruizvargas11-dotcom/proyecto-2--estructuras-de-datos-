@@ -60,6 +60,7 @@ class CriptaModelo:
 
         # Todas las salas ya están disponibles y ordenadas.
         for sala in self.recorrer_salas():
+            sala.cripta = self
             for salida in sala.salidas:
                 salida.sala_destino = self.sala_por_id(
                     salida.sala_destino_id
@@ -92,4 +93,3 @@ class CriptaModelo:
     def recorrer_salas(self):
         for i in range(len(self._salas)):
             yield self._salas.obtenerValor(i)
-

@@ -61,6 +61,27 @@ def test_bench_no_carga_pygame():
     assert resultado.returncode == 0, texto
 
 
+def test_bench_reporte_contrato_sin_vista(tmp_path, monkeypatch):
+    from bench import terreno_cazador
+
+    monkeypatch.setattr(
+        terreno_cazador,
+        "_correr_escenario",
+        lambda *args: ([1] * 1000, []),
+    )
+    ruta = tmp_path / "benchmark.json"
+    reporte = terreno_cazador.crear_reporte(ruta)
+    assert len(reporte["escenarios"]) == 8
+    assert all(len(s["repeticiones"]) == 30 for s in reporte["escenarios"])
+    assert all(
+        len(r["duraciones_ciclo_ns"]) == 1000
+        and not r["discrepancias"]
+        for s in reporte["escenarios"]
+        for r in s["repeticiones"]
+    )
+    assert reporte["fixture"]["identidad"] == "bench-terreno-cazador-grid-16x16"
+
+
 def test_replay_no_carga_pygame(tmp_path):
     from adaptadores.datos_offline import DatosOffline
     from controlador.controlador_juego import ControladorJuego

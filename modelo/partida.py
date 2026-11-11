@@ -70,6 +70,8 @@ class Partida:
         self.semilla = semilla
         self.rastro = Rastro(cripta, self.historial)
         self.entorno = Entorno(self.reloj)
+        from modelo.buscador_rutas import CacheDistanciasCazador
+        self.cache_rutas_cazador = CacheDistanciasCazador(cripta)
 
         self.estado = CREADA
         self.acciones_jugador = 0
@@ -222,28 +224,40 @@ class Partida:
         self.programar_siguiente_enemigo(enemigo)
         return accion
 
-    def ejecutar_accion_enemigo(self, enemigo):
+    def ejecutar_accion_enemigo(self, enemigo, usar_cache=True, distancias=None,
+                                entrantes=None):
         """Paso 3 del bucle"""
         if not enemigo.vivo or self.terminada:
             return None
+        if enemigo.comportamiento == "cazador" and usar_cache and distancias is None:
+            distancias = self.cache_rutas_cazador.obtener(self.jugador)
         accion, objetivo = enemigo.decidir_accion(
-            self.jugador, self.reloj.tiempo_actual, self.reloj.azar)
+            self.jugador, self.reloj.tiempo_actual, self.reloj.azar,
+            distancias, entrantes)
         if accion == "atacar":
+            enemigo.costo_ultima_accion = COSTO_ACCION_ENEMIGO
             dano = self.reloj.calcular_dano(enemigo.ataque, self.jugador.defensa)
             perdida = self.jugador.recibir_dano(dano)
             self._emitir(f"{self.nombre_enemigo(enemigo)} te ataca: -{perdida} de vida.")
             for funcion in self.al_atacar:
                 funcion(enemigo, self.jugador, perdida)
         elif accion == "mover":
+            enemigo.costo_ultima_accion = objetivo[1] if isinstance(objetivo, tuple) else 100
+            if isinstance(objetivo, tuple):
+                objetivo = objetivo[0]
             self._mover_enemigo(enemigo, objetivo)
+        else:
+            enemigo.costo_ultima_accion = COSTO_ACCION_ENEMIGO
         self.verificar_fin()
         return accion
 
-    def programar_siguiente_enemigo(self, enemigo):
+    def programar_siguiente_enemigo(self, enemigo, costo=None):
         """Paso para un enemigo: próxima acción a ahora + intervalo(100, vel)"""
         if not enemigo.vivo or self.terminada:
             return None
-        return self.reloj.programar(enemigo, COSTO_ACCION_ENEMIGO,
+        if costo is None:
+            costo = getattr(enemigo, "costo_ultima_accion", COSTO_ACCION_ENEMIGO)
+        return self.reloj.programar(enemigo, costo,
                                     self.ejecutor_enemigo(enemigo))
 
     def _mover_enemigo(self, enemigo, destino):

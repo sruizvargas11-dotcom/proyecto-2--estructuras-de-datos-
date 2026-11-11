@@ -70,12 +70,18 @@ def _guardar_evidencia(filas, commit, py, so, cpu, semilla=42):
     return ruta
 
 
-def main_bench():
+def main_bench(salida=None):
+    if salida is not None:
+        from bench.terreno_cazador import crear_reporte
+        crear_reporte(salida)
+        print(f"evidencia: {salida}")
+        return []
     commit, py, so, cpu = _encabezado()
     filas = []
     for caso in CASOS:
         filas.extend(caso())
     imprimir_tabla(filas)
-    ruta = _guardar_evidencia(filas, commit, py, so, cpu)
+    if salida is None:
+        ruta = _guardar_evidencia(filas, commit, py, so, cpu)
     print(f"\nevidencia: {ruta}")
     return filas

@@ -1289,5 +1289,53 @@ evidencia; el contrato conserva la definición detallada del esquema.
 
 Se ajustó `tasks.md` para reflejar esta configuración completa en T016 y T018 y para retirar
 la marca de paralelismo de T018, que depende de T014 y T017. T019 conserva su posibilidad
-de preparación paralela con T018 una vez completadas ambas dependencias; no se marcaron
-tareas como completadas ni se modificó código.
+de preparación paralela con T018 una vez completadas ambas dependencias.
+
+### Implementación y evidencia de Terreno y cazador (2026-11-10)
+
+Se implementó el costo efectivo de las salidas, la validación de ambos sentidos, el
+comportamiento cazador, la búsqueda ponderada determinista con estructuras propias, la
+propagación al reloj y las proyecciones de consola/Pygame. El fixture externo conserva el
+checksum `1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`.
+
+La evidencia anterior de 6.762 ms queda invalidada: no medía la ejecución real del ciclo
+del modelo y el reloj. El benchmark se ajustó para ejecutar `Partida`, `Enemigo` y
+`Reloj`, mantener ambos sentidos de cada puerta y no alternar ninguna puerta en el ciclo 1
+de los escenarios de frecuencia 100. Una primera corrida contractual midió el flujo real,
+pero superó 20 ms en dos escenarios pequeños (máximos de 20.70 y 22.23 ms) aunque todas
+las decisiones coincidieron con la referencia.
+
+La validación de vistas se ejecutó con Python 3.12.10 y pygame 2.6.1 en `.venv312`.
+La suite completa pasó 1175 pruebas con Python 3.12.10. T025 pasó 33 pruebas de consola y
+Pygame, sin omitidas; las pruebas de separación y regresión asociadas pasaron 36, las
+pruebas de datos y separación del quickstart pasaron 53, y las pruebas focalizadas de
+benchmark, cazador y persistencia pasaron 27. T027 queda completada por estas
+verificaciones. No se realizaron operaciones de Git.
+
+La corrección del benchmark registra una espera con la sala actual del cazador, incluso
+después de varios movimientos dentro del mismo intervalo de decisión del jugador. La copia
+para la referencia se toma al inicio de cada ciclo, antes de ejecutar eventos. El cronómetro
+incluye el cambio programado de puerta y el procesamiento de eventos hasta la siguiente
+decisión del jugador.
+
+Para reducir el tiempo de cálculo sin cambiar el protocolo, la cola de rutas usa un heap
+binario propio sobre `Vector` con acceso directo a su almacenamiento interno en las
+operaciones del heap. La búsqueda individual detiene Dijkstra cuando el costo mínimo
+pendiente supera el rango del cazador; como los costos son positivos, ninguna ruta restante
+puede habilitar una persecución. También se evita crear una colección temporal al recorrer
+las salidas abiertas. La referencia aplica el mismo límite matemático, pero recalcula cada
+decisión desde cero fuera del cronómetro. Las pruebas focalizadas de cazador y benchmark
+pasaron 15/15 con Python 3.12.10.
+
+El benchmark contractual final se ejecutó con
+`.venv312\Scripts\python.exe main.py --bench --salida
+docs\evidencia\2026-11-04-terreno-cazador-benchmark.json`. El reporte contiene los ocho
+escenarios, 30 repeticiones y 1000 ciclos por repetición (240 000 ciclos en total), con
+cero discrepancias frente a la referencia. El máximo global fue 17.7855 ms; todos los
+escenarios quedaron bajo el umbral de 20 ms. Se conserva el detalle de latencias y metadatos
+en el JSON versionable, que registra el checksum del fixture
+`1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`. T020 queda completada.
+
+La suite completa había pasado 1175 pruebas con Python 3.12.10 en la revisión anterior; tras
+la optimización final, las pruebas focalizadas de cazador y benchmark pasaron 15/15. No se
+ejecutaron `git add`, commit ni push.

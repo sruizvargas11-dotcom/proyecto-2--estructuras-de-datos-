@@ -212,7 +212,9 @@ class VistaConsola:
                 cierre = _pendiente(salida.evento_cierre)
                 if cierre is not None:
                     estado += f", se cierra en t={cierre}"
-            salidas.agregarValor(f"{salida.direccion}  {nombre} ({estado})")
+            salidas.agregarValor(
+                f"{salida.direccion}  {nombre} ({estado}) [costo {salida.costo}]"
+            )
         return salidas
 
     def _enemigos(self, partida, sala):
