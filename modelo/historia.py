@@ -63,6 +63,46 @@ class Historia:
         self.puntos_control.agregarValor(punto)
         return punto
 
+    def buscar_punto_control_tiempo(self, tiempo, tiempo_actual=None):
+        """Devuelve el ultimo punto cuyo tiempo no excede el solicitado."""
+        _entero_positivo(tiempo, "tiempo")
+        if tiempo_actual is not None:
+            _entero_positivo(tiempo_actual, "tiempo_actual")
+            if tiempo > tiempo_actual:
+                raise ValueError("No se puede consultar un tiempo futuro.")
+
+        primero = self.puntos_control.obtenerValor(0)
+        if tiempo < primero.tiempo:
+            raise ValueError("El tiempo consultado es anterior al inicio.")
+
+        izquierda = 0
+        derecha = len(self.puntos_control) - 1
+        resultado = None
+        while izquierda <= derecha:
+            medio = (izquierda + derecha) // 2
+            punto = self.puntos_control.obtenerValor(medio)
+            if punto.tiempo <= tiempo:
+                resultado = punto
+                izquierda = medio + 1
+            else:
+                derecha = medio - 1
+
+        return resultado
+
+    def buscar_punto_control_accion(self, numero_accion):
+        """Selecciona el punto previo a la accion vigente numerada desde uno."""
+        _entero_positivo(numero_accion, "numero_accion", 1)
+        if numero_accion > len(self.acciones):
+            raise ValueError("La accion consultada no existe.")
+
+        indice = (numero_accion - 1) // self.k
+        if indice >= len(self.puntos_control):
+            raise ValueError("Falta el punto de control requerido por la accion.")
+        punto = self.puntos_control.obtenerValor(indice)
+        if punto.numero_accion != indice * self.k:
+            raise ValueError("Los puntos de control no siguen el intervalo K.")
+        return punto
+
     def registrar_cambio(self, numero_accion, cambio):
         _entero_positivo(numero_accion, "numero_accion", 1)
         if numero_accion > len(self.acciones):
