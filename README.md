@@ -516,3 +516,13 @@ Para desarrollar una función o corregir un error:
 Los comentarios deben explicar una regla, una limitación o una decisión que no sea evidente al leer el código. Las notas históricas sobre lo que se agregó o corrigió pertenecen a la descripción del cambio, no a instrucciones permanentes dentro del módulo.
 
 Según el [Documento de Decisiones](docs/DECISIONES.md), el equipo está formado por Jose Daniel Morales Moreno, Sebastián Ruiz Vargas, Daniel Centeno y Jose Fabio.
+
+## Preparación de Spec Kit para CRIPTA II
+
+El equipo acordó usar **Spec Kit `1.2.6.dev0`**, la versión que declaran los archivos de la rama de Daniel. Para reproducir la instalación del CLI, queda pendiente registrar la referencia exacta de origen que usó Daniel. José tiene instalado `1.2.3` y Windows bloquea la ejecución de su `specify.exe`. Para la fase C, Antigravity ya reconoce los skills de la versión acordada que están en este proyecto.
+
+José utiliza **Antigravity**, con **Claude Opus 5.5 Low** seleccionado al preparar esta rama. Daniel preparó la base con la integración Copilot. Los skills del proyecto para Antigravity están en `.agents/skills/`; Copilot se conserva en `.github/skills/`. La adaptación de Antigravity se realizó mediante archivos, sin ejecutar el instalador bloqueado. Su descubrimiento en la aplicación fue verificado; aún no se ha ejecutado el flujo de la capacidad de José.
+
+En el chat de Antigravity, con este proyecto seleccionado, el flujo por capacidad usa `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, `/speckit-analyze` y, después de revisión y de confirmar los documentos en Git, `/speckit-implement`. La constitución compartida ya existe: no reinicializar ni regenerarla por integrante.
+
+La fase B de José y sus pendientes están en [la revisión de preparación](docs/equipo/FASE_B_JOSE.md). La entrada para su futura especificación está en [el borrador de niebla e ir a](docs/equipo/BORRADOR_NIEBLA_VIAJE_JOSE.md). Estos documentos no indican que la fase B del equipo esté integrada o aprobada por todos.
