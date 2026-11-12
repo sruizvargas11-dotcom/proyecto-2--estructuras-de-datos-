@@ -89,6 +89,7 @@ class EscenaPartida(EscenaBase):
         self._cerrar_ayuda=pygame.Rect(1195,28,38,38)
         self._mostrar_minimapa = True
         self._layout_minimapa = None
+        self._topologia_minimapa = None
         self._animaciones = ColaAnimaciones()
         self._estado_visual = None if cinematica else self.contexto.controlador.estado()
         self._ultimo_tiempo = self._estado_visual.tiempo if self._estado_visual else None
@@ -101,6 +102,7 @@ class EscenaPartida(EscenaBase):
 
     def al_salir(self):
         self._layout_minimapa = None
+        self._topologia_minimapa = None
         self._animaciones.limpiar()
 
     # -- entrada -----------------------------------------------------
@@ -305,9 +307,12 @@ class EscenaPartida(EscenaBase):
                     break
         self._error_mostrado = controlador.error_pendiente()
 
-        if self._layout_minimapa is None and controlador.topologia_cripta():
+        topologia_actual = controlador.topologia_cripta()
+        if topologia_actual and (self._layout_minimapa is None
+                                 or topologia_actual != self._topologia_minimapa):
+            self._topologia_minimapa = topologia_actual
             self._layout_minimapa = calcular_layout_minimapa(
-                controlador.topologia_cripta(), controlador.sala_inicial_id())
+                topologia_actual, controlador.sala_inicial_id())
 
         estado = controlador.estado()
         if (estado is not None and self._ultimo_tiempo is not None
@@ -330,6 +335,7 @@ class EscenaPartida(EscenaBase):
                 self._scroll_mensajes=0
                 self._estado_visual = estado
                 self._layout_minimapa = None
+                self._topologia_minimapa = None
                 self._sala_regreso_id = None
                 self._sala_observada_id = estado.sala_id if estado is not None else None
                 if estado is not None:

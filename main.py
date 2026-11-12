@@ -40,6 +40,8 @@ def main(argumentos=None):
     parser.add_argument('--reportes', metavar='ARCHIVO',
                         help='Historial de reportes de red (por defecto partidas/reportes_red.txt)')
     parser.add_argument('--bench', action='store_true', help='Ejecutar benchmarks')
+    parser.add_argument('--bench-caso', choices=('niebla-viaje',),
+                        help='Ejecutar un caso puntual de benchmark (requiere --bench)')
     parser.add_argument('--salida', metavar='RUTA',
                         help='Guardar el reporte JSON del benchmark en RUTA')
     parser.add_argument('--offline-dir', help='Datos locales alternativos; requiere --offline')
@@ -54,10 +56,18 @@ def main(argumentos=None):
         parser.error('--gui no se puede combinar con --replay, --bench ni --solo-mapa')
     if opciones.offline_dir and not opciones.offline:
         parser.error('--offline-dir requiere --offline')
+    if opciones.bench_caso and not opciones.bench:
+        parser.error('--bench-caso requiere --bench')
     if opciones.bench:
-        from bench.runner import main_bench
-        filas = (main_bench(opciones.salida) if opciones.salida
-                 else main_bench())
+        if opciones.bench_caso == 'niebla-viaje':
+            from bench.niebla_viaje import ejecutar_benchmark
+            from bench.medicion import imprimir_tabla
+            _, filas = ejecutar_benchmark(opciones.salida)
+            imprimir_tabla(filas)
+        else:
+            from bench.runner import main_bench
+            filas = (main_bench(opciones.salida) if opciones.salida
+                     else main_bench())
         metricas = ()
         for fila in filas:
             if fila.caso == 'cache' and fila.variante == 'hash' and fila.n == opciones.cache_size:

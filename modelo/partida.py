@@ -72,6 +72,9 @@ class Partida:
         self.entorno = Entorno(self.reloj)
         from modelo.buscador_rutas import CacheDistanciasCazador
         self.cache_rutas_cazador = CacheDistanciasCazador(cripta)
+        # Spec 002: lo que sabe el jugador, separado del mapa real.
+        from modelo.conocimiento import ConocimientoJugador
+        self._conocimiento = ConocimientoJugador(cripta, self.historial)
 
         self.estado = CREADA
         self.acciones_jugador = 0
@@ -108,6 +111,36 @@ class Partida:
 
     def encabezado(self):
         """Datos para la bitácora y el guardado binario."""
+        return self._encabezado()
+
+    @property
+    def conocimiento(self):
+        """Conocimiento del jugador (spec 002). Un guardado anterior a 002 no lo
+        trae: se reconstruye con las salas que tienen rastro del jugador."""
+        actual = self.__dict__.get("_conocimiento")
+        if actual is None:
+            from modelo.conocimiento import ConocimientoJugador
+            actual = ConocimientoJugador(self.cripta, self.historial)
+            for sala in self.cripta.recorrer_salas():
+                if sala.tiempo_rastro >= 0:
+                    actual.visitar(sala, sala.tiempo_rastro)
+            self._conocimiento = actual
+        return actual
+
+    def antorcha_encendida(self):
+        for nodo in self.jugador.inventario.recorrer_desde_frente():
+            objeto = nodo.valor
+            if objeto.clase == "antorcha" and getattr(objeto, "encendida", False):
+                return True
+        return False
+
+    def observar_entorno(self):
+        """El jugador ve las puertas con un extremo en su sala (FR-004)."""
+        return self.conocimiento.observar(self.jugador.sala_actual,
+                                          self.reloj.tiempo_actual)
+
+    def _encabezado(self):
+        """Datos para la bitácora y el guardado binario."""
         return (("cripta_id", self.cripta_id),
                 ("version_cripta", self.version_cripta),
                 ("version_catalogo", self.version_catalogo),
@@ -138,6 +171,7 @@ class Partida:
         self.rastro.registrar(sala.id, 0)
         self.reloj.programar_inicial(self.jugador, EjecutorEvento('decision'))
         self.estado = EN_CURSO
+        self.conocimiento.visitar(sala, 0, self.antorcha_encendida())
         self.activar_enemigos(sala)
         self._emitir(f"Entras a {sala.nombre}.")
         self._notificar_entrada(None, sala)
@@ -193,6 +227,8 @@ class Partida:
         anterior = self.jugador.sala_actual
         self.historial.registrar(DeltaAtributos(self.jugador, "sala_actual"))
         self.jugador.sala_actual = sala
+        self.conocimiento.visitar(sala, self.reloj.tiempo_actual,
+                                  self.antorcha_encendida())
         self.refrescar_rastro()
         self._emitir(f"Entras a {sala.nombre}.")
         # la trampa se activa justo después del movimiento.

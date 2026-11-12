@@ -137,3 +137,51 @@ def test_hooks_enemigos_llegan_como_eventos_sin_referencias_pygame(tmp_path):
     tipos = [getattr(e, "tipo", None) for e in eventos]
     assert "ataque" in tipos
     c.salir()
+
+
+def test_snapshot_y_topologia_ocultan_avistadas_y_desconocidas_y_revelan_al_explorar(tmp_path):
+    from vista_pygame.render.render_sala import calcular_layout_minimapa
+
+    c = ControladorPygame(DatosOffline(), carpeta_cache=str(tmp_path / "cache"),
+                          partidas_dir=str(tmp_path / "partidas"))
+    c.iniciar_partida("cripta-01", "Ada", semilla=72)
+    assert _esperar(lambda: c.estado() is not None)
+
+    estado0 = c.estado()
+    assert len(estado0.salidas) == 1
+    assert estado0.salidas[0].direccion == "N"
+    assert estado0.salidas[0].nombre_destino == "sala avistada"
+    assert estado0.salidas[0].costo == 100
+
+    topologia0 = c.topologia_cripta()
+    por_id0 = {s.sala_id: s for s in topologia0}
+    assert set(por_id0) == {1, 2}
+    assert por_id0[1].nombre == "Entrada derruida"
+    assert por_id0[1].salidas == [("N", 2)]
+    assert por_id0[2].nombre == "" and por_id0[2].salidas == []
+    for desconocida in (3, 4, 5, 6):
+        assert desconocida not in por_id0
+
+    layout0 = calcular_layout_minimapa(topologia0, c.sala_inicial_id())
+    assert [sid for sid, _, _ in layout0] == [1, 2]
+
+    c.enviar_comando("N")
+    assert _esperar(lambda: c.estado().sala_id == 2)
+    estado2 = c.estado()
+    salidas2 = {s.direccion: s for s in estado2.salidas}
+    assert salidas2["S"].nombre_destino == "Entrada derruida"
+    assert salidas2["N"].nombre_destino == "sala avistada"
+    assert salidas2["E"].nombre_destino == "sala avistada"
+
+    topologia2 = c.topologia_cripta()
+    por_id2 = {s.sala_id: s for s in topologia2}
+    assert set(por_id2) == {1, 2, 3, 5}
+    assert por_id2[2].nombre == "Pasillo de las urnas"
+    assert por_id2[3].nombre == "" and por_id2[3].salidas == []
+    assert por_id2[5].nombre == "" and por_id2[5].salidas == []
+    for desconocida in (4, 6):
+        assert desconocida not in por_id2
+
+    layout2 = calcular_layout_minimapa(topologia2, c.sala_inicial_id())
+    assert set(sid for sid, _, _ in layout2) == {1, 2, 3, 5}
+    c.salir()

@@ -70,6 +70,20 @@ class DeltaEfecto(DeltaEvento):
     """Un efecto usa las mismas reglas de agenda que una acción."""
 
 
+class DeltaLongitud:
+    """Longitud previa de un Vector al que solo se agregan valores al final.
+
+    Revertir quita lo agregado después (registro de cambios del conocimiento).
+    """
+    def __init__(self, vector):
+        self.vector = vector
+        self.longitud = len(vector)
+
+    def revertir(self):
+        while len(self.vector) > self.longitud:
+            self.vector.eliminarUltimo()
+
+
 class DeltaReloj:
     def __init__(self, reloj):
         self.reloj = reloj

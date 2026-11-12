@@ -40,6 +40,7 @@ _ALIAS = (
     ("G", "guardar"), ("GUARDAR", "guardar"),
     ("L", "cargar"), ("CARGAR", "cargar"),
     ("IS", "siguiente"), ("IA", "anterior"), ("IC", "consultar"),
+    ("IR", "ir"), ("M", "mapa"), ("MAPA", "mapa"),
 )
 
 
@@ -75,7 +76,14 @@ def interpretar(texto):
     if nombre in ("guardar", "cargar"):
         ruta = texto.strip().partition(' ')[2].strip().strip('"') or None
         return Comando(nombre, ruta), None
-    maximo = 0 if nombre in ('esperar', 'pergamino', 'ayuda', 'salir',
+    if nombre == "ir":
+        # 'IR 5', 'ir a 5'. El ID se valida contra el conocimiento, no aquí.
+        if resto and resto[0].upper() == "A":
+            resto = resto[1:]
+        if len(resto) != 1:
+            return None, "Indica la sala: IR A <id>."
+        return Comando("ir", resto[0]), None
+    maximo = 0 if nombre in ('esperar', 'pergamino', 'ayuda', 'salir', 'mapa',
                             'siguiente', 'anterior', 'consultar') or clave in DIRECCIONES else 1
     if len(resto) > maximo:
         return None, 'Sobran argumentos. Escribe H para ver la ayuda.'
@@ -152,6 +160,8 @@ class ControladorJuego:
         self.contador_turnos_enemigo = 0
         self.contador_efectos = 0
         self.contador_rechazos = 0
+        # Viaje de 'ir a' en curso (spec 002): transitorio, no se guarda.
+        self._viaje = None
 
         # Los mensajes del modelo van a la bitácora en pantalla de la vista.
         self.partida.al_mensaje.agregarValor(self.vista.agregar_mensaje)
@@ -224,7 +234,11 @@ class ControladorJuego:
 
     def _turno_jugador(self):
         """Paso 2. Devuelve el costo de la acción ejecutada, o None si se sale."""
-        # Llegó la siguiente decisión: se cierra el intervalo anterior.
+        # Llegó la siguiente decisión: el jugador observa sus puertas dentro del
+        # intervalo aún abierto (el pergamino lo revierte con la acción), y luego
+        # se cierra el intervalo anterior.
+        if not self.partida.terminada:
+            self.partida.observar_entorno()
         if self.historial.registrando:
             self.historial.confirmar_accion()
         # Punto fijo de red: incorporar respuestas en orden de número.
@@ -235,6 +249,12 @@ class ControladorJuego:
                 return None
             # Fichas protegidas según la sala actual y el inventario (4.4).
             self._sincronizar_protegidas()
+            # Viaje automático: un paso ordinario por turno, sin leer comandos.
+            if self._viaje is not None:
+                costo = self._paso_viaje()
+                if costo is not None:
+                    return costo
+                continue
             # Mostrar estado y pedir un comando.
             self.vista.mostrar_estado(self.partida)
             comando, error = interpretar(self.vista.leer_comando())
@@ -263,6 +283,12 @@ class ControladorJuego:
                 continue
             if comando.nombre == "pergamino":
                 self._usar_pergamino()
+                continue
+            if comando.nombre == "mapa":
+                self._mostrar_mapa()
+                continue
+            if comando.nombre == "ir":
+                self._iniciar_viaje(comando.argumento)
                 continue
             # Validar sin tocar el modelo: un rechazo no consume tiempo.
             rechazo = self._validar(comando)
@@ -466,6 +492,8 @@ class ControladorJuego:
             self._rechazar("No tienes pergaminos de retroceso.")
             return False
         momento = self.reloj.tiempo_actual   # la bitácora guarda cuándo se usó
+        # FR-015: el pergamino corta el viaje; nunca se reanuda solo.
+        self._viaje = None
         vivos_antes = self.red.ids_enemigos_vivos()
         if not self.historial.usar_pergamino(self.jugador, nodo):
             self._rechazar("No hay acciones que deshacer.")
@@ -478,6 +506,96 @@ class ControladorJuego:
             self.reloj.tiempo_actual,
             "Lees el pergamino: el tiempo retrocede a antes de tu última acción.")
         return True
+
+    # ------------------------------------------------------- spec 002: ir a
+    RECHAZO_DESTINO = "No conoces una sala explorada con ese identificador."
+
+    def _mostrar_mapa(self):
+        """Mapa conocido (FR-018): solo exploradas y la existencia de avistadas."""
+        from modelo.conocimiento import AVISTADA
+        t = self.reloj.tiempo_actual
+        self.vista.agregar_mensaje(t, "Mapa conocido:")
+        for sala_id, nombre, salidas in self.partida.conocimiento.vista_mapa():
+            partes = Vector()
+            for direccion, costo, puerta, destino in salidas:
+                visible = ("sala sin explorar" if destino == AVISTADA
+                           else f"{destino[1]} [{destino[0]}]")
+                partes.agregarValor(f"{direccion}->{visible} (costo {costo}, {puerta})")
+            actual = " (aquí)" if sala_id == self.jugador.sala_actual.id else ""
+            self.vista.agregar_mensaje(
+                t, f"[{sala_id}] {nombre}{actual}: " + "; ".join(partes))
+
+    def _iniciar_viaje(self, texto_id):
+        """Valida la orden sin consumir tiempo; el primer paso va en el bucle."""
+        conocimiento = self.partida.conocimiento
+        destino_id = int(texto_id) if texto_id.isdigit() else None
+        if destino_id is None or not conocimiento.explorada(destino_id):
+            self._rechazar(self.RECHAZO_DESTINO)
+            return False
+        sala = self.jugador.sala_actual
+        destino = self.partida.cripta.sala_por_id(destino_id)
+        if destino_id == sala.id:
+            self.vista.agregar_mensaje(self.reloj.tiempo_actual,
+                                       f"Ya estás en {destino.nombre}.")
+            return False
+        if len(sala.enemigos_activos) or len(sala.enemigos_dormidos):
+            self._rechazar("Viaje detenido: enemigos.")
+            return False
+        if conocimiento.siguiente_paso(sala.id, destino_id) is None:
+            self._rechazar("Viaje detenido: sin ruta conocida.")
+            return False
+        if self.bitacora is not None and hasattr(self.bitacora, "registrar_comentario"):
+            self.bitacora.registrar_comentario(self.reloj.tiempo_actual,
+                                               f"ir a {destino_id}")
+        self._viaje = [destino_id, self.jugador.vida]
+        return True
+
+    def causa_parada(self):
+        """Prioridad fin de partida > daño > enemigos > llegada (FR-012)."""
+        destino_id, vida_ref = self._viaje
+        sala = self.jugador.sala_actual
+        if self.partida.terminada:
+            return "fin de partida"
+        if self.jugador.vida < vida_ref:
+            return "daño"
+        if len(sala.enemigos_activos) or len(sala.enemigos_dormidos):
+            return "enemigos"
+        if sala.id == destino_id:
+            return "llegada"
+        return None
+
+    def _detener_viaje(self, causa):
+        t = self.reloj.tiempo_actual
+        if causa == "llegada":
+            self.vista.agregar_mensaje(
+                t, f"Llegas a {self.jugador.sala_actual.nombre}: fin del viaje.")
+        else:
+            self.vista.agregar_mensaje(t, f"Viaje detenido: {causa}.")
+        self._viaje = None
+        self.ultima_causa_viaje = causa
+
+    def _paso_viaje(self):
+        """Un movimiento ordinario del viaje, o None si el viaje terminó."""
+        causa = self.causa_parada()
+        if causa is not None:
+            self._detener_viaje(causa)
+            return None
+        destino_id = self._viaje[0]
+        paso = self.partida.conocimiento.siguiente_paso(
+            self.jugador.sala_actual.id, destino_id)
+        if paso is None:
+            self._detener_viaje("sin ruta conocida")
+            return None
+        comando = Comando("mover", paso[0])
+        rechazo = self._validar(comando)
+        if rechazo is not None:
+            self._detener_viaje(rechazo.rstrip("."))
+            return None
+        self._viaje[1] = self.jugador.vida
+        costo = self._ejecutar(comando)
+        if costo is None:
+            self._detener_viaje("movimiento anulado")
+        return costo
 
     def _mostrar_inventario(self, criterio):
         if criterio is None:

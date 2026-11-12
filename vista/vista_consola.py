@@ -21,6 +21,8 @@ AYUDA = """Comandos (no distingue mayúsculas; [n] es opcional y vale 1 por defe
 
   DEQ <n>  desequipar sin soltar (costo 50)
   AP <n>   apagar antorcha (costo 50; no reinicia su duración)
+  M        mapa conocido (sin costo)
+  IR A <id> viajar a una sala explorada paso a paso (cada paso es un movimiento)
 """
 
 
@@ -198,11 +200,15 @@ class VistaConsola:
 
     def _salidas(self, partida, sala):
         salidas = Vector()
+        conocimiento = partida.conocimiento
         for salida in sala.salidas:
             destino = salida.sala_destino
             if destino is None:
                 destino = partida.cripta.sala_por_id(salida.sala_destino_id)
-            nombre = destino.nombre if destino is not None else f"sala {salida.sala_destino_id}"
+            if conocimiento.explorada(salida.sala_destino_id) and destino is not None:
+                nombre = destino.nombre
+            else:
+                nombre = "sala avistada"
             if salida.cerrada:
                 estado = "cerrada"
                 if salida.llave is not None:
