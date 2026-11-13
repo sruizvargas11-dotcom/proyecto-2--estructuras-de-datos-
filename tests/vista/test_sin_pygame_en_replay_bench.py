@@ -100,7 +100,7 @@ def test_replay_no_carga_pygame(tmp_path):
 
     ruta_log = tmp_path / "partida.log"
     sesion = nueva_partida(DatosOffline(), "cripta-01", str(tmp_path / "cache"),
-                           semilla=1, ruta_bitacora=str(ruta_log))
+                           semilla=1, ruta_bitacora=str(ruta_log), forzar=True)
     ControladorJuego(sesion, VistaGuion(["W", "Q"])).jugar()
 
     raiz = Path(__file__).resolve().parents[2]

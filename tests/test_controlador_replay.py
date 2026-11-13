@@ -20,11 +20,24 @@ class OfflineResistente(DatosOffline):
         return datos
 
 
+class FuenteReplaySinConsulta(OfflineResistente):
+    def __init__(self):
+        super().__init__()
+        self.llaves_consultadas = 0
+        self.rechazar_consulta_llaves = False
+
+    def llaves_cripta(self, cripta_id):
+        self.llaves_consultadas += 1
+        if self.rechazar_consulta_llaves:
+            raise AssertionError("El replay no debe consultar llaves")
+        return super().llaves_cripta(cripta_id)
+
+
 def _jugar(tmp_path, comandos, semilla=3, fuente=None, nombre="partida.log"):
     fuente = fuente or OfflineResistente()
     ruta = str(tmp_path / nombre)
     sesion = nueva_partida(fuente, "cripta-01", str(tmp_path / "cache"),
-                           semilla=semilla, ruta_bitacora=ruta)
+                           semilla=semilla, ruta_bitacora=ruta, forzar=True)
     vista = VistaGuion(comandos)
     controlador = ControladorJuego(sesion, vista)
     controlador.jugar()
@@ -75,7 +88,7 @@ def test_sin_cierre_si_el_bucle_termina_por_un_error(tmp_path):
 
     ruta = str(tmp_path / "p.log")
     sesion = nueva_partida(OfflineResistente(), "cripta-01", _cache(tmp_path),
-                           semilla=3, ruta_bitacora=ruta)
+                           semilla=3, ruta_bitacora=ruta, forzar=True)
     with pytest.raises(RuntimeError):
         ControladorJuego(sesion, VistaQueFalla(["W"])).jugar()
     bitacora = BitacoraPartida.abrir(ruta)
@@ -112,6 +125,18 @@ def test_replay_de_la_ruta_completa_es_identico(tmp_path):
     # partida original (comandos inválidos que no llegaron a la bitácora).
     assert _es_subsecuencia(resultado.mensajes, vista.mensajes)
     assert len(vista.mensajes) - len(resultado.mensajes) == vista.rechazos > 0
+
+
+def test_replay_no_consulta_llaves(tmp_path):
+    fuente = FuenteReplaySinConsulta()
+    ruta, _, _ = _jugar(tmp_path, ["W"], fuente=fuente)
+    consultas_antes = fuente.llaves_consultadas
+    fuente.rechazar_consulta_llaves = True
+
+    resultado = reproducir(ruta, fuente, _cache(tmp_path))
+
+    assert resultado.partida.tiempo == 100
+    assert fuente.llaves_consultadas == consultas_antes
 
 
 def test_dos_replays_del_mismo_log_coinciden(tmp_path):

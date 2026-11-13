@@ -157,7 +157,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_cli_resolubilidad.py tests/test_separacion_mvc.py -q` pasa; invocaciones resoluble/no resoluble/error de datos o consulta devuelven 0/1/2 según contrato, no se instancia vista ni se importa Pygame, los conflictos se rechazan antes de consultar y la salida coincide con `contracts/cli.md`.
   - **Dependencias**: T005, T016–T022.
 
-- [ ] T024 [P] [US2] Excluir la verificación del replay en `controlador/controlador_replay.py` y ampliar `tests/test_controlador_replay.py`.
+- [X] T024 [P] [US2] Excluir la verificación del replay en `controlador/controlador_replay.py` y ampliar `tests/test_controlador_replay.py`.
   - **Atiende**: FR-023; RS-E26.
   - **Criterio**: `python -m pytest tests/test_controlador_replay.py tests/vista/test_sin_pygame_en_replay_bench.py -q` pasa; reproducir no consulta llaves ni instancia vista.
   - **Dependencias**: T020.

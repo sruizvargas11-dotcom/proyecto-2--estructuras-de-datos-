@@ -134,7 +134,7 @@ def reproducir(ruta_log, fuente, carpeta_cache=None, escribir=None, cache_size=2
     # vigentes sin gastar solicitudes extra.
     sesion = nueva_partida(fuente, bitacora.cripta_id, carpeta_cache,
                            semilla=bitacora.semilla, ruta_bitacora=None, cache_size=cache_size,
-                           despachador=despachador)
+                           despachador=despachador, verificar=False)
     try:
         return _reproducir_sesion(sesion, bitacora, acciones, cierre_original, escribir)
     except (ErrorVersionIncompatible, ErrorReplayDivergente) as error:
