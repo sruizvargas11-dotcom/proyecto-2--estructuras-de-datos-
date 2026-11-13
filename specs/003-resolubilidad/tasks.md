@@ -147,7 +147,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Prueba independiente**: Ejecutar pruebas CLI para resultados resoluble, no resoluble, datos inválidos y combinaciones prohibidas, comprobando códigos y que no se crea vista.
 
-- [ ] T022 [P] [US2] Añadir pruebas de contrato CLI en `tests/test_cli_resolubilidad.py`.
+- [X] T022 [P] [US2] Añadir pruebas de contrato CLI en `tests/test_cli_resolubilidad.py`.
   - **Atiende**: FR-014, FR-024; RS-E23–RS-E25, RS-E30–RS-E31, RS-E34.
   - **Criterio**: `python -m pytest --collect-only tests/test_cli_resolubilidad.py -q` recoge reporte/código para resoluble, no resoluble y error; ausencia de vista; rechazo antes de consultar con `--replay`/`--bench`; y que `--forzar` no altere `--verificar`.
   - **Dependencias**: T019–T021.
