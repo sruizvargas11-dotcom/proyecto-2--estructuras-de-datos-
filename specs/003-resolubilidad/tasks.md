@@ -102,7 +102,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e28_e29.py -q` recoge `test_rs_e28...` y `test_rs_e29...`, con ciclos simples más cortos, empates lexicográficos, inicio canónico en el id menor, ciclos ordenados por id inicial, puertas ordenadas por sala numérica y dirección lexicográfica por código de carácter y causas «en ciclo»/«depende de».
   - **Dependencias**: T006.
 
-- [ ] T015 [P] [US1] Crear `tests/test_resolubilidad_e35_e36.py` para llave de salida inválida y orden de frontera.
+- [X] T015 [P] [US1] Crear `tests/test_resolubilidad_e35_e36.py` para llave de salida inválida y orden de frontera.
   - **Atiende**: FR-013, FR-019, FR-021; RS-E35, RS-E36.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e35_e36.py -q` recoge `llave_salida` nula/ausente como error no forzable y orden de frontera por sala numérica/dirección lexicográfica por código de carácter.
   - **Dependencias**: T006.
