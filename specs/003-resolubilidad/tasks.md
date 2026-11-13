@@ -129,7 +129,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_formato_resolubilidad.py -q` pasa y compara UTF-8 byte a byte con las plantillas de `specs/003-resolubilidad/contracts/cli.md`; el resumen inicial no imprime ubicaciones, frontera ni ciclos.
   - **Dependencias**: T016–T018.
 
-- [ ] T020 [US1] Integrar la verificación y el bloqueo de partidas nuevas en `controlador/inicio_partida.py`.
+- [X] T020 [US1] Integrar la verificación y el bloqueo de partidas nuevas en `controlador/inicio_partida.py`.
   - **Atiende**: FR-015, FR-018, FR-019; G17; RS-E01, RS-E10, RS-E15, RS-E25.
   - **Criterio**: `python -m pytest tests/test_resolubilidad_g17.py -q` y `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -k "not rs_e01_forzar and not rs_e10_forzar" -q` pasan; `nueva_partida()` verifica una vez, conserva el resultado para presentación y bloquea NO RESOLUBLE/NO VERIFICABLE sin forzado y todo error de datos, incluido RS-E24 por sala inexistente.
   - **Dependencias**: T005, T016–T019.
