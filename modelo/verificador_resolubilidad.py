@@ -569,8 +569,7 @@ def verificar_resolubilidad(cripta, ubicaciones):
                 salida.llave,
             ))
         destino = salas_por_id.obtener(salida.sala_destino_id)
-        if not region.contiene(destino.id):
-            region.insertar(destino.id, True)
+        if region.insertar(destino.id, True):
             cola.encolar(destino)
 
     def expandir_region():
