@@ -29,6 +29,31 @@ def generar(destino):
     generales['jugador'].update(vida_max=300, ataque=30, defensa=15)
     escribir('cripta-prueba/general.json', generales)
     escribir('cripta-prueba/version.json', {'version': 'laboratorio-consola-v1'})
+    llaves = []
+    for pagina in range(1, generales['paginas'] + 1):
+        salas = leer(f'cripta-prueba/salas_p{pagina}.json')['salas']
+        for sala in salas:
+            for salida in sala['salidas'].values():
+                llave_id = salida.get('llave')
+                if (
+                    isinstance(llave_id, str)
+                    and llave_id
+                    and not any(llave['id'] == llave_id for llave in llaves)
+                ):
+                    llaves.append({
+                        'id': llave_id,
+                        'sala': generales['sala_inicial'],
+                    })
+    llave_salida = generales['llave_salida']
+    if llave_salida and not any(llave['id'] == llave_salida for llave in llaves):
+        llaves.append({
+            'id': llave_salida,
+            'sala': generales['sala_inicial'],
+        })
+    escribir('cripta-prueba/llaves.json', {
+        'version': generales['version'],
+        'llaves': llaves,
+    })
     escribir('catalogo_version.json', {'version': 'laboratorio-catalogo-v1'})
     escribir('catalogo/itm_velocidad_prueba.json', {
         'id': 'itm_velocidad_prueba', 'clase': 'pocion', 'nombre': 'Velocidad de ensayo',

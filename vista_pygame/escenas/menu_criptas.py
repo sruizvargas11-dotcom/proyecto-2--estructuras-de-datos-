@@ -96,6 +96,7 @@ class EscenaMenuCriptas(EscenaBase):
             self._fondo_limpio = True
         self._tamano_objetivo = self._tamano_layout
         self._error_nombre = None
+        self._aviso_inicio = None
 
         self._escala_texto = 1
         self._ruta_fuente_pixel = self._buscar_fuente_pixel()
@@ -471,6 +472,7 @@ class EscenaMenuCriptas(EscenaBase):
             cripta = self._criptas[self._foco]
         if not self._validar_nombre():
             return
+        self._aviso_inicio = None
         self._iniciando = True
         # Garantía de acceso secuencial a la fuente: el hilo que
         # consultó listar_criptas() debe haber terminado del todo antes de
@@ -484,11 +486,19 @@ class EscenaMenuCriptas(EscenaBase):
             self._hilo_carga.join()
         nombre = self._nombre.strip()
         self.contexto.audio.reproducir_sfx("menu_confirmar")
-        if callable(getattr(self.contexto,'iniciar_cripta',None)):
-            self.contexto.iniciar_cripta((cripta['id'],nombre,None))
-        else:
-            self.contexto.controlador.iniciar_partida(cripta['id'],nombre,semilla=None)
-            self.contexto.cambiar_escena(ESCENA_PARTIDA,None)
+        from controlador.controlador_pygame import InicioPygameBloqueado
+
+        try:
+            if callable(getattr(self.contexto,'iniciar_cripta',None)):
+                self.contexto.iniciar_cripta((cripta['id'],nombre,None))
+            else:
+                self.contexto.controlador.iniciar_partida(
+                    cripta['id'], nombre, semilla=None
+                )
+                self.contexto.cambiar_escena(ESCENA_PARTIDA,None)
+        except InicioPygameBloqueado as error:
+            self._aviso_inicio = error.resumen
+            self._iniciando = False
 
     def _validar_nombre(self):
         if not self._nombre.strip():
@@ -572,6 +582,8 @@ class EscenaMenuCriptas(EscenaBase):
             self._dibujar_mensaje_estado(pantalla, "Consultando criptas" + puntos)
         elif error is not None:
             self._dibujar_mensaje_error(pantalla, error)
+        elif self._aviso_inicio is not None:
+            self._dibujar_mensaje_inicio(pantalla, self._aviso_inicio)
         elif not criptas:
             self._dibujar_mensaje_estado(pantalla, "No hay criptas disponibles")
         else:
@@ -690,6 +702,19 @@ class EscenaMenuCriptas(EscenaBase):
         rect = self._rect_mensaje()
         self._dibujar_placa(pantalla, rect)
         render = self._fuente_normal.render(texto, False, COLOR_SUBTITULO_TEXTO)
+        pantalla.blit(render, render.get_rect(center=rect.center))
+        self._dibujar_relleno_filas_vacias(pantalla, desde=2)
+
+    def _dibujar_mensaje_inicio(self, pantalla, texto):
+        rect = self._rect_mensaje()
+        self._dibujar_placa(pantalla, rect)
+        tamano = 18
+        fuente = self._fuente(tamano)
+        render = fuente.render(texto, False, COLOR_SUBTITULO_TEXTO)
+        while render.get_width() > rect.w - 28 and tamano > 10:
+            tamano -= 1
+            fuente = self._fuente(tamano)
+            render = fuente.render(texto, False, COLOR_SUBTITULO_TEXTO)
         pantalla.blit(render, render.get_rect(center=rect.center))
         self._dibujar_relleno_filas_vacias(pantalla, desde=2)
 

@@ -132,9 +132,28 @@ def test_resumen_no_resoluble_omite_ubicaciones_frontera_y_ciclos():
 
 
 def test_formato_no_verificable_usa_motivo_estable_y_sin_detalle():
-    from vista.formato_resolubilidad import formatear_no_verificable
+    from types import SimpleNamespace
 
-    assert formatear_no_verificable().encode("utf-8") == (
+    from vista.formato_resolubilidad import formatear_no_verificable
+    from vista.formato_resolubilidad import formatear_reporte
+
+    esperado = (
         "VEREDICTO: NO VERIFICABLE\n"
+        "MOTIVO: consulta de llaves no disponible\n"
+    )
+    assert formatear_no_verificable().encode("utf-8") == esperado.encode("utf-8")
+    assert formatear_reporte(
+        SimpleNamespace(veredicto="NO VERIFICABLE")
+    ).encode("utf-8") == esperado.encode("utf-8")
+
+
+def test_resumen_no_verificable_coincide_con_el_contrato():
+    from types import SimpleNamespace
+
+    from vista.formato_resolubilidad import formatear_resumen
+
+    resultado = SimpleNamespace(veredicto="NO VERIFICABLE")
+    assert formatear_resumen(resultado).encode("utf-8") == (
+        "VEREDICTO: NO VERIFICABLE | "
         "MOTIVO: consulta de llaves no disponible\n"
     ).encode("utf-8")

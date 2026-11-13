@@ -70,6 +70,8 @@ def _formatear_reporte_no_resoluble(resultado):
 
 def formatear_reporte(resultado):
     """Devuelve el reporte completo de un resultado de alcanzabilidad."""
+    if resultado.veredicto == "NO VERIFICABLE":
+        return formatear_no_verificable()
     if resultado.veredicto == "RESOLUBLE":
         lineas = [
             "VEREDICTO: RESOLUBLE",
@@ -100,6 +102,11 @@ def formatear_reporte(resultado):
 
 def formatear_resumen(resultado):
     """Devuelve solo el veredicto y, cuando aplica, el motivo no resoluble."""
+    if resultado.veredicto == "NO VERIFICABLE":
+        return (
+            "VEREDICTO: NO VERIFICABLE | "
+            "MOTIVO: consulta de llaves no disponible\n"
+        )
     if resultado.veredicto == "RESOLUBLE":
         return "VEREDICTO: RESOLUBLE\n"
     if resultado.veredicto == "NO RESOLUBLE":

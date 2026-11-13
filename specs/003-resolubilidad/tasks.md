@@ -134,7 +134,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_resolubilidad_g17.py -q` y `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -k "not rs_e01_forzar and not rs_e10_forzar" -q` pasan; `nueva_partida()` verifica una vez, conserva el resultado para presentación y bloquea NO RESOLUBLE/NO VERIFICABLE sin forzado y todo error de datos, incluido RS-E24 por sala inexistente.
   - **Dependencias**: T005, T016–T019.
 
-- [ ] T021 [US1] Mostrar el resumen seguro en el flujo GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`.
+- [X] T021 [US1] Mostrar el resumen seguro en el flujo GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`.
   - **Atiende**: FR-015, FR-024; RS-E25.
   - **Criterio**: `python -m pytest tests/vista/test_inicio_resolubilidad.py -q` pasa; el inicio GUI muestra solo veredicto/motivo y no revela ubicaciones de llaves.
   - **Dependencias**: T019, T020.
