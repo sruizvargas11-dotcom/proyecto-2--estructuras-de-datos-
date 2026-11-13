@@ -39,10 +39,9 @@ varias ubicaciones del mismo ID de llave. El esquema/envoltorio HTTP y el signif
 una lista vacía deben confirmarse contra el servicio; una respuesta vacía, si es válida,
 no debe confundirse con una falla de consulta.
 
-La respuesta real del servicio aún debe confirmarse. En particular, el contrato de
-servicio debe validar el ID de enemigo y su sala inicial, o proveer datos que permitan
-al cliente hacerlo. Actualmente el esqueleto no incluye un roster de enemigos y el
-contenido de salas se carga bajo demanda.
+La respuesta real del servicio aún debe confirmarse. La verificación valida que `sala`
+exista, pero no valida la existencia del id de `enemigo`, porque el esqueleto no incluye
+un roster completo y el contenido de salas se carga bajo demanda.
 
 ## Presupuesto y fallos
 
@@ -54,8 +53,11 @@ contenido de salas se carga bajo demanda.
 - Para `--verificar`, NO VERIFICABLE devuelve código 2.
 - Al inicio, NO VERIFICABLE bloquea salvo `--forzar`. El forzado no altera los datos de
   entrada ni convierte un error de datos en resultado válido.
-- JSON ilegible, estructura/campo/tipo inválido o referencia a sala/enemigo inexistente
-  se considera error de datos (código 2 y no forzable).
+- JSON ilegible, estructura/campo/tipo inválido o referencia a sala inexistente se
+  considera error de datos (código 2 y no forzable). Un id de enemigo inexistente no es
+  validado y no produce error si la sala indicada existe.
+- `llave_salida` ausente o nula, así como sala inicial/salida inexistentes, es error de
+  datos del esqueleto y no se puede forzar (FR-019).
 - Los estados HTTP deben clasificarse según el contrato de error del servicio: una
   respuesta que declare datos/referencias inválidas es error de datos; una falla de
   disponibilidad es NO VERIFICABLE. `DatosHTTP._get()` hoy agrupa estados no exitosos

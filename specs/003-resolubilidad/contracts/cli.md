@@ -18,6 +18,7 @@ inicia una partida.
 python main.py --cripta <cripta>
 python main.py --cripta <cripta> --forzar
 python main.py --offline --cripta <cripta> --forzar
+python main.py --gui --forzar
 ```
 
 El inicio muestra un resumen antes de jugar. RESOLUBLE muestra solo el veredicto;
@@ -27,10 +28,14 @@ bloquea; con `--forzar`, permite continuar. Los errores de datos siempre bloquea
 
 ### Compatibilidad de modos
 
-`--replay` conserva su comportamiento y no verifica (FR-023). `--bench` ejecuta la
-medición headless. La combinación de `--verificar` con `--forzar`, `--gui`, `--replay`,
-`--bench` o `--salida` no está definida por `spec.md`; ver hallazgos y propuestas en
-[plan.md](../plan.md). Este contrato no fija su comportamiento.
+- `--verificar` combinado con `--replay` o `--bench` se rechaza como error de uso antes
+  de consultar datos o comenzar la verificación.
+- `--forzar` se ignora en modo `--verificar`; el resultado/código es el mismo que sin
+  esa opción.
+- `--replay` conserva su comportamiento y no verifica (FR-023).
+- `--forzar` se propaga al inicio con `--gui` y permite iniciar NO RESOLUBLE o
+  NO VERIFICABLE, pero no un error de datos.
+- El caso de resolubilidad de `--bench` se ejecuta con y sin `--salida`.
 
 ## Códigos de salida de `--verificar`
 
@@ -44,11 +49,11 @@ Un resultado de error no debe ser convertido a código 0/1 ni a reporte de éxit
 inicio normal, los errores de datos no son forzables; los fallos de consulta se expresan
 como NO VERIFICABLE.
 
-## Formato estable propuesto
+## Formato estable
 
-La spec fija los campos y sus órdenes, pero no la sintaxis textual exacta. La siguiente
-plantilla es una propuesta para completar el contrato de presentación; no agrega reglas
-de alcanzabilidad y debe confirmarse antes de tratarla como API estable.
+Las siguientes plantillas son normativas para el reporte completo y el resumen inicial
+(FR-024). La codificación es UTF-8. Las listas conservan el orden especificado en
+`spec.md`; direcciones se ordenan lexicográficamente por código de carácter.
 
 Resultado resoluble:
 
@@ -67,16 +72,18 @@ VEREDICTO: NO RESOLUBLE
 MOTIVO: (a) llave_salida inobtenible
 REGION: salas=<cantidad> | llaves_obtenidas=<cantidad>
 LLAVES_INOBTENIBLES:
-  - id=<id> | ubicacion=sala:<id>[, enemigo:<id>] | causa=<causa>
+  - id=<id> | ubicaciones=[sala:<id>[, enemigo:<id>]; ...] | causa=<causa>
 FRONTERA_BLOQUEADA:
   - origen=<id-sala> | direccion=<direccion> | destino=<id-sala> | llave=<id|inexistente>
 CICLOS:
-  - llaves=<id> -> <id> -> ... -> <id> | puertas=<puertas_en_el_mismo_orden>
+  - llaves=<id> -> <id> -> ... -> <id> | puertas=[origen=<id>, direccion=<dir>; ...]
 ```
 
 Para motivo (b), `MOTIVO` identifica que se obtuvo `llave_salida` pero no se alcanza
-ninguna puerta hacia `sala_salida` que la requiera. Ubicaciones múltiples se imprimen
-en el orden normativo de la spec; los separadores internos aún requieren fijarse.
+ninguna puerta hacia `sala_salida` que la requiera. Las ubicaciones de cada llave se
+ordenan por sala numérica, ubicación sin enemigo primero y luego id de enemigo
+lexicográfico. La causa es `en ciclo`, `depende de <ids ordenados>` o `sala inalcanzable
+aun con todas las llaves`, según FR-011. Puertas de ciclo: por sala de origen y dirección.
 
 NO VERIFICABLE:
 
@@ -103,11 +110,9 @@ o:
 VEREDICTO: NO VERIFICABLE | MOTIVO: consulta de llaves no disponible
 ```
 
-La dirección se muestra con su identificador de entrada. El orden de esas direcciones,
-la sintaxis para varias ubicaciones y la selección de puertas paralelas aún no están
-completamente definidos en la spec; se listan como hallazgos en [plan.md](../plan.md).
-La salida debe ser determinista, UTF-8 y conservar el orden de secciones/campos de estas
-plantillas una vez aprobadas.
+La salida debe conservar exactamente las etiquetas y orden de secciones/campos de estas
+plantillas. Para una puerta cerrada cuyo id de llave sea nulo, ausente o no aparezca en
+la consulta, `llave=inexistente`.
 
 ## Errores
 

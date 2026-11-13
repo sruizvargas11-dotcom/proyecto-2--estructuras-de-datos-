@@ -1,9 +1,8 @@
 # Investigación y decisiones
 
-Esta investigación se basa en la especificación de la capacidad, la constitución y el
-código presente en el repositorio. No se consulta la red ni se implementan cambios. Los
-hallazgos que requieren cambiar comportamiento observable se separan de las decisiones de
-diseño y no modifican `spec.md`.
+Esta investigación se basa en la especificación enmendada, la constitución y el código
+presente en el repositorio. No se consulta la red ni se implementan cambios. Las
+decisiones post-plan están incorporadas en `spec.md` y se reflejan aquí y en los contratos.
 
 ## D1. Recorrido incremental con rondas (FR-002–FR-010, SC-002–SC-004)
 
@@ -67,7 +66,11 @@ la expansión que descubre el origen, evitando un segundo barrido topológico. P
 si `kj` es indispensable, ejecutar una evaluación con todas las llaves excepto `kj`,
 sembrada desde las salas alcanzables sin puertas cerradas y limitada al exterior que
 podría cambiar de alcance. Inspeccionar todas las ubicaciones de las llaves candidatas
-en cada evaluación y conservar todas las relaciones que exige FR-022.
+en cada evaluación y conservar todas las relaciones que exige FR-022. Una llave con
+varias ubicaciones sigue inobtenible únicamente si todas ellas continúan inalcanzables.
+Para las causas, las llaves que participan en un ciclo reportado reciben «en ciclo»;
+las demás dependientes reciben «depende de». La frontera se imprime por sala de origen
+numérica y luego dirección lexicográfica por código de carácter.
 
 No reemplazar la prueba de indispensabilidad por análisis de ciclos solamente: una ruta
 alternativa invalida una dependencia aunque el grafo de puertas parezca cíclico.
@@ -85,8 +88,8 @@ relaciones; contrastar contra SC-001.
 El subgrafo exterior puede coincidir con la cripta completa, por lo que el límite p95
 no se garantiza solo por el algoritmo incremental. El trabajo no debe ejecutarse por
 cada par de llaves si una evaluación retirada ya puede clasificar todas las llaves
-candidatas. La spec no fija precedencia entre “en ciclo” y “depende de”; ver hallazgo
-H6 en [plan.md](./plan.md).
+candidatas. Las causas siguen la precedencia fijada por FR-011: «en ciclo» para
+participantes de ciclos reportados y «depende de» para las demás llaves dependientes.
 
 ## D3. Selección de ciclos (FR-012)
 
@@ -105,12 +108,12 @@ del criterio solicitado sin agregar reglas de visita.
 
 ### Decisión
 
-No escoger A para producción sin evidencia de que cabe en SC-001; su peor caso es
-incompatible con una cota predecible. Proponer B como **ENMIENDA REQUERIDA**, sin
-modificar `spec.md`. Para cada nodo candidato, seleccionar el ciclo no vacío de menor
-longitud; a igual longitud, la menor secuencia canónica de IDs, con inicio en el ID
-menor. Registrar además la puerta de cada enlace con desempate explícito. Si la enmienda
-no se aprueba, el diseño no autoriza sustituir FR-012 unilateralmente.
+Aplicar B, ahora fijada por la enmienda de FR-012. Para cada llave participante se
+selecciona el ciclo simple de menor longitud; a igual longitud, la menor secuencia de IDs
+lexicográfica con inicio canónico en el ID menor. Las puertas de cada ciclo se ordenan
+por sala de origen numérica y dirección lexicográfica por código de carácter. Los ciclos
+se ordenan por el id inicial. La opción A queda descartada para el comportamiento
+normativo porque enumera potencialmente todos los ciclos simples.
 
 ### Complejidad y medición
 
@@ -121,9 +124,9 @@ propios, auto-ciclos y rutas alternativas; medir el caso denso junto a SC-001.
 
 ### Límites
 
-La enmienda cambia salida visible. La spec tampoco define ciclos simples, enlaces
-paralelos entre la misma pareja de llaves ni cómo seleccionar la puerta que representa
-un enlace indispensable; esos puntos se proponen en los hallazgos del plan.
+La regla ya es observable y normativa. La complejidad O(U(U+D)) debe medirse con grafos
+densos. Si existen puertas paralelas para un mismo enlace de dependencia, se imprimen
+en el orden de sala de origen y dirección fijado en la spec.
 
 ## D4. Fuente y persistencia de llaves (FR-001, FR-016, FR-018, FR-019)
 
@@ -149,8 +152,9 @@ descargador offline lo obtiene con la misma operación lógica que HTTP. `DatosS
 delega el método para que los tests sigan cubriendo la interfaz completa.
 
 Fallas de transporte, timeout, indisponibilidad del servicio, reintentos agotados o
-presupuesto producen NO VERIFICABLE. Respuesta inválida o ubicación que refiere a
-sala/enemigo inexistente es error de datos y no se fuerza. El adaptador HTTP debe usar
+presupuesto producen NO VERIFICABLE. Respuesta inválida o ubicación que refiere a una
+sala inexistente es error de datos y no se fuerza. La verificación no valida si existe el
+enemigo indicado; el id es metadato de ubicación. El adaptador HTTP debe usar
 `_get()`; `_get()` suma cada intento, incluidos reintentos. La lista cacheada se usa solo
 si la versión coincide con la del esqueleto actual; si no coincide, se descarta y se
 consulta la fuente. La clasificación de estados HTTP debe basarse en el contrato de
@@ -166,10 +170,10 @@ presupuesto/reintentos, versión coincidente/obsoleta, modo offline y fallo de e
 ### Límites
 
 El repositorio no contiene endpoint ni archivo offline de llaves. El esqueleto y el
-contenido de salas no ofrecen un roster completo ya cargado; el servicio debe validar
-la existencia del enemigo y su sala inicial o proveer evidencia para validarla. El
-contrato definitivo del servicio requiere confirmación. La falta de un archivo offline
-se trata como consulta no disponible y no como lista vacía.
+contenido de salas no ofrecen un roster completo ya cargado; FR-016 resuelve el alcance:
+se valida la sala de ubicación, no la existencia del enemigo. El contrato definitivo de
+la respuesta del servicio requiere confirmación. La falta de un archivo offline se trata
+como consulta no disponible y no como lista vacía.
 
 ## D5. CLI e inicio de partida (FR-014, FR-015, FR-018, FR-019, FR-023)
 
@@ -195,7 +199,10 @@ VERIFICABLE sí pueden continuarse con `--forzar`.
 
 `controlador/controlador_replay.py` ya llama a `nueva_partida()`: debe pasar una opción
 explícita de no verificar (FR-023). La vía de `--bench` continúa separada de `nueva_partida`
-y sin vista. El código de salida queda 0/1/2 según el contrato CLI.
+y sin vista. `--verificar` se rechaza con `--replay` o `--bench` antes de consultar;
+`--forzar` se ignora en modo verificar y también funciona con inicio GUI. El reporte y
+resumen inicial usan el formato estable de `contracts/cli.md`. El código de salida queda
+0/1/2 según el contrato CLI.
 
 ### Complejidad y medición
 
@@ -206,11 +213,11 @@ combinaciones permitidas después de que spec las defina.
 
 ### Límites
 
-La interfaz existente de Pygame inicia criptas desde un menú y `main.py --forzar` hoy no
-se propaga a ese flujo. La semántica de combinaciones de flags y forzado GUI requiere
-aclaración antes del código. La operación de inicio normal aún puede fallar en cargas
-requeridas por presupuesto aunque el reporte de verificación permita continuar; no
-ocultar esa falla.
+La implementación debe propagar `--forzar` a la ruta GUI sin revelar ubicaciones. Las
+combinaciones `--verificar`/`--replay` y `--verificar`/`--bench` se rechazan antes de
+consultar; otras combinaciones de flags no establecidas por la enmienda no se presuponen.
+La operación de inicio normal aún puede fallar en cargas requeridas por presupuesto
+aunque el reporte de verificación permita continuar; no ocultar esa falla.
 
 ## D6. Benchmark (SC-001, SC-002, SC-004)
 
@@ -232,8 +239,9 @@ cripta real en producción. Antes de medir, comparar A y B con el mismo input y 
 veredicto, orden y frontera. Medir A/B para la comparación algorítmica y A end-to-end
 para SC-001, incluyendo los diagnósticos necesarios pero sin red, carga ni renderizado.
 
-Usar al menos tres tamaños con duplicación de salas, salidas y llaves encadenadas. Se
-proponen 20 repeticiones (la tabla imprime p95 desde 20; el requisito mínimo es cinco).
+Usar al menos tres tamaños con duplicación de salas, salidas y llaves encadenadas. El
+caso de resolubilidad se ejecuta en `--bench` con y sin `--salida`. Se proponen 20
+repeticiones (la tabla imprime p95 desde 20; el requisito mínimo es cinco).
 Incluir la mayor cripta publicada disponible cuando exista y documentar el máximo. Las
 mediciones se ejecutan en un commit limpio y guardan el hash y entorno.
 
@@ -247,8 +255,9 @@ SC-001/004. La repetición de B es intencionalmente costosa y solo para comparac
 
 `bench.medicion` oculta p95 en pantalla con menos de 20 repeticiones, aunque lo guarda en
 JSON; por eso se prefieren 20. `main.py --bench --salida` desvía actualmente al reporte
-especializado de terreno y no ejecuta `CASOS`; decidir si ese modo también debe incluir
-la resolubilidad. No se ha medido ningún umbral durante esta fase documental.
+especializado de terreno y no ejecuta `CASOS`; la implementación debe ejecutar también
+el caso de resolubilidad y conservar el reporte indicado por `--salida`. No se ha medido
+ningún umbral durante esta fase documental.
 
 ## Hallazgos de investigación
 
@@ -266,5 +275,5 @@ la resolubilidad. No se ha medido ningún umbral durante esta fase documental.
 - `bench.runner` registra casos desde `bench.casos.CASOS`, guarda metadatos y JSON;
   `bench.medicion` tiene p95/máximo y calentamiento fuera de tiempo. `mensajes.py`
   compara resultados antes de medir.
-- La estructura de datos y las decisiones técnicas se documentan sin añadir reglas a
-  [spec.md](./spec.md). Véase [plan.md](./plan.md) para hallazgos que requieren decisión.
+- Los hallazgos del plan están resueltos en la sesión de enmienda post-plan de
+  [spec.md](./spec.md); su estado y trazabilidad se resumen en [plan.md](./plan.md).
