@@ -147,7 +147,11 @@ class FuenteSintetica(FuenteDeDatos):
                           for s in range(inicio, fin + 1)]}
 
     def llaves_cripta(self, cripta_id):
-        return {"llaves": []}
+        llaves = [{"id": "itm_llave_salida", "sala": 1}]
+        for sala_id in range(1, self.salas + 1):
+            if sala_id % 9 == 8:
+                llaves.append({"id": "itm_llave", "sala": sala_id})
+        return {"llaves": llaves}
 
     def contenido_salas(self, cripta_id, sala_ids):
         if not 1 <= len(sala_ids) <= 10:
