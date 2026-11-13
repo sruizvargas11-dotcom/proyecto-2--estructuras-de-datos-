@@ -35,7 +35,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_http.py -q` pasa; GET usa `_get()` y cada intento/reintento cuenta en `presupuesto_solicitudes`; transporte/timeout/indisponibilidad se distingue de una respuesta de datos inválidos.
   - **Dependencias**: T001, T002.
 
-- [ ] T004 Implementar lectura offline y delegación simulada en `adaptadores/datos_offline.py` y `adaptadores/datos_simulado.py`.
+- [X] T004 Implementar lectura offline y delegación simulada en `adaptadores/datos_offline.py` y `adaptadores/datos_simulado.py`.
   - **Atiende**: FR-001, FR-018; RS-E10, RS-E11.
   - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_offline.py -q` pasa; se lee `datos_offline/<cripta_id>/llaves.json`, una ausencia de archivo produce NO VERIFICABLE (nunca lista vacía) y el adaptador simulado conserva su demora determinista. Las pruebas crean el archivo bajo un directorio temporal con datos sintéticos; no dependen de una cripta publicada ni agregan ids de criptas concretas al código.
   - **Dependencias**: T001–T003.
