@@ -77,7 +77,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g16.py -q` recoge dos ejecuciones idénticas y una comparación byte a byte del orden por rondas.
   - **Dependencias**: T006.
 
-- [ ] T010 [P] [US1] Crear `tests/test_resolubilidad_g17.py` para bloquear el inicio no forzado.
+- [X] T010 [P] [US1] Crear `tests/test_resolubilidad_g17.py` para bloquear el inicio no forzado.
   - **Atiende**: FR-015; G17.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g17.py -q` recoge un caso no resoluble que conserva el reporte y no crea partida sin `--forzar`.
   - **Dependencias**: T006.
