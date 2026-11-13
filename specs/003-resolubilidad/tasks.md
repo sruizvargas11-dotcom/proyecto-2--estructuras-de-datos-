@@ -186,7 +186,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Propósito**: Comparar incremental y oráculo con equivalencia previa, y medir SC-001/SC-004 con evidencia reproducible.
 
-- [ ] T027 Integrar el caso de resolubilidad en `bench/casos/resolubilidad.py`, `bench/casos/__init__.py`, `bench/runner.py` y `main.py`; añadir `tests/test_bench_resolubilidad.py`.
+- [X] T027 Integrar el caso de resolubilidad en `bench/casos/resolubilidad.py`, `bench/casos/__init__.py`, `bench/runner.py` y `main.py`; añadir `tests/test_bench_resolubilidad.py`.
   - **Atiende**: FR-023; SC-002; RS-E12, RS-E33.
   - **Criterio**: `python -m pytest tests/test_bench_resolubilidad.py tests/test_bench_runner.py -q` pasa; `python main.py --bench` y `python main.py --bench --salida <ruta>` ambos ejecutan el caso de resolubilidad, sin vista ni red, y el benchmark rechaza discrepancias de veredicto/orden/frontera antes de cronometrar. Con `--salida` conserva el reporte especializado actual y el destino solicitados además de ejecutar el caso.
   - **Dependencias**: T006, T016–T018, T023, T025–T026.

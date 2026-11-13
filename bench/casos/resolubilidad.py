@@ -7,9 +7,16 @@ from estructuras.cola import Cola
 from estructuras.ordenamientos import ordenar
 from estructuras.tabla_hash import TablaHash
 from estructuras.vector_dinamico import Vector
+from bench.medicion import Fila, medir
 from modelo.mundo.cripta_modelo import CriptaModelo
 from modelo.mundo.sala import Sala
 from modelo.mundo.salida import Salida
+from modelo.verificador_resolubilidad import verificar_resolubilidad
+
+
+SEMILLA_BENCH = 42
+TAMANOS_BENCH = (8, 16, 32)
+REPETICIONES_BENCH = 20
 
 
 @dataclass(frozen=True)
@@ -293,3 +300,86 @@ def recorrido_completo_repetido(cripta, ubicaciones):
         _frontera(cripta, llaves_adquiridas, region),
         recorridos,
     )
+
+
+def _firma(resultado):
+    rondas = tuple(
+        tuple((llave.id, llave.sala, llave.enemigo) for llave in ronda)
+        for ronda in resultado.orden_por_rondas
+    )
+    puerta = resultado.puerta_final
+    puerta_final = (
+        None
+        if puerta is None
+        else (puerta.origen, puerta.direccion, puerta.destino, puerta.llave)
+    )
+    frontera = getattr(resultado, "frontera_bloqueada", None)
+    if frontera is None:
+        frontera = resultado.frontera
+    puertas = tuple(
+        (puerta.origen, puerta.direccion, puerta.destino, puerta.llave)
+        for puerta in frontera
+    )
+    return resultado.veredicto, rondas, puerta_final, puertas
+
+
+def validar_equivalencia(sintetica):
+    """Compara resultados completos antes de iniciar cualquier medición."""
+    incremental = verificar_resolubilidad(
+        sintetica.cripta, sintetica.ubicaciones
+    )
+    referencia = recorrido_completo_repetido(
+        sintetica.cripta, sintetica.ubicaciones
+    )
+    if _firma(incremental) != _firma(referencia):
+        raise ValueError(
+            "El benchmark de resolubilidad detectó discrepancias antes de medir."
+        )
+    return incremental, referencia
+
+
+def correr():
+    """Mide la verificación incremental frente al recorrido repetido de referencia."""
+    filas = []
+    for cantidad_llaves in TAMANOS_BENCH:
+        sintetica = generar_cripta_sintetica(
+            SEMILLA_BENCH, cantidad_llaves, "cadena"
+        )
+        _, referencia = validar_equivalencia(sintetica)
+        salas = len(sintetica.cripta)
+        salidas = 0
+        for sala in sintetica.cripta.recorrer_salas():
+            salidas += len(sala.salidas)
+        extra = (
+            f"S={salas} E={salidas} K={cantidad_llaves} "
+            f"semilla={SEMILLA_BENCH}"
+        )
+        filas.append(
+            Fila.desde_medicion(
+                "resolubilidad",
+                "incremental",
+                cantidad_llaves,
+                medir(
+                    verificar_resolubilidad,
+                    sintetica.cripta,
+                    sintetica.ubicaciones,
+                    repeticiones=REPETICIONES_BENCH,
+                ),
+                extra=extra,
+            )
+        )
+        filas.append(
+            Fila.desde_medicion(
+                "resolubilidad",
+                "referencia",
+                cantidad_llaves,
+                medir(
+                    recorrido_completo_repetido,
+                    sintetica.cripta,
+                    sintetica.ubicaciones,
+                    repeticiones=REPETICIONES_BENCH,
+                ),
+                extra=f"{extra} recorridos={referencia.recorridos_completos}",
+            )
+        )
+    return filas
