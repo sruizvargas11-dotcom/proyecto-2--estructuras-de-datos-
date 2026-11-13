@@ -30,7 +30,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_fuente_llaves.py -q` termina con código 0 y recoge los casos de respuesta válida/vacía, reintentos y presupuesto, versión obsoleta, sala inexistente, un id de enemigo inexistente aceptado cuando la sala existe y fallos de consulta; las pruebas afirman errores de datos y NO VERIFICABLE como resultados distintos.
   - **Dependencias**: T001.
 
-- [ ] T003 Implementar la operación común y consulta HTTP de llaves en `adaptadores/fuente_datos.py` y `adaptadores/datos_http.py`.
+- [X] T003 Implementar la operación común y consulta HTTP de llaves en `adaptadores/fuente_datos.py` y `adaptadores/datos_http.py`.
   - **Atiende**: FR-001, FR-018, FR-019; RS-E10.
   - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_http.py -q` pasa; GET usa `_get()` y cada intento/reintento cuenta en `presupuesto_solicitudes`; transporte/timeout/indisponibilidad se distingue de una respuesta de datos inválidos.
   - **Dependencias**: T001, T002.

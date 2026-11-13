@@ -19,6 +19,10 @@ class FuenteDeDatos(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def llaves_cripta(self, cripta_id: str) -> dict:
+        raise NotImplementedError
+
+    @abstractmethod
     def contenido_salas(self, cripta_id: str, sala_ids: list) -> dict:
         raise NotImplementedError
 
