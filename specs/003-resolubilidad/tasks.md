@@ -82,7 +82,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g17.py -q` recoge un caso no resoluble que conserva el reporte y no crea partida sin `--forzar`.
   - **Dependencias**: T006.
 
-- [ ] T011 [P] [US1] Crear `tests/test_resolubilidad_e01_e09.py` para forzado, dependencias, rondas y supuestos de alcanzabilidad.
+- [X] T011 [P] [US1] Crear `tests/test_resolubilidad_e01_e09.py` para forzado, dependencias, rondas y supuestos de alcanzabilidad.
   - **Atiende**: FR-002, FR-003, FR-005–FR-010, FR-012, FR-015, FR-018; RS-E01–RS-E09.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e01_e09.py -q` recoge los nueve escenarios. Cada prueba lleva `rs_eNN` en su nombre; E01 se identifica como `rs_e01_forzar`, E03 se divide en `rs_e03_dependencias` y `rs_e03_ciclo`, y E02 queda seleccionado por T018. Incluye ruta alternativa sin ciclo, cadena de llaves, puerta final abierta, costo ignorado, direccionalidad y llaves no consumidas.
   - **Dependencias**: T006.
