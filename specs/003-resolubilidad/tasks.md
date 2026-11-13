@@ -170,7 +170,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Prueba independiente**: Contrastar inicio normal/GUI con y sin `--forzar` para NO RESOLUBLE, NO VERIFICABLE y error de datos.
 
-- [ ] T025 [US3] Implementar la opción de consola `--forzar` en `main.py` y su decisión de inicio en `controlador/inicio_partida.py`; añadir `tests/test_inicio_forzar_resolubilidad.py`.
+- [X] T025 [US3] Implementar la opción de consola `--forzar` en `main.py` y su decisión de inicio en `controlador/inicio_partida.py`; añadir `tests/test_inicio_forzar_resolubilidad.py`.
   - **Atiende**: FR-015, FR-018, FR-019; SC-005; G17; RS-E01, RS-E10, RS-E15, RS-E32, RS-E35.
   - **Criterio**: `python -m pytest tests/test_inicio_forzar_resolubilidad.py tests/test_resolubilidad_g17.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -q` pasa; consola permite forzar NO RESOLUBLE/NO VERIFICABLE, bloquea errores de datos incluso con `--forzar`, y `--verificar --forzar` conserva exactamente el resultado/código de `--verificar`.
   - **Dependencias**: T020–T023.

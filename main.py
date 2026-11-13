@@ -123,6 +123,11 @@ def main(argumentos=None):
         if opciones.verificar is not None:
             informar(f'ERROR: {error}')
             return 2
+        from controlador.inicio_partida import InicioBloqueado
+        if isinstance(error, InicioBloqueado):
+            from vista.formato_resolubilidad import formatear_resumen
+            informar(formatear_resumen(error.resultado).rstrip('\n'))
+            return 1
         informar(f'No se pudo cargar la cripta: {error}')
         if fuente is not None and not opciones.solo_mapa and not getattr(error, 'reportado', False):
             _mostrar_reporte(fuente, None, 'replay' if opciones.replay else 'partida',
@@ -196,7 +201,11 @@ def jugar(fuente, cripta_id, opciones):
         ruta_bitacora=ruta_log,
         cache_size=opciones.cache_size,
         despachador=DespachoEnHilos() if opciones.hilos else None,
-        nombre_jugador=nombre_jugador)
+        nombre_jugador=nombre_jugador,
+        forzar=opciones.forzar)
+    if sesion.resultado_resolubilidad is not None:
+        from vista.formato_resolubilidad import formatear_resumen
+        informar(formatear_resumen(sesion.resultado_resolubilidad).rstrip('\n'))
     vista.mostrar_inicio(cripta_id, semilla)
     controlador = ControladorJuego(sesion, vista,
                                     str(Path(opciones.partidas_dir) / 'partida.sav'),
