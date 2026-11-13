@@ -72,7 +72,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g15.py -q` recoge el caso de enemigo errante y no errante y comprueba la sala de inicio del enemigo.
   - **Dependencias**: T006.
 
-- [ ] T009 [P] [US1] Crear `tests/test_resolubilidad_g16.py` para orden determinista.
+- [X] T009 [P] [US1] Crear `tests/test_resolubilidad_g16.py` para orden determinista.
   - **Atiende**: FR-010, FR-017; SC-003; G16.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g16.py -q` recoge dos ejecuciones idénticas y una comparación byte a byte del orden por rondas.
   - **Dependencias**: T006.
