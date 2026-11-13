@@ -87,7 +87,7 @@ def test_rs_e03_dependencias_enumera_todas_las_llaves_indispensables():
         (10, 20, 30, 40, 99),
         (
             (10, "A", 20, True, "key-b", 1),
-            (20, "A", 30, True, "key-c", 1),
+            (10, "B", 30, True, "key-c", 1),
             (30, "A", 40, True, "missing", 1),
             (40, "Z", 99, True, "key-c", 1),
         ),
