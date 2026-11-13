@@ -198,7 +198,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 ## Fase 7: Cierre y verificación transversal
 
-- [ ] T029 Crear una revisión automatizada de restricciones en `tests/test_resolubilidad_restricciones.py` para `modelo/verificador_resolubilidad.py`, `vista/formato_resolubilidad.py`, `bench/casos/resolubilidad.py`, `adaptadores/fuente_datos.py`, `adaptadores/datos_http.py`, `adaptadores/datos_offline.py`, `adaptadores/datos_simulado.py`, `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
+- [X] T029 Crear una revisión automatizada de restricciones en `tests/test_resolubilidad_restricciones.py` para `modelo/verificador_resolubilidad.py`, `vista/formato_resolubilidad.py`, `bench/casos/resolubilidad.py`, `adaptadores/fuente_datos.py`, `adaptadores/datos_http.py`, `adaptadores/datos_offline.py`, `adaptadores/datos_simulado.py`, `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
   - **Atiende**: FR-009, FR-010, FR-012, FR-013, FR-017, FR-021; SC-003; G16; RS-E19, RS-E28, RS-E36.
   - **Criterio**: `python -m pytest tests/test_resolubilidad_restricciones.py -q` pasa y la revisión confirma que no se usan `dict`/`set` como índice/caché, `collections`, `heapq`, `bisect`, bibliotecas de grafos/rutas, `hash()` de cadenas ni `sorted()`/iteración nativa para ordenar el reporte; se reutilizan las estructuras y ordenamientos propios. El análisis distingue los mapeos necesarios para parsear/serializar JSON de su uso prohibido como índice o caché.
   - **Dependencias**: T003–T005, T016–T020, T027.
