@@ -62,7 +62,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 ### Pruebas de aceptación de US1
 
-- [ ] T007 [P] [US1] Crear `tests/test_resolubilidad_g14.py` para llave de salida encerrada por la única puerta que ella misma abre.
+- [X] T007 [P] [US1] Crear `tests/test_resolubilidad_g14.py` para llave de salida encerrada por la única puerta que ella misma abre.
   - **Atiende**: FR-007, FR-011, FR-012, FR-013; G14.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g14.py -q` recoge aserciones para NO RESOLUBLE (a), puerta de frontera y ciclo llave→llave.
   - **Dependencias**: T006.
