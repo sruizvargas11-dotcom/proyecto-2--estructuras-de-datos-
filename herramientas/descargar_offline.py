@@ -31,7 +31,13 @@ def main():
     cripta_id = sys.argv[1] if len(sys.argv) > 1 else "cripta-01"
     guardar("criptas.json", http.listar_criptas())
     guardar(os.path.join(cripta_id, "general.json"), http.datos_cripta(cripta_id))
-    guardar(os.path.join(cripta_id, "version.json"), http.version_cripta(cripta_id))
+    version = http.version_cripta(cripta_id)
+    guardar(os.path.join(cripta_id, "version.json"), version)
+    llaves = http.llaves_cripta(cripta_id)
+    guardar(
+        os.path.join(cripta_id, "llaves.json"),
+        {"version": version["version"], "llaves": llaves["llaves"]},
+    )
 
     # Recorre todas las páginas del mapa y reúne los identificadores de sala.
     ids_salas = []

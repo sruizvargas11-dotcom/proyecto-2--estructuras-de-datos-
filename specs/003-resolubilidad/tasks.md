@@ -40,7 +40,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_offline.py -q` pasa; se lee `datos_offline/<cripta_id>/llaves.json`, una ausencia de archivo produce NO VERIFICABLE (nunca lista vacía) y el adaptador simulado conserva su demora determinista. Las pruebas crean el archivo bajo un directorio temporal con datos sintéticos; no dependen de una cripta publicada ni agregan ids de criptas concretas al código.
   - **Dependencias**: T001–T003.
 
-- [ ] T005 Persistir llaves por cripta y versión y extender la descarga offline en `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
+- [X] T005 Persistir llaves por cripta y versión y extender la descarga offline en `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
   - **Atiende**: FR-001, FR-018, FR-019; RS-E10, RS-E11.
   - **Criterio**: `python -m pytest tests/test_fuente_llaves.py -q` pasa; una caché con versión e identificador coincidentes se reutiliza, una obsoleta/inválida se descarta y se consulta la fuente, y el guardado reutiliza `persistencia/cache_json.py` con escritura atómica.
   - **Dependencias**: T001, T003–T004.

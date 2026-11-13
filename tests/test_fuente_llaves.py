@@ -86,3 +86,68 @@ def test_falla_de_transporte_y_datos_invalidos_tienen_tipos_distintos():
     with patch("adaptadores.datos_http.requests.get", return_value=respuesta):
         with pytest.raises(ValueError):
             DatosHTTP().llaves_cripta("cripta-sintetica")
+
+
+def test_cache_llaves_coincidente_se_reutiliza_sin_consultar_fuente(tmp_path):
+    """La caché solo se reutiliza para la versión e id de cripta esperados (FR-001)."""
+    from persistencia.llaves_cripta import (
+        guardar_llaves_cache,
+        obtener_llaves,
+    )
+
+    respuesta = {"llaves": [{"id": "key-a", "sala": 2}]}
+    guardar_llaves_cache(tmp_path, "cripta-sintetica", "v1", respuesta)
+
+    class Fuente:
+        def llaves_cripta(self, cripta_id):
+            raise AssertionError("la fuente no debe consultarse")
+
+    assert obtener_llaves(Fuente(), tmp_path, "cripta-sintetica", "v1") == respuesta
+
+
+def test_cache_llaves_obsoleta_se_descarta_y_consulta_fuente(tmp_path):
+    """Una versión anterior no participa y la respuesta nueva se persiste (FR-001)."""
+    from persistencia.llaves_cripta import (
+        cargar_llaves_cache,
+        guardar_llaves_cache,
+        obtener_llaves,
+    )
+
+    guardar_llaves_cache(
+        tmp_path, "cripta-sintetica", "v1",
+        {"llaves": [{"id": "key-old", "sala": 1}]},
+    )
+    nueva = {"llaves": [{"id": "key-new", "sala": 3}]}
+
+    class Fuente:
+        llamadas = 0
+
+        def llaves_cripta(self, cripta_id):
+            self.llamadas += 1
+            return nueva
+
+    fuente = Fuente()
+    assert obtener_llaves(fuente, tmp_path, "cripta-sintetica", "v2") == nueva
+    assert fuente.llamadas == 1
+    assert cargar_llaves_cache(tmp_path, "cripta-sintetica", "v2") == nueva
+
+
+def test_cache_llaves_invalida_se_descarta_y_error_de_fuente_se_propaga(tmp_path):
+    """Un archivo corrupto no se convierte en respuesta ni oculta fallos (FR-018, FR-019)."""
+    import json
+
+    from persistencia.cache_json import guardar_cache
+    from persistencia.llaves_cripta import obtener_llaves, ruta_cache_llaves
+
+    ruta = ruta_cache_llaves(tmp_path, "cripta-sintetica")
+    guardar_cache(ruta, "v1", "cripta-sintetica", {"llaves": "inválido"})
+
+    class Fuente:
+        def llaves_cripta(self, cripta_id):
+            raise RuntimeError("fuente no disponible")
+
+    with pytest.raises(RuntimeError, match="fuente no disponible"):
+        obtener_llaves(Fuente(), tmp_path, "cripta-sintetica", "v1")
+
+    with open(ruta, encoding="utf-8") as archivo:
+        assert json.load(archivo)["datos"]["llaves"] == "inválido"
