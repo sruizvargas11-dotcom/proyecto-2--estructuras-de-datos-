@@ -97,7 +97,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e19_e22.py -q` recoge los cuatro escenarios; E19 se divide en `rs_e19_orden` y `rs_e19_ubicaciones`, y E21 en `rs_e21_dependencias` y `rs_e21_ciclo`, para filtrar los criterios de T016–T018 sin omitir casos. Afirma comparación numérica de salas, comparación lexicográfica de ids, ronda final completa, indispensabilidad y crecimiento.
   - **Dependencias**: T006.
 
-- [ ] T014 [P] [US1] Crear `tests/test_resolubilidad_e28_e29.py` para ciclos mínimos y prioridad de causas.
+- [X] T014 [P] [US1] Crear `tests/test_resolubilidad_e28_e29.py` para ciclos mínimos y prioridad de causas.
   - **Atiende**: FR-011, FR-012, FR-021; RS-E28, RS-E29.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e28_e29.py -q` recoge `test_rs_e28...` y `test_rs_e29...`, con ciclos simples más cortos, empates lexicográficos, inicio canónico en el id menor, ciclos ordenados por id inicial, puertas ordenadas por sala numérica y dirección lexicográfica por código de carácter y causas «en ciclo»/«depende de».
   - **Dependencias**: T006.
