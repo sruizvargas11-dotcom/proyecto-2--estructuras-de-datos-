@@ -16,7 +16,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Propósito**: Corregir el artefacto de diseño contradictorio y confirmar el cambio antes de tocar pruebas o código, conforme al principio VII de la constitución.
 
-- [ ] T001 Corregir y confirmar el modelo lógico en `specs/003-resolubilidad/data-model.md` antes de iniciar cualquier tarea de pruebas o código.
+- [X] T001 Corregir y confirmar el modelo lógico en `specs/003-resolubilidad/data-model.md` antes de iniciar cualquier tarea de pruebas o código.
   - **Atiende**: FR-016, FR-019, FR-020, FR-022; RS-E16, RS-E18, RS-E24, RS-E35.
   - **Criterio**: `git diff --check -- specs/003-resolubilidad/data-model.md` termina sin errores; se corrigen las contradicciones sobre enemigo inexistente, `llave_salida` nula/ausente y salida cerrada sin llave. El cambio queda en un commit documental independiente que precede a cualquier commit de código.
   - **Dependencias**: Ninguna. Bloquea T002–T031.
@@ -25,7 +25,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Propósito**: Obtener las ubicaciones de llaves de forma uniforme, respetar el presupuesto, validar versiones y distinguir NO VERIFICABLE de errores de datos.
 
-- [ ] T002 Añadir pruebas de contrato de la fuente de llaves en `tests/test_fuente_llaves.py`.
+- [X] T002 Añadir pruebas de contrato de la fuente de llaves en `tests/test_fuente_llaves.py`.
   - **Atiende**: FR-001, FR-016, FR-018, FR-019; RS-E10, RS-E11, RS-E24.
   - **Criterio**: `python -m pytest --collect-only tests/test_fuente_llaves.py -q` termina con código 0 y recoge los casos de respuesta válida/vacía, reintentos y presupuesto, versión obsoleta, sala inexistente, un id de enemigo inexistente aceptado cuando la sala existe y fallos de consulta; las pruebas afirman errores de datos y NO VERIFICABLE como resultados distintos.
   - **Dependencias**: T001.
