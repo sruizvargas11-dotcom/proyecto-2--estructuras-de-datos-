@@ -146,6 +146,9 @@ class FuenteSintetica(FuenteDeDatos):
                 "salas": [{"id": s, "nombre": f"Sala {s}", "salidas": self._salidas(s)}
                           for s in range(inicio, fin + 1)]}
 
+    def llaves_cripta(self, cripta_id):
+        return {"llaves": []}
+
     def contenido_salas(self, cripta_id, sala_ids):
         if not 1 <= len(sala_ids) <= 10:
             raise ValueError("Máximo 10 salas por consulta.")
