@@ -124,7 +124,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py -q` y `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e28_e29.py -k "rs_e02 or rs_e03_ciclo or rs_e21_ciclo or rs_e28 or rs_e29" -q` pasan. Cada llave participante recibe su ciclo simple más corto; empates usan la secuencia lexicográficamente menor iniciada en el id menor; ciclos se ordenan por id inicial y puertas por sala de origen numérica y dirección lexicográfica por código de carácter. Incluye las causas «en ciclo» de G14, RS-E03, RS-E21 y RS-E29.
   - **Dependencias**: T017.
 
-- [ ] T019 [US1] Crear el formateador de reporte completo y resumen seguro en `vista/formato_resolubilidad.py` y sus pruebas en `tests/test_formato_resolubilidad.py`.
+- [X] T019 [US1] Crear el formateador de reporte completo y resumen seguro en `vista/formato_resolubilidad.py` y sus pruebas en `tests/test_formato_resolubilidad.py`.
   - **Atiende**: FR-011, FR-013–FR-015, FR-024; SC-003; RS-E25, RS-E34.
   - **Criterio**: `python -m pytest tests/test_formato_resolubilidad.py -q` pasa y compara UTF-8 byte a byte con las plantillas de `specs/003-resolubilidad/contracts/cli.md`; el resumen inicial no imprime ubicaciones, frontera ni ciclos.
   - **Dependencias**: T016–T018.
