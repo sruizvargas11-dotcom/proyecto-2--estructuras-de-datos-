@@ -177,7 +177,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Punto de control US3**: forzar solo omite el bloqueo de estados permitidos y nunca cambia un error de datos en éxito.
 
-- [ ] T026 [US3] Propagar el inicio forzado a GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`; añadir `tests/vista/test_inicio_forzar_resolubilidad.py`.
+- [X] T026 [US3] Propagar el inicio forzado a GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`; añadir `tests/vista/test_inicio_forzar_resolubilidad.py`.
   - **Atiende**: FR-015, FR-018, FR-019; SC-005; G17; RS-E01, RS-E10, RS-E15, RS-E32, RS-E35.
   - **Criterio**: `python -m pytest tests/vista/test_inicio_forzar_resolubilidad.py -q` pasa; GUI inicia NO RESOLUBLE/NO VERIFICABLE con resumen cuando se fuerza y sigue bloqueando cualquier error de datos, sin mostrar ubicaciones.
   - **Dependencias**: T021, T025.

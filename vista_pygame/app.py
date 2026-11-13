@@ -57,7 +57,11 @@ class Contexto:
     def arrancar_partida(self,datos):
         self.error_inicio=None
         def arrancar():
-            try:self.controlador.iniciar_partida(*datos)
+            try:
+                if getattr(self.controlador, 'forzar_inicio', False):
+                    self.controlador.iniciar_partida(*datos, forzar=True)
+                else:
+                    self.controlador.iniciar_partida(*datos)
             except Exception as error:self.error_inicio=str(error)
         self._hilo_inicio=threading.Thread(target=arrancar,name='cripta-arranque',daemon=False)
         self._hilo_inicio.start()
@@ -67,7 +71,8 @@ class Contexto:
 
 
 class AppPygame:
-    def __init__(self, fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas", reportes=None):
+    def __init__(self, fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas",
+                 reportes=None, forzar=False):
         pygame.init()
         self._pantalla = pygame.display.set_mode((ANCHO_LOGICO, ALTO_LOGICO),pygame.RESIZABLE)
         pygame.display.set_caption(TITULO_VENTANA)
@@ -76,7 +81,9 @@ class AppPygame:
         self._tamano_ventana = (ANCHO_LOGICO,ALTO_LOGICO)
         self._reloj = pygame.time.Clock()
 
-        controlador = ControladorPygame(fuente, carpeta_cache, cache_size, partidas_dir, reportes)
+        controlador = ControladorPygame(
+            fuente, carpeta_cache, cache_size, partidas_dir, reportes, forzar=forzar
+        )
         assets = CargadorAssets()
         audio = GestorAudioTemporal()
         self._contexto = Contexto(controlador, assets, audio, self)
@@ -181,5 +188,8 @@ class AppPygame:
                 pygame.quit()
 
 
-def ejecutar(fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas", reportes=None):
-    AppPygame(fuente, carpeta_cache, cache_size, partidas_dir, reportes).ejecutar()
+def ejecutar(fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas",
+             reportes=None, forzar=False):
+    AppPygame(
+        fuente, carpeta_cache, cache_size, partidas_dir, reportes, forzar=forzar
+    ).ejecutar()

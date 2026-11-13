@@ -492,9 +492,14 @@ class EscenaMenuCriptas(EscenaBase):
             if callable(getattr(self.contexto,'iniciar_cripta',None)):
                 self.contexto.iniciar_cripta((cripta['id'],nombre,None))
             else:
-                self.contexto.controlador.iniciar_partida(
-                    cripta['id'], nombre, semilla=None
-                )
+                if getattr(self.contexto.controlador, 'forzar_inicio', False):
+                    self.contexto.controlador.iniciar_partida(
+                        cripta['id'], nombre, semilla=None, forzar=True
+                    )
+                else:
+                    self.contexto.controlador.iniciar_partida(
+                        cripta['id'], nombre, semilla=None
+                    )
                 self.contexto.cambiar_escena(ESCENA_PARTIDA,None)
         except InicioPygameBloqueado as error:
             self._aviso_inicio = error.resumen

@@ -310,13 +310,15 @@ class ControladorPygame:
     """Vista no interactiva para ControladorJuego + API de alto nivel para
     las escenas de menú, pausa, inventario y fin de partida."""
 
-    def __init__(self, fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas", reportes=None):
+    def __init__(self, fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas",
+                 reportes=None, forzar=False):
         self._fuente = fuente
         self._fuente_usada = False
         self._carpeta_cache = carpeta_cache
         self._cache_size = cache_size
         self._partidas_dir = partidas_dir
         self._ruta_reportes = reportes
+        self._forzar_inicio = forzar
 
         self._lock = threading.Lock()
         self._comandos = queue.Queue()
@@ -344,6 +346,10 @@ class ControladorPygame:
         self._sala_inicial_id = None
         self._sala_salida_id = None
         self._criptas_disponibles = ()
+
+    @property
+    def forzar_inicio(self):
+        return self._forzar_inicio
 
     # -- arranque / cierre (API para las escenas, hilo principal) --------
 
@@ -423,8 +429,10 @@ class ControladorPygame:
         semilla=None,
         *,
         ruta_carga=None,
-        forzar=False,
+        forzar=None,
     ):
+        if forzar is None:
+            forzar = self._forzar_inicio
         if not isinstance(nombre_jugador,str) or not nombre_jugador.strip():
             raise ValueError('El nombre del jugador es obligatorio.')
         nombre_jugador=nombre_jugador.strip()

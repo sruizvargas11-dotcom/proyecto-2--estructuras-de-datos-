@@ -236,7 +236,8 @@ def jugar_gui(fuente, opciones):
     from vista_pygame.app import ejecutar as ejecutar_gui
 
     ejecutar_gui(fuente, carpeta_cache=opciones.cache_dir, cache_size=opciones.cache_size,
-                partidas_dir=opciones.partidas_dir, reportes=opciones.reportes)
+                partidas_dir=opciones.partidas_dir, reportes=opciones.reportes,
+                forzar=opciones.forzar)
     return 0
 
 
