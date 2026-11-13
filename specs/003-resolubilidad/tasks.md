@@ -49,7 +49,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Propósito**: Preparar datos deterministas y un oráculo independiente antes del recorrido incremental.
 
-- [ ] T006 Crear el generador sintético por semilla y el oráculo de recorrido repetido en `bench/casos/resolubilidad.py` y sus pruebas en `tests/test_resolubilidad_oraculo.py`.
+- [X] T006 Crear el generador sintético por semilla y el oráculo de recorrido repetido en `bench/casos/resolubilidad.py` y sus pruebas en `tests/test_resolubilidad_oraculo.py`.
   - **Atiende**: FR-017; SC-002, SC-003; RS-E12.
   - **Criterio**: `python -m pytest tests/test_resolubilidad_oraculo.py -q` pasa; la misma semilla reproduce exactamente la misma cripta y el generador cubre cadenas de llaves, ciclos y rutas alternativas; el oráculo devuelve un resultado de datos comparable y no es usado como algoritmo de producción.
   - **Dependencias**: T001, T005.
