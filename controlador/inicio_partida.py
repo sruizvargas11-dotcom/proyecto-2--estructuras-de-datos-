@@ -3,7 +3,12 @@ from dataclasses import dataclass
 from estructuras.vector_dinamico import Vector
 
 from bitacora_partida import BitacoraPartida
-from controlador.controlador_red import ControladorRed, cargar_cripta, _generales
+from controlador.controlador_red import (
+    ControladorRed,
+    _carpeta_cache_por_defecto,
+    _generales,
+    cargar_cripta,
+)
 from controlador.semilla import generar_semilla, validar_semilla
 from modelo.entidades.jugador import Jugador
 from modelo.entidades.objetos.fabrica_objetos import FabricaObjetos
