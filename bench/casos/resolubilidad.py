@@ -389,6 +389,7 @@ def correr():
                     sintetica.cripta,
                     sintetica.ubicaciones,
                     repeticiones=REPETICIONES_BENCH,
+                    deshabilitar_gc=True,
                 ),
                 extra=extra,
             )
@@ -403,6 +404,7 @@ def correr():
                     sintetica.cripta,
                     sintetica.ubicaciones,
                     repeticiones=REPETICIONES_BENCH,
+                    deshabilitar_gc=True,
                 ),
                 extra=f"{extra} recorridos={referencia.recorridos_completos}",
             )

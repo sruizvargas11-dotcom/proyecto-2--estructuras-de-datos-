@@ -1,5 +1,6 @@
 """Comprobaciones básicas de los casos y resultados de --bench."""
 import ast
+import gc
 import glob
 
 from bench.casos import CASOS, heap, inventario, lru
@@ -9,6 +10,19 @@ from bench.medicion import Fila, mediana, medir
 def test_mediana_y_medir():
     assert mediana([5, 1, 3, 9, 2]) == 3
     assert medir(sum, [1, 2, 3], repeticiones=3).ms_med >= 0
+
+
+def test_medir_deshabilita_gc_solo_durante_muestras_y_lo_restaura():
+    gc_antes = gc.isenabled()
+    estados = []
+
+    def accion():
+        estados.append(gc.isenabled())
+
+    medir(accion, repeticiones=2, deshabilitar_gc=True)
+
+    assert estados == [gc_antes, False, False]
+    assert gc.isenabled() == gc_antes
 
 
 def test_cada_caso_devuelve_filas_bien_formadas(monkeypatch):
