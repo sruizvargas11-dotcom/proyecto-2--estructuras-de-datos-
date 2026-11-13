@@ -26,8 +26,8 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 **Propósito**: Obtener las ubicaciones de llaves de forma uniforme, respetar el presupuesto, validar versiones y distinguir NO VERIFICABLE de errores de datos.
 
 - [X] T002 Añadir pruebas de contrato de la fuente de llaves en `tests/test_fuente_llaves.py`.
-  - **Atiende**: FR-001, FR-016, FR-018, FR-019; RS-E10, RS-E11, RS-E24.
-  - **Criterio**: `python -m pytest --collect-only tests/test_fuente_llaves.py -q` termina con código 0 y recoge los casos de respuesta válida/vacía, reintentos y presupuesto, versión obsoleta, sala inexistente, un id de enemigo inexistente aceptado cuando la sala existe y fallos de consulta; las pruebas afirman errores de datos y NO VERIFICABLE como resultados distintos.
+  - **Atiende**: FR-001, FR-016, FR-018, FR-019; RS-E10.
+  - **Criterio**: `python -m pytest --collect-only tests/test_fuente_llaves.py -q` termina con código 0 y recoge respuesta HTTP válida/vacía, reintentos y presupuesto, el id de enemigo como metadato no validado y la distinción entre fallos de transporte y JSON inválido. La caché obsoleta se prueba en T005; la ubicación de sala inexistente se prueba explícitamente en T012 (RS-E24).
   - **Dependencias**: T001.
 
 - [X] T003 Implementar la operación común y consulta HTTP de llaves en `adaptadores/fuente_datos.py` y `adaptadores/datos_http.py`.
@@ -84,22 +84,22 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 - [ ] T011 [P] [US1] Crear `tests/test_resolubilidad_e01_e09.py` para forzado, dependencias, rondas y supuestos de alcanzabilidad.
   - **Atiende**: FR-002, FR-003, FR-005–FR-010, FR-012, FR-015, FR-018; RS-E01–RS-E09.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e01_e09.py -q` recoge los nueve escenarios, incluida ruta alternativa sin ciclo, cadena de llaves, puerta final abierta, costo ignorado, direccionalidad y llaves no consumidas.
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e01_e09.py -q` recoge los nueve escenarios. Cada prueba lleva `rs_eNN` en su nombre; E01 se identifica como `rs_e01_forzar`, E03 se divide en `rs_e03_dependencias` y `rs_e03_ciclo`, y E02 queda seleccionado por T018. Incluye ruta alternativa sin ciclo, cadena de llaves, puerta final abierta, costo ignorado, direccionalidad y llaves no consumidas.
   - **Dependencias**: T006.
 
 - [ ] T012 [P] [US1] Crear `tests/test_resolubilidad_e10_e18.py` para consulta, versiones, trampas, ubicaciones múltiples y selección de puerta final.
   - **Atiende**: FR-001, FR-005, FR-008, FR-009, FR-016, FR-018–FR-020; RS-E10–RS-E18.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e10_e18.py -q` recoge los nueve escenarios; las pruebas incluyen versión obsoleta, llave inicial en ronda 0, desempate de puerta por dirección lexicográfica por código de carácter y desempate de ubicación.
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e10_e18.py -q` recoge los nueve escenarios. Las pruebas llevan `rs_eNN` en el nombre; E10 se divide en `rs_e10_no_forzar` y `rs_e10_forzar`, E18 en `rs_e18_alcanzable` y `rs_e18_inobtenible` para recorrido y diagnóstico. Incluye versión obsoleta, llave inicial en ronda 0, desempate de puerta por dirección lexicográfica por código de carácter y desempate de ubicación. Incluye `test_rs_e24_sala_inexistente_es_error_datos_y_enemigo_no_se_valida`: ubicación en sala inexistente da error de datos, mientras que un id de enemigo desconocido no se valida si la sala existe; T020 comprueba que ese error bloquea el inicio.
   - **Dependencias**: T006.
 
 - [ ] T013 [P] [US1] Crear `tests/test_resolubilidad_e19_e22.py` para comparadores, corte por ronda, indispensabilidad y crecimiento.
   - **Atiende**: FR-009, FR-016, FR-021, FR-022; SC-004; RS-E19–RS-E22.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e19_e22.py -q` recoge los cuatro escenarios y afirma comparación numérica de salas, comparación lexicográfica de ids, ronda final completa y todas las ubicaciones de una llave.
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e19_e22.py -q` recoge los cuatro escenarios; E19 se divide en `rs_e19_orden` y `rs_e19_ubicaciones`, y E21 en `rs_e21_dependencias` y `rs_e21_ciclo`, para filtrar los criterios de T016–T018 sin omitir casos. Afirma comparación numérica de salas, comparación lexicográfica de ids, ronda final completa, indispensabilidad y crecimiento.
   - **Dependencias**: T006.
 
 - [ ] T014 [P] [US1] Crear `tests/test_resolubilidad_e28_e29.py` para ciclos mínimos y prioridad de causas.
   - **Atiende**: FR-011, FR-012, FR-021; RS-E28, RS-E29.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e28_e29.py -q` recoge ciclos simples más cortos, empates lexicográficos, inicio canónico en el id menor, ciclos ordenados por id inicial, puertas ordenadas por sala numérica y dirección lexicográfica por código de carácter y causas «en ciclo»/«depende de».
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e28_e29.py -q` recoge `test_rs_e28...` y `test_rs_e29...`, con ciclos simples más cortos, empates lexicográficos, inicio canónico en el id menor, ciclos ordenados por id inicial, puertas ordenadas por sala numérica y dirección lexicográfica por código de carácter y causas «en ciclo»/«depende de».
   - **Dependencias**: T006.
 
 - [ ] T015 [P] [US1] Crear `tests/test_resolubilidad_e35_e36.py` para llave de salida inválida y orden de frontera.
@@ -111,17 +111,17 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 - [ ] T016 [US1] Implementar el recorrido incremental dirigido y las rondas en `modelo/verificador_resolubilidad.py`.
   - **Atiende**: FR-002–FR-010, FR-016, FR-017, FR-020, FR-021; G15, G16; RS-E04, RS-E07–RS-E09, RS-E13–RS-E14, RS-E16–RS-E20.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py -q` pasa; la expansión procesa salidas dirigidas y puertas pendientes, cada ronda se completa y ordena antes de liberar puertas, la ronda final se incluye completa y el orden termina cuando la puerta final es cruzable. No se usan costos ni se modifica `CriptaModelo`; las pruebas sintéticas igualan al oráculo en veredicto, orden y frontera.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py -k "g15 or g16 or rs_e04 or rs_e07 or rs_e08 or rs_e09 or rs_e13 or rs_e14 or rs_e16 or rs_e17 or rs_e18_alcanzable or rs_e19_orden or rs_e20" -q` pasa; cubre solo recorrido, rondas, orden y puerta final. La expansión procesa salidas dirigidas y puertas pendientes; completa y ordena cada ronda antes de liberar puertas; incluye completa la ronda final y termina cuando la puerta final es cruzable. No usa costos ni modifica `CriptaModelo`; iguala al oráculo en veredicto y orden. Los selectores `rs_eNN` identifican pruebas individuales por escenario.
   - **Dependencias**: T006–T015.
 
 - [ ] T017 [US1] Implementar diagnóstico de llaves inobtenibles, causas, frontera y dependencias en `modelo/verificador_resolubilidad.py`.
-  - **Atiende**: FR-011, FR-013, FR-016, FR-022; G14; RS-E03, RS-E05–RS-E06, RS-E18, RS-E21, RS-E29, RS-E36.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e28_e29.py tests/test_resolubilidad_e35_e36.py -q` pasa; la frontera se recoge en el recorrido base, incluyendo puertas cerradas con llave nula o ausente como `inexistente` y sin abrirlas; se listan todas las dependencias indispensables y una llave múltiple solo es inobtenible si todas sus ubicaciones quedan fuera.
+  - **Atiende**: FR-011, FR-013, FR-016, FR-022; RS-E03, RS-E05–RS-E06, RS-E18, RS-E21, RS-E36.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e35_e36.py -k "rs_e03_dependencias or rs_e05 or rs_e06 or rs_e18_inobtenible or rs_e19_ubicaciones or rs_e21_dependencias or rs_e36" -q` pasa, sin seleccionar aserciones de ciclos. La frontera se recoge en el recorrido base, incluyendo puertas cerradas con llave nula o ausente como `inexistente` y sin abrirlas; se listan todas las dependencias indispensables y una llave múltiple solo es inobtenible si todas sus ubicaciones quedan fuera. Los selectores excluyen los subcasos de ciclos, que corresponden a T018.
   - **Dependencias**: T016.
 
 - [ ] T018 [US1] Implementar selección y orden determinista de ciclos simples en `modelo/verificador_resolubilidad.py`.
-  - **Atiende**: FR-011, FR-012, FR-021; G14; RS-E02, RS-E28–RS-E29.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e28_e29.py -q` pasa; cada llave participante recibe su ciclo simple más corto; empates usan la secuencia lexicográficamente menor iniciada en el id menor; ciclos se ordenan por id inicial y puertas por sala de origen numérica y dirección lexicográfica por código de carácter.
+  - **Atiende**: FR-011, FR-012, FR-021; G14; RS-E02, RS-E03, RS-E21, RS-E28–RS-E29.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py -q` y `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e28_e29.py -k "rs_e02 or rs_e03_ciclo or rs_e21_ciclo or rs_e28 or rs_e29" -q` pasan. Cada llave participante recibe su ciclo simple más corto; empates usan la secuencia lexicográficamente menor iniciada en el id menor; ciclos se ordenan por id inicial y puertas por sala de origen numérica y dirección lexicográfica por código de carácter. Incluye las causas «en ciclo» de G14, RS-E03, RS-E21 y RS-E29.
   - **Dependencias**: T017.
 
 - [ ] T019 [US1] Crear el formateador de reporte completo y resumen seguro en `vista/formato_resolubilidad.py` y sus pruebas en `tests/test_formato_resolubilidad.py`.
@@ -131,7 +131,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 - [ ] T020 [US1] Integrar la verificación y el bloqueo de partidas nuevas en `controlador/inicio_partida.py`.
   - **Atiende**: FR-015, FR-018, FR-019; G17; RS-E01, RS-E10, RS-E15, RS-E25.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g17.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -q` pasa; `nueva_partida()` verifica una vez, conserva el resultado para presentación y bloquea NO RESOLUBLE/NO VERIFICABLE sin forzado y todo error de datos.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g17.py -q` y `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -k "not rs_e01_forzar and not rs_e10_forzar" -q` pasan; `nueva_partida()` verifica una vez, conserva el resultado para presentación y bloquea NO RESOLUBLE/NO VERIFICABLE sin forzado y todo error de datos, incluido RS-E24 por sala inexistente.
   - **Dependencias**: T005, T016–T019.
 
 - [ ] T021 [US1] Mostrar el resumen seguro en el flujo GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`.
@@ -289,7 +289,7 @@ Completar Fases 0–3: commit documental de T001, consulta versionada de llaves,
 | FR-016 | T001–T002, T005, T008, T012–T013, T016–T017 |
 | FR-017 | T006, T009, T016, T029 |
 | FR-018 | T002–T005, T020, T025–T026 |
-| FR-019 | T001–T002, T005, T012, T015, T020, T025–T026 |
+| FR-019 | T001, T005, T012, T015, T020, T025–T026 |
 | FR-020 | T001, T012, T016 |
 | FR-021 | T013–T015, T016, T018, T029 |
 | FR-022 | T013, T017 |
@@ -300,21 +300,21 @@ Completar Fases 0–3: commit documental de T001, consulta versionada de llaves,
 | SC-003 | T009, T016, T019, T029 |
 | SC-004 | T013, T028, T031 |
 | SC-005 | T002–T005, T020, T023, T025–T026, T031 |
-| G14 | T007, T017–T018, T031 |
+| G14 | T007, T018, T031 |
 | G15 | T008, T016, T031 |
 | G16 | T009, T016, T019, T029, T031 |
 | G17 | T010, T020, T025–T026, T031 |
 | RS-E01 | T011, T025–T026, T031 |
 | RS-E02 | T011, T018, T031 |
-| RS-E03 | T011, T017, T031 |
+| RS-E03 | T011, T017–T018, T031 |
 | RS-E04 | T011, T016, T031 |
-| RS-E05 | T011, T016–T017, T031 |
+| RS-E05 | T011, T017, T031 |
 | RS-E06 | T011, T017, T031 |
 | RS-E07 | T011, T016, T031 |
 | RS-E08 | T011, T016, T031 |
 | RS-E09 | T011, T016, T031 |
 | RS-E10 | T002–T005, T012, T020, T025–T026, T031 |
-| RS-E11 | T002, T004–T005, T012, T031 |
+| RS-E11 | T004–T005, T012, T031 |
 | RS-E12 | T006, T027–T028, T031 |
 | RS-E13 | T012, T016, T031 |
 | RS-E14 | T008, T012, T016, T031 |
@@ -322,17 +322,17 @@ Completar Fases 0–3: commit documental de T001, consulta versionada de llaves,
 | RS-E16 | T012, T016, T031 |
 | RS-E17 | T012, T016, T031 |
 | RS-E18 | T012–T013, T016–T017, T031 |
-| RS-E19 | T013, T016, T029, T031 |
+| RS-E19 | T013, T016–T017, T029, T031 |
 | RS-E20 | T013, T016, T031 |
-| RS-E21 | T013, T017, T031 |
+| RS-E21 | T013, T017–T018, T031 |
 | RS-E22 | T013, T028, T031 |
 | RS-E23 | T022–T023, T031 |
-| RS-E24 | T002, T022–T023, T031 |
+| RS-E24 | T012, T020, T022–T023, T031 |
 | RS-E25 | T019–T021, T031 |
 | RS-E26 | T024, T031 |
 | RS-E27 | T028, T031 |
 | RS-E28 | T014, T018, T029, T031 |
-| RS-E29 | T014, T017–T018, T031 |
+| RS-E29 | T014, T018, T031 |
 | RS-E30 | T022–T023, T031 |
 | RS-E31 | T022–T023, T031 |
 | RS-E32 | T021, T026, T031 |
