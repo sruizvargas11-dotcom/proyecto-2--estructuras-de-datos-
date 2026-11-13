@@ -119,7 +119,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e35_e36.py -k "rs_e03_dependencias or rs_e05 or rs_e06 or rs_e18_inobtenible or rs_e19_ubicaciones or rs_e21_dependencias or rs_e36" -q` pasa, sin seleccionar aserciones de ciclos. La frontera se recoge en el recorrido base, incluyendo puertas cerradas con llave nula o ausente como `inexistente` y sin abrirlas; se listan todas las dependencias indispensables y una llave múltiple solo es inobtenible si todas sus ubicaciones quedan fuera. Los selectores excluyen los subcasos de ciclos, que corresponden a T018.
   - **Dependencias**: T016.
 
-- [ ] T018 [US1] Implementar selección y orden determinista de ciclos simples en `modelo/verificador_resolubilidad.py`.
+- [X] T018 [US1] Implementar selección y orden determinista de ciclos simples en `modelo/verificador_resolubilidad.py`.
   - **Atiende**: FR-011, FR-012, FR-021; G14; RS-E02, RS-E03, RS-E21, RS-E28–RS-E29.
   - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py -q` y `python -m pytest tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e28_e29.py -k "rs_e02 or rs_e03_ciclo or rs_e21_ciclo or rs_e28 or rs_e29" -q` pasan. Cada llave participante recibe su ciclo simple más corto; empates usan la secuencia lexicográficamente menor iniciada en el id menor; ciclos se ordenan por id inicial y puertas por sala de origen numérica y dirección lexicográfica por código de carácter. Incluye las causas «en ciclo» de G14, RS-E03, RS-E21 y RS-E29.
   - **Dependencias**: T017.

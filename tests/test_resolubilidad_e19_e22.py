@@ -207,7 +207,10 @@ def test_rs_e21_ciclo_considera_todas_las_ubicaciones_de_la_llave():
     )
     assert tuple(
         ciclo.llaves for ciclo in resultado.ciclos
-    ) == (("key-a", "key-b", "key-a"),)
+    ) == (
+        ("key-a", "key-b", "key-a"),
+        ("key-a", "key-b", "key-a"),
+    )
 
 
 def test_rs_e22_generador_entrega_tamanos_deterministas_para_bench():

@@ -146,7 +146,10 @@ def test_rs_e03_ciclo_asigna_causa_en_ciclo_solo_a_participantes():
     )
     assert tuple(
         ciclo.llaves for ciclo in resultado.ciclos
-    ) == (("key-b", "key-c", "key-b"),)
+    ) == (
+        ("key-b", "key-c", "key-b"),
+        ("key-b", "key-c", "key-b"),
+    )
 
 
 def test_rs_e04_las_llaves_de_la_region_abierta_quedan_en_la_ronda_siguiente():

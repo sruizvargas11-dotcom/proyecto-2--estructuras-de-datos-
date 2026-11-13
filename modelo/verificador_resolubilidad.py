@@ -32,12 +32,25 @@ class PuertaBloqueada:
     ubicaciones_llave: tuple
 
 
+@dataclass(frozen=True)
+class DependenciaLlave:
+    id: str
+    puertas: tuple
+
+
 @dataclass
 class LlaveInobtenible:
     id: str
     ubicaciones: tuple
     causa: str
     dependencias: tuple = ()
+    relaciones: tuple = ()
+
+
+@dataclass(frozen=True)
+class CicloResolubilidad:
+    llaves: tuple
+    puertas: tuple
 
 
 @dataclass(frozen=True)
@@ -87,6 +100,26 @@ def _comparar_puertas(a, b):
     return _comparar(a.direccion, b.direccion)
 
 
+def _comparar_ciclos(a, b):
+    por_inicio = _comparar(a.llaves[0], b.llaves[0])
+    if por_inicio:
+        return por_inicio
+    return _comparar_secuencias(a.llaves, b.llaves)
+
+
+def _comparar_dependencias(a, b):
+    return _comparar(a.id, b.id)
+
+
+def _comparar_secuencias(a, b):
+    limite = min(len(a), len(b))
+    for indice in range(limite):
+        diferencia = _comparar(a[indice], b[indice])
+        if diferencia:
+            return diferencia
+    return _comparar(len(a), len(b))
+
+
 def _alcanzar_con_llaves(cripta, salas_por_id, llaves, sala_inicial_id):
     alcanzables = TablaHash(capacidad_inicial=max(1, len(cripta)))
     cola = Cola()
@@ -105,6 +138,171 @@ def _alcanzar_con_llaves(cripta, salas_por_id, llaves, sala_inicial_id):
                 alcanzables.insertar(destino.id, True)
                 cola.encolar(destino)
     return alcanzables
+
+
+def _puertas_de_dependencia(
+    cripta,
+    region,
+    llave_id,
+    ubicaciones_por_id,
+):
+    puertas = Vector()
+    ubicaciones = ubicaciones_por_id.obtener(llave_id)
+    if ubicaciones is None:
+        return ()
+    ubicaciones_ordenadas = Vector()
+    for ubicacion in ubicaciones:
+        ubicaciones_ordenadas.agregarValor(ubicacion)
+    ordenar(ubicaciones_ordenadas, _comparar_ubicaciones_detalle)
+    datos_ubicacion = tuple(
+        ubicaciones_ordenadas.obtenerValor(indice)
+        for indice in range(len(ubicaciones_ordenadas))
+    )
+    for sala in cripta.recorrer_salas():
+        if not region.contiene(sala.id):
+            continue
+        for salida in sala.salidas:
+            if (
+                salida.cerrada
+                and salida.llave == llave_id
+                and not region.contiene(salida.sala_destino_id)
+            ):
+                puertas.agregarValor(PuertaBloqueada(
+                    sala.id,
+                    salida.direccion,
+                    salida.sala_destino_id,
+                    llave_id,
+                    datos_ubicacion,
+                ))
+    ordenar(puertas, _comparar_puertas)
+    return tuple(
+        puertas.obtenerValor(indice)
+        for indice in range(len(puertas))
+    )
+
+
+def _camino_hasta(nodo, padres):
+    camino_inverso = Vector()
+    actual = nodo
+    while actual is not None:
+        camino_inverso.agregarValor(actual)
+        actual = padres.obtener(actual)
+    camino = Vector()
+    for indice in range(len(camino_inverso) - 1, -1, -1):
+        camino.agregarValor(camino_inverso.obtenerValor(indice))
+    return camino
+
+
+def _canonizar_ciclo(camino):
+    cantidad = len(camino) - 1
+    minimo = camino.obtenerValor(0)
+    indice_minimo = 0
+    for indice in range(1, cantidad):
+        actual = camino.obtenerValor(indice)
+        if actual < minimo:
+            minimo = actual
+            indice_minimo = indice
+    canonico = Vector()
+    for desplazamiento in range(cantidad):
+        indice = (indice_minimo + desplazamiento) % cantidad
+        canonico.agregarValor(camino.obtenerValor(indice))
+    canonico.agregarValor(canonico.obtenerValor(0))
+    return tuple(canonico.obtenerValor(indice)
+                 for indice in range(len(canonico)))
+
+
+def _buscar_ciclo_minimo(llave_inicial, llaves_por_id):
+    inicio = llaves_por_id.obtener(llave_inicial)
+    if inicio is None:
+        return None
+
+    padres = TablaHash(capacidad_inicial=max(1, len(llaves_por_id)))
+    distancias = TablaHash(capacidad_inicial=max(1, len(llaves_por_id)))
+    visitadas = TablaHash(capacidad_inicial=max(1, len(llaves_por_id)))
+    cola = Cola()
+    visitadas.insertar(llave_inicial, True)
+    padres.insertar(llave_inicial, None)
+    distancias.insertar(llave_inicial, 0)
+
+    for vecino in inicio.dependencias:
+        if vecino == llave_inicial:
+            return (llave_inicial, llave_inicial)
+        if llaves_por_id.contiene(vecino) and not visitadas.contiene(vecino):
+            visitadas.insertar(vecino, True)
+            padres.insertar(vecino, llave_inicial)
+            distancias.insertar(vecino, 1)
+            cola.encolar(vecino)
+
+    mejor = None
+    longitud_mejor = None
+    while not cola.esta_vacia():
+        actual = cola.desencolar()
+        distancia = distancias.obtener(actual)
+        if longitud_mejor is not None and distancia + 1 > longitud_mejor:
+            break
+        llave_actual = llaves_por_id.obtener(actual)
+        for vecino in llave_actual.dependencias:
+            if vecino == llave_inicial:
+                camino = _camino_hasta(actual, padres)
+                camino.agregarValor(llave_inicial)
+                candidato = _canonizar_ciclo(camino)
+                longitud = len(candidato) - 1
+                if (
+                    longitud_mejor is None
+                    or longitud < longitud_mejor
+                    or (
+                        longitud == longitud_mejor
+                        and _comparar_secuencias(candidato, mejor) < 0
+                    )
+                ):
+                    mejor = candidato
+                    longitud_mejor = longitud
+            elif (
+                llaves_por_id.contiene(vecino)
+                and not visitadas.contiene(vecino)
+            ):
+                visitadas.insertar(vecino, True)
+                padres.insertar(vecino, actual)
+                distancias.insertar(vecino, distancia + 1)
+                cola.encolar(vecino)
+    return mejor
+
+
+def _crear_ciclos(llaves_inobtenibles):
+    llaves_por_id = TablaHash(capacidad_inicial=max(1, len(llaves_inobtenibles)))
+    for llave in llaves_inobtenibles:
+        llaves_por_id.insertar(llave.id, llave)
+
+    ciclos = Vector()
+    for llave in llaves_inobtenibles:
+        secuencia = _buscar_ciclo_minimo(llave.id, llaves_por_id)
+        if secuencia is None:
+            continue
+        puertas = Vector()
+        for indice in range(len(secuencia) - 1):
+            desde = llaves_por_id.obtener(secuencia[indice])
+            hacia = secuencia[indice + 1]
+            for relacion in desde.relaciones:
+                if relacion.id == hacia:
+                    for puerta in relacion.puertas:
+                        puertas.agregarValor(puerta)
+                    break
+        ordenar(puertas, _comparar_puertas)
+        ciclos.agregarValor(CicloResolubilidad(
+            secuencia,
+            tuple(puertas.obtenerValor(indice)
+                  for indice in range(len(puertas))),
+        ))
+
+    ordenar(ciclos, _comparar_ciclos)
+    participantes = TablaHash(capacidad_inicial=max(1, len(llaves_inobtenibles)))
+    for ciclo in ciclos:
+        for indice in range(len(ciclo.llaves) - 1):
+            participantes.insertar(ciclo.llaves[indice], True)
+    for llave in llaves_inobtenibles:
+        if participantes.contiene(llave.id):
+            llave.causa = "en ciclo"
+    return tuple(ciclos.obtenerValor(indice) for indice in range(len(ciclos)))
 
 
 def _diagnosticar_no_resoluble(
@@ -130,6 +328,7 @@ def _diagnosticar_no_resoluble(
             tuple(ubicaciones.obtenerValor(posicion)
                   for posicion in range(len(ubicaciones))),
             "sala inalcanzable aun con todas las llaves",
+            Vector(),
             Vector(),
         )
         inobtenibles.agregarValor(llave)
@@ -160,6 +359,7 @@ def _diagnosticar_no_resoluble(
         region_sin_llave = _alcanzar_con_llaves(
             cripta, salas_por_id, llaves_otorgadas, sala_inicial_id
         )
+        puertas_dependencia = None
         for llave in inobtenibles:
             if not alcanzables_con_todas.contiene(llave.id):
                 continue
@@ -170,12 +370,28 @@ def _diagnosticar_no_resoluble(
                     break
             if not tiene_ubicacion:
                 llave.dependencias.agregarValor(llave_retirada)
+                if puertas_dependencia is None:
+                    puertas_dependencia = _puertas_de_dependencia(
+                        cripta,
+                        region_sin_llave,
+                        llave_retirada,
+                        ubicaciones_por_id,
+                    )
+                llave.relaciones.agregarValor(DependenciaLlave(
+                    llave_retirada,
+                    puertas_dependencia,
+                ))
 
     for llave in inobtenibles:
         ordenar(llave.dependencias, _comparar)
         llave.dependencias = tuple(
             llave.dependencias.obtenerValor(indice)
             for indice in range(len(llave.dependencias))
+        )
+        ordenar(llave.relaciones, _comparar_dependencias)
+        llave.relaciones = tuple(
+            llave.relaciones.obtenerValor(indice)
+            for indice in range(len(llave.relaciones))
         )
         if llave.dependencias:
             llave.causa = "depende de " + ", ".join(llave.dependencias)
@@ -421,6 +637,7 @@ def verificar_resolubilidad(cripta, ubicaciones):
                 region,
                 puertas_pendientes,
             )
+            ciclos = _crear_ciclos(llaves_inobtenibles)
             return ResultadoResolubilidad(
                 "NO RESOLUBLE",
                 tuple(rondas),
@@ -429,6 +646,7 @@ def verificar_resolubilidad(cripta, ubicaciones):
                 salas_ordenadas(),
                 llaves_inobtenibles,
                 frontera,
+                ciclos,
             )
 
         for ubicacion in nuevas:
