@@ -11,10 +11,9 @@ hacia la sala de salida por una puerta que la requiera. Devuelve un resultado de
 la presentación imprime el reporte completo para `--verificar` y solo el veredicto y
 motivo al iniciar. La opción de forzar omite el bloqueo de un resultado no resoluble o
 no verificable, pero nunca un error de datos. El recorrido principal será incremental,
-con rondas deterministas y puertas pendientes liberadas al obtener su llave. La
-investigación de ciclos identifica una incompatibilidad potencial entre el desempate
-lexicográfico actual de FR-012 y el límite de rendimiento: la alternativa polinómica
-requiere una enmienda de la especificación antes de programar.
+con rondas deterministas y puertas pendientes liberadas al obtener su llave. La enmienda
+post-plan fija ciclos simples más cortos con desempate determinista, direcciones
+lexicográficas, precedencia de causas, modos CLI y el formato estable.
 
 ## Contexto técnico
 
@@ -64,12 +63,15 @@ semilla y entorno.
 | Principio | Estado previo | Evidencia y condición |
 |---|---|---|
 | I. Estructuras propias | Cumple con diseño pendiente | El repositorio incluye `Cola`, `TablaHash`, `Vector` y ordenamientos propios. Aún se debe elegir su composición para rondas y puertas pendientes. |
-| II. Determinismo | Cumple con diseño pendiente | La spec fija orden de salas/llaves y semillas para sintéticas; falta definir una regla para el orden de direcciones y puertas paralelas en ciclos. |
+| II. Determinismo | Cumple con diseño pendiente | En el diagnóstico inicial faltaba fijar orden de direcciones y puertas paralelas en ciclos; ambos puntos están resueltos en la enmienda post-plan. |
 | III. Separación MVC | Riesgo identificado | `main.py` y `nueva_partida()` son puntos existentes; `--replay` también usa `nueva_partida()`, por lo que habrá que exceptuarlo explícitamente. |
 | IV. Datos externos | Cumple con condición | El modelo recibe topología y llaves desde fuentes; el generador sintético pertenecerá únicamente a `bench`. |
 | V. Presupuesto | Riesgo identificado | `DatosHTTP._get()` cuenta intentos y reintentos. La consulta nueva debe pasar por ese control; falta definir el detalle de la fuente offline y disponibilidad del servicio. |
 | VI. Rendimiento verificable | Pendiente de evidencia | `--bench` ya registra mediciones y entorno, pero no existe caso de resolubilidad ni evidencia para SC-001/004. |
-| VII. Especificación antes del código | Cumple para esta fase | `spec.md` existe antes del plan; el diseño no modifica código. La enmienda potencial de FR-012 debe confirmarse y registrarse antes de implementar. |
+| VII. Especificación antes del código | Cumple para esta fase | `spec.md` y su enmienda post-plan preceden al código; el diseño no modifica código. |
+
+Esta tabla conserva el diagnóstico que precedió al diseño; el estado actualizado de cada
+hallazgo se registra al final de este plan.
 
 ## Estructura del proyecto
 
@@ -114,7 +116,7 @@ No se genera `tasks.md` en esta fase.
 | `vista/formato_resolubilidad.py` | Formato estable del reporte completo y del resumen seguro al iniciar. |
 | `bench/casos/resolubilidad.py` | Generador sintético determinista, referencia B, comparación de salidas y mediciones A/B. |
 | `tests/test_resolubilidad_g14.py` … `tests/test_resolubilidad_g17.py` | Un archivo por escenario obligatorio, cada prueba cita sus FR/SC. |
-| `tests/test_resolubilidad_e01_e09.py`, `tests/test_resolubilidad_e10_e18.py`, `tests/test_resolubilidad_e19_e27.py` | Grupos de escenarios adicionales; separar adaptadores y CLI en archivos de integración si el tamaño lo requiere. |
+| `tests/test_resolubilidad_e01_e09.py`, `tests/test_resolubilidad_e10_e18.py`, `tests/test_resolubilidad_e19_e27.py`, `tests/test_resolubilidad_e28_e36.py` | Grupos de escenarios adicionales; separar adaptadores y CLI en archivos de integración si el tamaño lo requiere. |
 
 **Decisión de estructura**: integrar en las capas MVC existentes y crear solo el
 verificador, el adaptador de persistencia versionada, el formateador y el caso de bench.
@@ -138,38 +140,42 @@ cada arista: esa búsqueda binaria es O(log S).
    pruebas/bench.
 3. **Diagnóstico**: capturar la frontera en el recorrido base, sin recorrido adicional.
    Para indispensables, evaluar candidatos sobre la región exterior a la alcanzabilidad
-   sin llaves, usando esa región abierta como semillas; el peor caso sigue siendo
+   sin llaves, usando esa región abierta como semillas. Una llave con varias ubicaciones
+   permanece inobtenible solo si todas siguen fuera; la indispensabilidad se calcula
+   sobre todas ellas. Las llaves participantes en ciclos reportados reciben causa «en
+   ciclo» y las demás dependientes «depende de». El peor caso sigue siendo
    O(U(S+E+K)+D), donde U es el número de llaves candidatas y D el número de pares
    indispensables reportados. Debe medirse con criptas no resolubles y ciclos; puede
    dominar SC-001.
-4. **Ciclos**: la petición de FR-012 de elegir la secuencia lexicográfica mínima puede
-   requerir enumerar un número exponencial de ciclos. Proponer ciclo más corto por llave
-   y desempate lexicográfico determinista, calculable en O(U(U+D)) sobre dependencias.
-   Es una **ENMIENDA REQUERIDA** de `spec.md`; no se aplica en este plan.
-5. **Inicio y modos**: `nueva_partida()` debe invocar el verificador y entregar el
-   resultado como dato. Si bloquea, propagar un error tipado que conserve el resultado
-   para que consola/Pygame muestren solo veredicto y motivo. `--forzar` permite NO
-   RESOLUBLE y NO VERIFICABLE, nunca error de datos. `reproducir()` debe indicar
-   explícitamente que no verifique al llamar `nueva_partida()`. El detalle se imprime
-   solo para `--verificar`; `--bench` sigue headless.
-6. **Benchmark**: añadir un caso registrado en `bench/casos/__init__.py`. Validar
-   equivalencia de veredicto, orden y frontera antes de cronometrar. Medir tres o más
-   tamaños con duplicación de S/E/K, semilla fija y ≥20 repeticiones por tamaño para
-   que la tabla actual muestre p95; conservar también máximo, mediana, muestras y
-   metadatos. Ejecutar ambos algoritmos con los mismos datos, sin fuente, carga o vista.
-   El protocolo completo está en [quickstart.md](./quickstart.md).
+4. **Ciclos**: FR-012 ahora requiere por llave un ciclo simple más corto, desempate por
+   secuencia lexicográfica, inicio canónico en el id menor y puertas ordenadas por sala
+   de origen/dirección lexicográfica. Se conserva la búsqueda por capas determinista,
+   con complejidad O(U(U+D)) sobre dependencias; ya no hay enmienda pendiente.
+5. **Inicio y modos**: `nueva_partida()` verifica y entrega el resultado como dato. Si
+   bloquea, propaga un error tipado que conserva el resultado para el resumen de
+   consola/Pygame. `--forzar` permite NO RESOLUBLE y NO VERIFICABLE, nunca error de
+   datos, y también se aplica con `--gui`. `--verificar` ignora `--forzar`, pero se
+   rechaza con `--replay` o `--bench` antes de consultar. `reproducir()` indica
+   explícitamente que no verifique al llamar `nueva_partida()`. El reporte y resumen
+   siguen el contrato estable de [contracts/cli.md](./contracts/cli.md).
+6. **Benchmark**: añadir un caso registrado en `bench/casos/__init__.py` que se ejecute
+   en `--bench` con y sin `--salida`. Validar equivalencia de veredicto, orden y frontera
+   antes de cronometrar. Medir tres o más tamaños con duplicación de S/E/K, semilla fija
+   y ≥20 repeticiones por tamaño para que la tabla actual muestre p95; conservar también
+   máximo, mediana, muestras y metadatos. Ejecutar ambos algoritmos con los mismos datos,
+   sin fuente, carga o vista. El protocolo completo está en [quickstart.md](./quickstart.md).
 
 ## Verificación de constitución después del diseño
 
 | Principio | Estado del diseño | Evidencia |
 |---|---|---|
 | I. Estructuras propias | Cumple condicionado a implementación | La selección está acotada a `Cola`, `TablaHash`, `Vector` y ordenamientos propios. No hay `dict`/`set` como índice/cache ni bibliotecas prohibidas. |
-| II. Determinismo | Cumple con observaciones | Las rondas, llaves, salas y enemigos tienen orden fijado. Falta precisar orden de direcciones y desempate de puertas de dependencia; se proponen en hallazgos, no se incorporan como reglas. |
-| III. Separación MVC | Cumple condicionado a integración | Verificador en modelo; salida en presentación. El replay se excluye expresamente; CLI verificar/bench no instancian vista. |
+| II. Determinismo | Cumple | Direcciones y puertas de ciclos se ordenan lexicográficamente después del origen; ubicaciones duplicadas en una sala prefieren ausencia de enemigo y luego su id. |
+| III. Separación MVC | Cumple condicionado a integración | Verificador en modelo; salida en presentación. `--verificar` con `--replay` o `--bench` se rechaza; replay se excluye y bench/verify no instancian vista. |
 | IV. Datos externos | Cumple | El modelo no contiene topología de cripta; el generador sintético vive en `bench`. |
 | V. Presupuesto | Cumple condicionado a contrato | HTTP usa `_get()` para contar GET/reintentos. La cache/offline debe validar versión y las fallas de consulta no pueden aparentar éxito. |
 | VI. Rendimiento verificable | Cumple condicionado a evidencia | El caso registra p95, máximo y metadatos; no se declara SC-001/004 satisfecho sin ejecutar y conservar evidencia. |
-| VII. Especificación antes del código | Pendiente por FR-012 | Toda enmienda deberá actualizarse y confirmarse antes del código. No programar mientras el criterio exacto de ciclo contradiga el presupuesto medible. |
+| VII. Especificación antes del código | Cumple para esta fase | La enmienda FR-012 y los demás hallazgos resueltos ya constan en `spec.md`; no se modifica código. |
 | Trazabilidad | Cumple en artefactos | [spec.md](./spec.md) relaciona escenarios y FR; la matriz de este plan conecta FR/SC con decisiones y pruebas previstas. Las tareas futuras citarán FR. |
 
 ## Seguimiento de complejidad
@@ -180,7 +186,7 @@ cada arista: esa búsqueda binaria es O(log S).
 | Referencia B | O(K(S + E + K)) en el peor caso | Solo oráculo/bench; nunca modo de producción. |
 | Frontera | O(E), recogida durante el recorrido principal | Sin pasada posterior; orden final requiere ordenar entradas de salida. |
 | Indispensables/dependencias | O(U(S_x + E_x + U) + D), máximo O(U(S+E+U)+U²) | U candidatos, región exterior x, D pares reportados; medir especialmente grafos no resolubles. |
-| Ciclos alternativos | O(U(U + D)) tras ordenar vecinos, salida ≤U ciclos | Solo después de enmendar FR-012; el ciclo lexicográfico actual no tiene cota polinómica aceptable. |
+| Ciclos | O(U(U + D)) tras ordenar vecinos, salida ≤U ciclos | Ciclo simple más corto por llave; secuencia lexicográfica y puertas con orden estable conforme a FR-012. |
 | Formato determinista | O(R log R) sobre campos del reporte | Ordenamientos propios; no se usa el orden de iteración hash. |
 
 ## Trazabilidad FR/SC → decisión → prueba prevista
@@ -197,19 +203,20 @@ cada arista: esa búsqueda binaria es O(log S).
 | FR-008 | D1: escoger primera puerta cruzable en orden | RS-E17 |
 | FR-009 | D1: rondas completas, sort antes de liberar | G16, RS-E04, RS-E16, RS-E18–20 |
 | FR-010 | D1: propiedades del orden y repetibilidad | G16, prueba byte a byte |
-| FR-011 | D2: resultado no resoluble y causas | G14, RS-E03, RS-E05 |
-| FR-012 | D3: enmienda propuesta para ciclo polinómico | G14, RS-E02; bloqueada hasta confirmar enmienda |
-| FR-013 | D2: frontera capturada durante recorrido | G14, RS-E06 |
-| FR-014 | D5: CLI headless y códigos 0/1/2 | RS-E23/24, pruebas CLI |
-| FR-015 | D5: resumen seguro y bloqueo/forzar | G17, RS-E01/25 |
-| FR-016 | D4: sala inicial de enemigo y ubicaciones múltiples | G15, RS-E14/18 |
+| FR-011 | D2: causas con precedencia para ciclos reportados | G14, RS-E03, RS-E05, RS-E29 |
+| FR-012 | D3: ciclo simple más corto, desempate lexicográfico | G14, RS-E02, RS-E28 |
+| FR-013 | D2: frontera incremental; dirección lexicográfica; llave nula «inexistente» | G14, RS-E06/36 |
+| FR-014 | D5: CLI headless, modos mutuamente excluyentes, force ignorado | RS-E23/24, RS-E30/31 |
+| FR-015 | D5: resumen seguro, bloqueo y force también con GUI | G17, RS-E01/25/32 |
+| FR-016 | D4: validar sala, no existencia del enemigo; desempate de ubicaciones | G15, RS-E14/18/24 |
 | FR-017 | D1/D6: entradas externas y orden canónico | G16, RS-E12, igualdad byte a byte |
 | FR-018 | D4/D5: NO VERIFICABLE y forzado | RS-E10 |
-| FR-019 | D4: error de datos no forzable | RS-E15/24 |
+| FR-019 | D4: sala/llave_salida inválida no forzable; enemigo no validado | RS-E15/24/35 |
 | FR-020 | D1: llave inicial en ronda 0 y puerta exigida | RS-E16 |
-| FR-021 | D1: comparadores numérico/lexicográfico | RS-E19 |
-| FR-022 | D2: todas las dependencias indispensables | RS-E03/21 |
-| FR-023 | D5/D6: replay excluido; bench headless | RS-E12/26 |
+| FR-021 | D1: comparadores numérico/lexicográfico, también dirección | RS-E17/19/28/36 |
+| FR-022 | D2: todas las dependencias, sobre cada ubicación | RS-E03/18/21 |
+| FR-023 | D5/D6: replay excluido; bench headless con/sin `--salida` | RS-E12/26/30/33 |
+| FR-024 | D5: formato estable del reporte y resumen | RS-E34 |
 | SC-001 | D6: p95 <200 ms, máximo guardado | RS-E27; evidencia bench reproducible |
 | SC-002 | D6: A/B con semillas y equivalencia previa | RS-E12; oráculo sintético |
 | SC-003 | D1/D6: reporte byte a byte | G16, RS-E12 |
@@ -218,14 +225,13 @@ cada arista: esa búsqueda binaria es O(log S).
 
 ## Riesgos visibles
 
-- **Ciclos**: FR-012 puede no cumplir el límite de rendimiento con su criterio lexicográfico.
-  Requiere enmienda aprobada, no reinterpretación durante la implementación.
-- **Validación de enemigos**: el esqueleto no contiene su roster; el contenido se carga
-  bajo demanda. La consulta de llaves debe certificar el enemigo/sala inicial o aportar
-  metadatos suficientes para detectar un enemigo inexistente sin cargar todos los cuartos.
+- **Ciclos**: FR-012 ya fija el ciclo simple más corto con desempate determinista. Aun así,
+  medir el peor caso denso junto a SC-001.
+- **Validación de enemigos**: por la enmienda, el cliente valida solo que exista la sala;
+  no valida el id de enemigo porque el esqueleto no contiene su roster.
 - **Contrato externo**: el endpoint HTTP `/llaves` y el archivo offline correspondiente
-  aún no están presentes; su disponibilidad, formato real y validación de referencias
-  deben confirmarse contra la fuente.
+  aún no están presentes; su disponibilidad y esquema real deben confirmarse contra la
+  fuente. La validez de la sala se comprueba en el cliente; el id de enemigo no se valida.
 - **Clasificación HTTP**: `DatosHTTP._get()` convierte hoy cualquier estado no exitoso en
   `RuntimeError`. La integración debe distinguir fallas de disponibilidad de respuestas
   que indiquen datos inválidos; un mapeo general de todos los estados HTTP a NO
@@ -233,12 +239,11 @@ cada arista: esa búsqueda binaria es O(log S).
 - **Presupuesto**: el inicio puede depender de contenido/catálogo además de la consulta
   nueva. El forzado de NO VERIFICABLE no debe convertirse en una falla silenciosa de
   carga ni exceder presupuesto.
-- **Orden determinista**: FR-013/012 no fijan una convención de dirección ni el desempate
-  de varias puertas que representan la misma dependencia.
-- **CLI/GUI**: combinaciones de `--verificar`, `--forzar`, `--gui`, `--bench`,
-  `--replay` y `--salida` no están completamente especificadas.
-- **Medición**: hoy `--bench --salida` deriva al reporte especializado de terreno y no
-  ejecuta los casos registrados. Debe preservarse o aclararse el alcance de esa combinación.
+- **CLI/GUI**: FR-014/015 ya fijan rechazo de `--verificar` con replay/bench, ignorar
+  `--forzar` en verificación y aplicar `--forzar` también en GUI.
+- **Medición**: FR-023 requiere que el caso de resolubilidad se ejecute tanto con como
+  sin `--salida`; la implementación debe integrar el caso aun cuando `main_bench(salida)`
+  produzca además el reporte especializado de terreno.
 
 ## Borrador para `docs/DECISIONES.md`
 
@@ -250,56 +255,57 @@ las causas de NO RESOLUBLE, conservar determinismo y respetar el presupuesto del
   liberación al adquirirla y orden por rondas.
 - B: repetir recorrido completo por cada llave; más simple como referencia pero
   O(K(S+E+K)).
-- Para ciclos: secuencia lexicográfica mínima (FR-012 actual, potencialmente exponencial)
-  o ciclo más corto con desempate lexicográfico (polinómico).
+- Para ciclos: enumerar todos para escoger la secuencia lexicográfica mínima o seleccionar
+  un ciclo simple más corto con desempate lexicográfico.
 
-**Decisión propuesta**: usar A en producción; conservar B como oráculo/benchmark. Solicitar
-enmienda formal de FR-012 antes de elegir ciclo más corto. Consulta de llaves mediante
-adaptadores existentes y caché JSON atómica validada por versión.
+**Decisión**: usar A en producción; conservar B como oráculo/benchmark. Aplicar el ciclo
+simple más corto por llave, con desempates estables de secuencia y puerta según FR-012
+enmendado. Consultar llaves mediante adaptadores existentes y caché JSON atómica validada
+por versión.
 
 **Complejidad**: A O(S+E+K log K) esperada; diagnósticos O(U(S_x+E_x+U)+D);
-ciclos alternativos O(U(U+D)). Ver tabla de complejidad y límites arriba.
+ciclos O(U(U+D)). La indispensabilidad considera todas las ubicaciones de cada llave.
+Ver tabla de complejidad y límites arriba.
 
 **Evidencia planificada**: `--bench` con criptas sintéticas por semilla, al menos tres
 tamaños doblados, 20 repeticiones, A/B equivalente antes del tiempo, y reporte de mediana,
-p95, máximo, commit y entorno; además la cripta mayor disponible, sin red/carga/render.
+p95, máximo, commit y entorno; el caso se ejecuta con y sin `--salida`. Medir también la
+cripta mayor disponible, sin red/carga/render.
 
 **Límites conocidos**: máximo publicado local no determinado; el endpoint y archivo offline
-faltan; la verificación de enemigo depende de contrato de fuente; la enmienda de ciclo y
-varios desempates requieren aprobación antes del código.
+faltan; solo se valida la sala de ubicación, no la existencia del enemigo. El contrato de
+errores HTTP y de esquema externo debe conservar la distinción entre disponibilidad y
+datos inválidos.
 
-## Hallazgos y enmiendas propuestas
+## Hallazgos resueltos en la spec
 
-1. **ENMIENDA REQUERIDA — FR-012**: sustituir la secuencia lexicográficamente mínima por
-   “un ciclo simple más corto por llave participante, con secuencia de IDs
-   lexicográficamente menor entre ciclos de igual longitud; canonizar el inicio en el ID
-   menor; desempatar puertas por sala de origen y dirección”. Es polinómico, pero cambia
-   el comportamiento observable solicitado. No se modifica `spec.md` en esta fase.
-2. El orden de dirección en FR-008/013 y el desempate de puertas de dependencia no están
-   definidos; propuesta: orden lexicográfico por código de carácter, pendiente de
-   especificar.
-3. La spec no define cómo comprobar desde las entradas del cliente que un `enemigo`
-   existe y que `sala` coincide con su sala inicial; el esqueleto no trae enemigos.
-   Propuesta: exigir que el servicio de llaves entregue referencias validadas o la
-   información necesaria.
-4. Si el mismo id aparece en varias ubicaciones de igual sala, falta desempate de enemigo;
-   propuesta: id de enemigo lexicográfico, y ubicación sin enemigo antes que con enemigo.
-5. Falta precisar si un id de llave es indispensable para otro cuando existen varias
-   ubicaciones; propuesta: la llave permanece inobtenible solo si todas sus ubicaciones
-   siguen fuera de la región.
-6. Falta definir prioridad de causas si una llave puede etiquetarse como “en ciclo” y
-   “depende de”; propuesta: “en ciclo” para participantes y “depende de” para el resto.
-7. El comportamiento de combinaciones de flags CLI, y `--forzar` en el flujo GUI, no se
-   especifica. Propuesta: rechazar combinaciones de modos de diagnóstico incompatibles y
-   propagar el forzado al inicio GUI, previa confirmación en spec.
-8. La fuente real de `--bench --salida` omite los casos generales. Precisar si el nuevo
-   caso debe ejecutarse también con ese parámetro o si la exigencia de comparación aplica
-   únicamente a `--bench` sin `--salida`.
-9. Falta precisar qué hacer con una salida marcada cerrada cuyo campo de llave sea nulo o
-   falte; la spec solo define la llave no listada. Propuesta: tratarla como puerta que no
-   puede abrirse y representar la llave requerida como inexistente, previa confirmación.
-10. El formato textual del reporte y del resumen no está definido línea por línea. Se
-    propone una plantilla estable en [contracts/cli.md](./contracts/cli.md), pendiente
-    de aprobación como contrato de presentación.
-11. `CriptaModelo` admite `llave_salida=None`, pero la spec no define ese caso. Propuesta:
-    clasificarlo como error de datos no forzable, previa confirmación.
+1. **Resuelto en spec (enmienda post-plan)**: FR-012 elige un ciclo simple más corto por
+   llave, luego secuencia lexicográfica, inicio canónico menor y puertas por sala/dirección.
+2. **Resuelto en spec (enmienda post-plan)**: FR-008, FR-013 y FR-021 fijan dirección
+   lexicográfica por código de carácter para puerta final, frontera y dependencias.
+3. **Resuelto en spec (enmienda post-plan)**: FR-016/019 y RS-E24 validan la sala, no la
+   existencia del enemigo asociado.
+4. **Resuelto en spec (enmienda post-plan)**: FR-016 y RS-E18 desempatan ubicaciones de
+   igual sala por ausencia de enemigo y luego id de enemigo lexicográfico.
+5. **Resuelto en spec (enmienda post-plan)**: FR-022 y RS-E18/21 consideran inobtenible
+   una llave solo si todas sus ubicaciones siguen inalcanzables.
+6. **Resuelto en spec (enmienda post-plan)**: FR-011/RS-E29 dan prioridad «en ciclo» a
+   participantes de ciclos reportados y «depende de» a las otras dependientes.
+7. **Resuelto en spec (enmienda post-plan)**: FR-014/015 y RS-E30–32 rechazan combinaciones
+   verificar/replay o verificar/bench antes de consultar, ignoran force con verificar y
+   aplican force también a GUI.
+8. **Resuelto en spec (enmienda post-plan)**: FR-023/SC-002 y RS-E33 requieren el caso de
+   resolubilidad con y sin `--salida`.
+9. **Resuelto en spec (enmienda post-plan)**: FR-013 y RS-E06 establecen que una puerta
+   cerrada sin llave nunca abre y se muestra con llave «inexistente».
+10. **Resuelto en spec (enmienda post-plan)**: FR-024/RS-E34 hacen normativo el formato
+    estable del contrato `contracts/cli.md`.
+11. **Resuelto en spec (enmienda post-plan)**: FR-019/RS-E35 clasifican `llave_salida`
+    ausente o nula como error de datos no forzable.
+
+## FR y escenarios nuevos o modificados
+
+- **Nuevo FR**: FR-024 (formato estable del reporte completo y resumen inicial).
+- **FR modificados**: FR-008, FR-011–FR-016, FR-019, FR-021–FR-023.
+- **Escenarios modificados**: RS-E06, RS-E17, RS-E18, RS-E21 y RS-E24.
+- **Escenarios nuevos**: RS-E28–RS-E36. G14–G17 conservan sus identificadores.
