@@ -67,7 +67,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g14.py -q` recoge aserciones para NO RESOLUBLE (a), puerta de frontera y ciclo llave→llave.
   - **Dependencias**: T006.
 
-- [ ] T008 [P] [US1] Crear `tests/test_resolubilidad_g15.py` para llaves asociadas a enemigos.
+- [X] T008 [P] [US1] Crear `tests/test_resolubilidad_g15.py` para llaves asociadas a enemigos.
   - **Atiende**: FR-004, FR-016; G15.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_g15.py -q` recoge el caso de enemigo errante y no errante y comprueba la sala de inicio del enemigo.
   - **Dependencias**: T006.
