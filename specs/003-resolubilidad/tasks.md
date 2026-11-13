@@ -152,7 +152,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_cli_resolubilidad.py -q` recoge reporte/código para resoluble, no resoluble y error; ausencia de vista; rechazo antes de consultar con `--replay`/`--bench`; y que `--forzar` no altere `--verificar`.
   - **Dependencias**: T019–T021.
 
-- [ ] T023 [US2] Implementar `--verificar <cripta>` y sus códigos/formato en `main.py`.
+- [X] T023 [US2] Implementar `--verificar <cripta>` y sus códigos/formato en `main.py`.
   - **Atiende**: FR-014, FR-024; SC-005; RS-E23–RS-E25, RS-E30–RS-E31, RS-E34.
   - **Criterio**: `python -m pytest tests/test_cli_resolubilidad.py tests/test_separacion_mvc.py -q` pasa; invocaciones resoluble/no resoluble/error de datos o consulta devuelven 0/1/2 según contrato, no se instancia vista ni se importa Pygame, los conflictos se rechazan antes de consultar y la salida coincide con `contracts/cli.md`.
   - **Dependencias**: T005, T016–T022.

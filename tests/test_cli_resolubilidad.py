@@ -72,6 +72,26 @@ def test_cli_verificar_resoluble_imprime_reporte_y_codigo_cero(monkeypatch, tmp_
     assert fuente.consultas_llaves == 1
 
 
+def test_cli_verificar_acepta_identificador_en_la_opcion(monkeypatch, tmp_path):
+    cripta, llaves = _cripta()
+    fuente = _FuenteLlaves(llaves)
+    salidas = _preparar(monkeypatch, tmp_path, cripta, fuente)
+
+    codigo = main.main(
+        [
+            "--offline",
+            "--verificar",
+            "cripta-sintetica",
+            "--cache-dir",
+            str(tmp_path / "cache"),
+        ]
+    )
+
+    assert codigo == 0
+    assert salidas[0].startswith("VEREDICTO: RESOLUBLE\n")
+    assert fuente.consultas_llaves == 1
+
+
 def test_cli_verificar_no_resoluble_imprime_reporte_y_codigo_uno(monkeypatch, tmp_path):
     cripta, llaves = _cripta(llave_en_salida=True)
     fuente = _FuenteLlaves(llaves)
