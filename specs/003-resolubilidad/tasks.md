@@ -92,7 +92,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e10_e18.py -q` termina con código 0 y recoge los casos del grupo y RS-E24. Cada prueba lleva `rs_eNN` en el nombre; E10 se divide en `rs_e10_no_forzar` y `rs_e10_forzar`, E18 en `rs_e18_alcanzable` y `rs_e18_inobtenible` para recorrido y diagnóstico. Incluye versión obsoleta, llave inicial en ronda 0, desempate de puerta por dirección lexicográfica por código de carácter y desempate de ubicación. Incluye `test_rs_e24_sala_inexistente_es_error_datos_y_enemigo_no_se_valida`: ubicación en sala inexistente da error de datos, mientras que un id de enemigo desconocido no se valida si la sala existe; T020 comprueba que ese error bloquea el inicio.
   - **Dependencias**: T006.
 
-- [ ] T013 [P] [US1] Crear `tests/test_resolubilidad_e19_e22.py` para comparadores, corte por ronda, indispensabilidad y crecimiento.
+- [X] T013 [P] [US1] Crear `tests/test_resolubilidad_e19_e22.py` para comparadores, corte por ronda, indispensabilidad y crecimiento.
   - **Atiende**: FR-009, FR-016, FR-021, FR-022; SC-004; RS-E19–RS-E22.
   - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e19_e22.py -q` recoge los cuatro escenarios; E19 se divide en `rs_e19_orden` y `rs_e19_ubicaciones`, y E21 en `rs_e21_dependencias` y `rs_e21_ciclo`, para filtrar los criterios de T016–T018 sin omitir casos. Afirma comparación numérica de salas, comparación lexicográfica de ids, ronda final completa, indispensabilidad y crecimiento.
   - **Dependencias**: T006.
