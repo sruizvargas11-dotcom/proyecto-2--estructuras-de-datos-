@@ -12,34 +12,38 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Formato**: Cada tarea usa `- [ ] TNNN [P?] [USn?]`, identifica sus archivos, requisitos/escenarios, criterio de terminado y dependencias explícitas.
 
+## Fase 0: Corrección documental previa a implementación
+
+**Propósito**: Corregir el artefacto de diseño contradictorio y confirmar el cambio antes de tocar pruebas o código, conforme al principio VII de la constitución.
+
+- [ ] T001 Corregir y confirmar el modelo lógico en `specs/003-resolubilidad/data-model.md` antes de iniciar cualquier tarea de pruebas o código.
+  - **Atiende**: FR-016, FR-019, FR-020, FR-022; RS-E16, RS-E18, RS-E24, RS-E35.
+  - **Criterio**: `git diff --check -- specs/003-resolubilidad/data-model.md` termina sin errores; se corrigen las contradicciones sobre enemigo inexistente, `llave_salida` nula/ausente y salida cerrada sin llave. El cambio queda en un commit documental independiente que precede a cualquier commit de código.
+  - **Dependencias**: Ninguna. Bloquea T002–T031.
+
 ## Fase 1: Base de datos de entrada
 
 **Propósito**: Obtener las ubicaciones de llaves de forma uniforme, respetar el presupuesto, validar versiones y distinguir NO VERIFICABLE de errores de datos.
 
-- [ ] T001 [P] Añadir pruebas de contrato de la fuente de llaves en `tests/test_fuente_llaves.py`.
+- [ ] T002 Añadir pruebas de contrato de la fuente de llaves en `tests/test_fuente_llaves.py`.
   - **Atiende**: FR-001, FR-016, FR-018, FR-019; RS-E10, RS-E11, RS-E24.
-  - **Criterio**: `python -m pytest --collect-only tests/test_fuente_llaves.py -q` termina con código 0 y recoge los casos de respuesta válida/vacía, reintentos y presupuesto, versión obsoleta, sala inexistente, enemigo no validado y fallos de consulta; las pruebas afirman errores de datos y NO VERIFICABLE como resultados distintos.
-  - **Dependencias**: Ninguna.
-
-- [ ] T002 Implementar la operación común y consulta HTTP de llaves en `adaptadores/fuente_datos.py` y `adaptadores/datos_http.py`.
-  - **Atiende**: FR-001, FR-018, FR-019; RS-E10.
-  - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_http.py -q` pasa; GET usa `_get()` y cada intento/reintento cuenta en `presupuesto_solicitudes`; transporte/timeout/indisponibilidad se distingue de una respuesta de datos inválidos.
+  - **Criterio**: `python -m pytest --collect-only tests/test_fuente_llaves.py -q` termina con código 0 y recoge los casos de respuesta válida/vacía, reintentos y presupuesto, versión obsoleta, sala inexistente, un id de enemigo inexistente aceptado cuando la sala existe y fallos de consulta; las pruebas afirman errores de datos y NO VERIFICABLE como resultados distintos.
   - **Dependencias**: T001.
 
-- [ ] T003 [P] Implementar lectura offline y delegación simulada en `adaptadores/datos_offline.py` y `adaptadores/datos_simulado.py`.
-  - **Atiende**: FR-001, FR-018; RS-E10, RS-E11.
-  - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_offline.py -q` pasa; se lee `datos_offline/<cripta_id>/llaves.json`, una ausencia de archivo produce NO VERIFICABLE (nunca lista vacía) y el adaptador simulado conserva su demora determinista.
+- [ ] T003 Implementar la operación común y consulta HTTP de llaves en `adaptadores/fuente_datos.py` y `adaptadores/datos_http.py`.
+  - **Atiende**: FR-001, FR-018, FR-019; RS-E10.
+  - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_http.py -q` pasa; GET usa `_get()` y cada intento/reintento cuenta en `presupuesto_solicitudes`; transporte/timeout/indisponibilidad se distingue de una respuesta de datos inválidos.
   - **Dependencias**: T001, T002.
 
-- [ ] T004 Persistir llaves por cripta y versión y extender la descarga offline en `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
+- [ ] T004 Implementar lectura offline y delegación simulada en `adaptadores/datos_offline.py` y `adaptadores/datos_simulado.py`.
+  - **Atiende**: FR-001, FR-018; RS-E10, RS-E11.
+  - **Criterio**: `python -m pytest tests/test_fuente_llaves.py tests/test_datos_offline.py -q` pasa; se lee `datos_offline/<cripta_id>/llaves.json`, una ausencia de archivo produce NO VERIFICABLE (nunca lista vacía) y el adaptador simulado conserva su demora determinista. Las pruebas crean el archivo bajo un directorio temporal con datos sintéticos; no dependen de una cripta publicada ni agregan ids de criptas concretas al código.
+  - **Dependencias**: T001–T003.
+
+- [ ] T005 Persistir llaves por cripta y versión y extender la descarga offline en `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
   - **Atiende**: FR-001, FR-018, FR-019; RS-E10, RS-E11.
   - **Criterio**: `python -m pytest tests/test_fuente_llaves.py -q` pasa; una caché con versión e identificador coincidentes se reutiliza, una obsoleta/inválida se descarta y se consulta la fuente, y el guardado reutiliza `persistencia/cache_json.py` con escritura atómica.
-  - **Dependencias**: T002, T003.
-
-- [ ] T005 Sincronizar el modelo lógico en `specs/003-resolubilidad/data-model.md` con las reglas vigentes de `spec.md`.
-  - **Atiende**: FR-016, FR-019, FR-020, FR-022; RS-E16, RS-E18, RS-E24, RS-E35.
-  - **Criterio**: `git diff --check -- specs/003-resolubilidad/data-model.md` termina sin errores y el documento ya no contradice que el enemigo no se valida, que `llave_salida` nula/ausente es error no forzable, ni las reglas de ubicaciones múltiples e indispensabilidad.
-  - **Dependencias**: Ninguna.
+  - **Dependencias**: T001, T003–T004.
 
 ## Fase 2: Fundacional
 
@@ -48,7 +52,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 - [ ] T006 Crear el generador sintético por semilla y el oráculo de recorrido repetido en `bench/casos/resolubilidad.py` y sus pruebas en `tests/test_resolubilidad_oraculo.py`.
   - **Atiende**: FR-017; SC-002, SC-003; RS-E12.
   - **Criterio**: `python -m pytest tests/test_resolubilidad_oraculo.py -q` pasa; la misma semilla reproduce exactamente la misma cripta y el generador cubre cadenas de llaves, ciclos y rutas alternativas; el oráculo devuelve un resultado de datos comparable y no es usado como algoritmo de producción.
-  - **Dependencias**: T005.
+  - **Dependencias**: T001, T005.
 
 ## Fase 3: User Story 1 - Conocer si la cripta puede ganarse (P1, MVP)
 
@@ -85,7 +89,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 - [ ] T012 [P] [US1] Crear `tests/test_resolubilidad_e10_e18.py` para consulta, versiones, trampas, ubicaciones múltiples y selección de puerta final.
   - **Atiende**: FR-001, FR-005, FR-008, FR-009, FR-016, FR-018–FR-020; RS-E10–RS-E18.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e10_e18.py -q` recoge los nueve escenarios; las pruebas incluyen versión obsoleta, llave inicial en ronda 0 y desempate de puerta/ubicación.
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e10_e18.py -q` recoge los nueve escenarios; las pruebas incluyen versión obsoleta, llave inicial en ronda 0, desempate de puerta por dirección lexicográfica por código de carácter y desempate de ubicación.
   - **Dependencias**: T006.
 
 - [ ] T013 [P] [US1] Crear `tests/test_resolubilidad_e19_e22.py` para comparadores, corte por ronda, indispensabilidad y crecimiento.
@@ -95,29 +99,29 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 - [ ] T014 [P] [US1] Crear `tests/test_resolubilidad_e28_e29.py` para ciclos mínimos y prioridad de causas.
   - **Atiende**: FR-011, FR-012, FR-021; RS-E28, RS-E29.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e28_e29.py -q` recoge ciclos simples más cortos, empates lexicográficos, inicio canónico, orden de puertas y causas «en ciclo»/«depende de».
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e28_e29.py -q` recoge ciclos simples más cortos, empates lexicográficos, inicio canónico en el id menor, ciclos ordenados por id inicial, puertas ordenadas por sala numérica y dirección lexicográfica por código de carácter y causas «en ciclo»/«depende de».
   - **Dependencias**: T006.
 
 - [ ] T015 [P] [US1] Crear `tests/test_resolubilidad_e35_e36.py` para llave de salida inválida y orden de frontera.
   - **Atiende**: FR-013, FR-019, FR-021; RS-E35, RS-E36.
-  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e35_e36.py -q` recoge `llave_salida` nula/ausente como error no forzable y orden de frontera por sala numérica/dirección lexicográfica.
+  - **Criterio**: `python -m pytest --collect-only tests/test_resolubilidad_e35_e36.py -q` recoge `llave_salida` nula/ausente como error no forzable y orden de frontera por sala numérica/dirección lexicográfica por código de carácter.
   - **Dependencias**: T006.
 
 ### Implementación de US1
 
 - [ ] T016 [US1] Implementar el recorrido incremental dirigido y las rondas en `modelo/verificador_resolubilidad.py`.
   - **Atiende**: FR-002–FR-010, FR-016, FR-017, FR-020, FR-021; G15, G16; RS-E04, RS-E07–RS-E09, RS-E13–RS-E14, RS-E16–RS-E20.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py -q` pasa; la ronda se completa y ordena antes de liberar puertas, el algoritmo no usa costos ni modifica `CriptaModelo`, y las pruebas sintéticas igualan al oráculo en veredicto, orden y frontera.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py -q` pasa; la expansión procesa salidas dirigidas y puertas pendientes, cada ronda se completa y ordena antes de liberar puertas, la ronda final se incluye completa y el orden termina cuando la puerta final es cruzable. No se usan costos ni se modifica `CriptaModelo`; las pruebas sintéticas igualan al oráculo en veredicto, orden y frontera.
   - **Dependencias**: T006–T015.
 
 - [ ] T017 [US1] Implementar diagnóstico de llaves inobtenibles, causas, frontera y dependencias en `modelo/verificador_resolubilidad.py`.
   - **Atiende**: FR-011, FR-013, FR-016, FR-022; G14; RS-E03, RS-E05–RS-E06, RS-E18, RS-E21, RS-E29, RS-E36.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e28_e29.py tests/test_resolubilidad_e35_e36.py -q` pasa; la frontera se recoge en el recorrido base, se listan todas las dependencias indispensables y una llave múltiple solo es inobtenible si todas sus ubicaciones quedan fuera.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py tests/test_resolubilidad_e28_e29.py tests/test_resolubilidad_e35_e36.py -q` pasa; la frontera se recoge en el recorrido base, incluyendo puertas cerradas con llave nula o ausente como `inexistente` y sin abrirlas; se listan todas las dependencias indispensables y una llave múltiple solo es inobtenible si todas sus ubicaciones quedan fuera.
   - **Dependencias**: T016.
 
 - [ ] T018 [US1] Implementar selección y orden determinista de ciclos simples en `modelo/verificador_resolubilidad.py`.
   - **Atiende**: FR-011, FR-012, FR-021; G14; RS-E02, RS-E28–RS-E29.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e28_e29.py -q` pasa; cada llave participante recibe un ciclo simple más corto, los empates siguen la secuencia de ids requerida y las puertas se ordenan por sala/dirección.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e28_e29.py -q` pasa; cada llave participante recibe su ciclo simple más corto; empates usan la secuencia lexicográficamente menor iniciada en el id menor; ciclos se ordenan por id inicial y puertas por sala de origen numérica y dirección lexicográfica por código de carácter.
   - **Dependencias**: T017.
 
 - [ ] T019 [US1] Crear el formateador de reporte completo y resumen seguro en `vista/formato_resolubilidad.py` y sus pruebas en `tests/test_formato_resolubilidad.py`.
@@ -128,7 +132,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 - [ ] T020 [US1] Integrar la verificación y el bloqueo de partidas nuevas en `controlador/inicio_partida.py`.
   - **Atiende**: FR-015, FR-018, FR-019; G17; RS-E01, RS-E10, RS-E15, RS-E25.
   - **Criterio**: `python -m pytest tests/test_resolubilidad_g17.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -q` pasa; `nueva_partida()` verifica una vez, conserva el resultado para presentación y bloquea NO RESOLUBLE/NO VERIFICABLE sin forzado y todo error de datos.
-  - **Dependencias**: T004, T016–T019.
+  - **Dependencias**: T005, T016–T019.
 
 - [ ] T021 [US1] Mostrar el resumen seguro en el flujo GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`.
   - **Atiende**: FR-015, FR-024; RS-E25.
@@ -150,8 +154,8 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 - [ ] T023 [US2] Implementar `--verificar <cripta>` y sus códigos/formato en `main.py`.
   - **Atiende**: FR-014, FR-024; SC-005; RS-E23–RS-E25, RS-E30–RS-E31, RS-E34.
-  - **Criterio**: `python -m pytest tests/test_cli_resolubilidad.py -q` pasa; invocaciones resoluble/no resoluble/devuelven 0/1, error de datos o consulta devuelve 2, no se instancia vista, los conflictos se rechazan antes de consultar y la salida coincide con `contracts/cli.md`.
-  - **Dependencias**: T004, T016–T022.
+  - **Criterio**: `python -m pytest tests/test_cli_resolubilidad.py tests/test_separacion_mvc.py -q` pasa; invocaciones resoluble/no resoluble/error de datos o consulta devuelven 0/1/2 según contrato, no se instancia vista ni se importa Pygame, los conflictos se rechazan antes de consultar y la salida coincide con `contracts/cli.md`.
+  - **Dependencias**: T005, T016–T022.
 
 - [ ] T024 [P] [US2] Excluir la verificación del replay en `controlador/controlador_replay.py` y ampliar `tests/test_controlador_replay.py`.
   - **Atiende**: FR-023; RS-E26.
@@ -166,62 +170,70 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 **Prueba independiente**: Contrastar inicio normal/GUI con y sin `--forzar` para NO RESOLUBLE, NO VERIFICABLE y error de datos.
 
-- [ ] T025 [US3] Implementar `--forzar` y su propagación en `main.py`, `controlador/inicio_partida.py`, `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`; añadir `tests/test_inicio_forzar_resolubilidad.py`.
+- [ ] T025 [US3] Implementar la opción de consola `--forzar` en `main.py` y su decisión de inicio en `controlador/inicio_partida.py`; añadir `tests/test_inicio_forzar_resolubilidad.py`.
   - **Atiende**: FR-015, FR-018, FR-019; SC-005; G17; RS-E01, RS-E10, RS-E15, RS-E32, RS-E35.
-  - **Criterio**: `python -m pytest tests/test_inicio_forzar_resolubilidad.py tests/test_resolubilidad_g17.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -q` pasa; forzar permite NO RESOLUBLE/NO VERIFICABLE con resumen, también en GUI, pero nunca permite iniciar con error de datos. En modo verificar, `--forzar` sigue ignorado.
+  - **Criterio**: `python -m pytest tests/test_inicio_forzar_resolubilidad.py tests/test_resolubilidad_g17.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e35_e36.py -q` pasa; consola permite forzar NO RESOLUBLE/NO VERIFICABLE, bloquea errores de datos incluso con `--forzar`, y `--verificar --forzar` conserva exactamente el resultado/código de `--verificar`.
   - **Dependencias**: T020–T023.
 
 **Punto de control US3**: forzar solo omite el bloqueo de estados permitidos y nunca cambia un error de datos en éxito.
+
+- [ ] T026 [US3] Propagar el inicio forzado a GUI en `controlador/controlador_pygame.py` y `vista_pygame/escenas/menu_criptas.py`; añadir `tests/vista/test_inicio_forzar_resolubilidad.py`.
+  - **Atiende**: FR-015, FR-018, FR-019; SC-005; G17; RS-E01, RS-E10, RS-E15, RS-E32, RS-E35.
+  - **Criterio**: `python -m pytest tests/vista/test_inicio_forzar_resolubilidad.py -q` pasa; GUI inicia NO RESOLUBLE/NO VERIFICABLE con resumen cuando se fuerza y sigue bloqueando cualquier error de datos, sin mostrar ubicaciones.
+  - **Dependencias**: T021, T025.
 
 ## Fase 6: Rendimiento y benchmark
 
 **Propósito**: Comparar incremental y oráculo con equivalencia previa, y medir SC-001/SC-004 con evidencia reproducible.
 
-- [ ] T026 Integrar el caso de resolubilidad en `bench/casos/resolubilidad.py`, `bench/casos/__init__.py`, `bench/runner.py` y `main.py`; añadir `tests/test_bench_resolubilidad.py`.
+- [ ] T027 Integrar el caso de resolubilidad en `bench/casos/resolubilidad.py`, `bench/casos/__init__.py`, `bench/runner.py` y `main.py`; añadir `tests/test_bench_resolubilidad.py`.
   - **Atiende**: FR-023; SC-002; RS-E12, RS-E33.
-  - **Criterio**: `python -m pytest tests/test_bench_resolubilidad.py tests/test_bench_runner.py -q` pasa; `python main.py --bench` y `python main.py --bench --salida <ruta>` ambos ejecutan el caso de resolubilidad, sin vista ni red, y el benchmark rechaza discrepancias de veredicto/orden/frontera antes de cronometrar.
-  - **Dependencias**: T006, T016–T018, T023.
+  - **Criterio**: `python -m pytest tests/test_bench_resolubilidad.py tests/test_bench_runner.py -q` pasa; `python main.py --bench` y `python main.py --bench --salida <ruta>` ambos ejecutan el caso de resolubilidad, sin vista ni red, y el benchmark rechaza discrepancias de veredicto/orden/frontera antes de cronometrar. Con `--salida` conserva el reporte especializado actual y el destino solicitados además de ejecutar el caso.
+  - **Dependencias**: T006, T016–T018, T023, T025–T026.
 
-- [ ] T027 Ejecutar el protocolo de medición en `bench/resultados/<timestamp>_<commit>_bench.json` y registrar resultados en `specs/003-resolubilidad/quickstart.md`.
+- [ ] T028 Ejecutar el protocolo de medición en `bench/resultados/<timestamp>_<commit>_bench.json` y registrar resultados en `specs/003-resolubilidad/quickstart.md`.
   - **Atiende**: SC-001, SC-002, SC-004; RS-E22, RS-E27, RS-E33.
-  - **Criterio**: ejecutar ambos comandos de T026 en un commit limpio, con ≥5 repeticiones por tamaño (preferiblemente 20), al menos tres tamaños con S/E/K duplicados y semillas registradas; guardar commit, entorno, semilla, mediana, p95 y máximo. Confirmar equivalencia antes del tiempo. SC-001 pasa solo si p95 <200 ms en la mayor cripta disponible y sintéticas; SC-004 pasa solo si cada duplicación aumenta p95 ≤2.5×. Si falla un umbral, optimizar `modelo/verificador_resolubilidad.py` y repetir hasta cumplir o dejar evidencia explícita del incumplimiento.
-  - **Dependencias**: T026.
+  - **Criterio**: ejecutar ambos comandos de T027 en un commit limpio, con ≥5 repeticiones por tamaño (preferiblemente 20), al menos tres tamaños con S/E/K duplicados y semillas registradas; guardar commit, entorno, semilla, mediana, p95 y máximo. Confirmar equivalencia antes del tiempo. SC-001 pasa solo si el p95 medido es <200 ms en la mayor cripta disponible y sintéticas; SC-004 pasa solo si cada duplicación aumenta p95 ≤2.5×. Registrar en quickstart una fila por tamaño con S/E/K, semilla, n, p95, máximo y razón p95 respecto al tamaño previo. Si falla un umbral, optimizar `modelo/verificador_resolubilidad.py` y repetir hasta cumplir o dejar evidencia explícita del incumplimiento.
+  - **Dependencias**: T027.
 
 ## Fase 7: Cierre y verificación transversal
 
-- [ ] T028 Crear una revisión automatizada de restricciones en `tests/test_resolubilidad_restricciones.py` para `modelo/verificador_resolubilidad.py`, `vista/formato_resolubilidad.py` y `bench/casos/resolubilidad.py`.
+- [ ] T029 Crear una revisión automatizada de restricciones en `tests/test_resolubilidad_restricciones.py` para `modelo/verificador_resolubilidad.py`, `vista/formato_resolubilidad.py`, `bench/casos/resolubilidad.py`, `adaptadores/fuente_datos.py`, `adaptadores/datos_http.py`, `adaptadores/datos_offline.py`, `adaptadores/datos_simulado.py`, `persistencia/llaves_cripta.py` y `herramientas/descargar_offline.py`.
   - **Atiende**: FR-009, FR-010, FR-012, FR-013, FR-017, FR-021; SC-003; G16; RS-E19, RS-E28, RS-E36.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_restricciones.py -q` pasa y la revisión confirma que no se usan `dict`/`set` como índice/caché, `collections`, `heapq`, `bisect`, bibliotecas de grafos/rutas, `hash()` de cadenas ni `sorted()`/iteración nativa para ordenar el reporte; se reutilizan las estructuras y ordenamientos propios.
-  - **Dependencias**: T016–T019, T026.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_restricciones.py -q` pasa y la revisión confirma que no se usan `dict`/`set` como índice/caché, `collections`, `heapq`, `bisect`, bibliotecas de grafos/rutas, `hash()` de cadenas ni `sorted()`/iteración nativa para ordenar el reporte; se reutilizan las estructuras y ordenamientos propios. El análisis distingue los mapeos necesarios para parsear/serializar JSON de su uso prohibido como índice o caché.
+  - **Dependencias**: T003–T005, T016–T020, T027.
 
-- [ ] T029 Documentar la decisión y uso en `docs/DECISIONES.md`, `README.md`, `docs/PROMPTS_LLM.md` y `specs/003-resolubilidad/quickstart.md`.
+- [ ] T030 Documentar la decisión y uso en `docs/DECISIONES.md`, `README.md`, `docs/PROMPTS_LLM.md` y `specs/003-resolubilidad/quickstart.md`.
   - **Atiende**: FR-001, FR-014, FR-015, FR-023, FR-024; SC-001–SC-004; RS-E10, RS-E23, RS-E33–RS-E34.
   - **Criterio**: `git diff --check` pasa; `docs/DECISIONES.md` contiene problema, alternativas, decisión, complejidad, evidencia y límites; README y quickstart documentan `--verificar`, `--forzar`, pruebas y ambos modos de bench; `docs/PROMPTS_LLM.md` registra el cambio.
   - **Dependencias**: T023, T025–T027.
 
-- [ ] T030 Ejecutar la suite y regresión final con `python -m pytest -q`.
+- [ ] T031 Ejecutar la suite y regresión final con `python -m pytest -q` y pruebas focalizadas existentes.
   - **Atiende**: FR-001–FR-024; SC-001–SC-005; G14–G17; RS-E01–RS-E36.
-  - **Criterio**: `python -m pytest -q` termina con código 0; además pasan las pruebas focalizadas descritas en `specs/003-resolubilidad/quickstart.md`. Adjuntar el resultado de la suite y la evidencia de benchmark a la revisión final.
-  - **Dependencias**: T001–T029.
+  - **Criterio**: `python -m pytest -q` termina con código 0; también pasan `python -m pytest tests/test_controlador_replay.py tests/vista/test_sin_pygame_en_replay_bench.py tests/test_linea_tiempo_g18.py tests/test_linea_tiempo_g19.py tests/test_linea_tiempo_g20.py tests/test_linea_tiempo_g21.py tests/test_linea_tiempo_g22.py tests/test_linea_tiempo_g23.py tests/test_bench_runner.py -q`. Adjuntar resultados y evidencia de benchmark a la revisión final.
+  - **Dependencias**: T001–T030.
 
 ## Dependencias y orden de ejecución
 
 ### Dependencias entre fases
 
-- **Fase 1**: T001 → T002 → T003 → T004; T005 es independiente y debe completarse antes de la fundación.
-- **Fase 2**: T006 depende de T005 y deja disponible el generador/oráculo para el modelo y el benchmark.
+- **Fase 0**: T001 debe corregirse y confirmarse en un commit separado antes de comenzar cualquier otra tarea.
+- **Fase 1**: T002 → T003 → T004 → T005; todas dependen del cierre documental de T001.
+- **Fase 2**: T006 depende de T001 y T005 y deja disponible el generador/oráculo para el modelo y el benchmark.
 - **US1**: pruebas T007–T015 pueden escribirse en paralelo después de T006; T016 precede a diagnósticos T017, ciclos T018, presentación T019 e inicio T020–T021.
 - **US2**: pruebas T022 esperan el contrato de presentación; T023 implementa CLI y T024 excluye replay. Tras la fundación, US2 puede avanzar en paralelo con partes independientes de US1, pero su integración requiere T016–T021.
-- **US3**: T025 depende del inicio integrado, CLI y resultado de datos.
-- **Rendimiento**: T026 requiere incremental y oráculo; T027 mide solo después de comprobar equivalencia.
-- **Cierre**: T028–T030 requieren las implementaciones y mediciones correspondientes.
+- **US3**: T025 implementa forzado de consola; T026 agrega la GUI y depende de T025.
+- **Rendimiento**: T027 requiere verificador, CLI y forzado; T028 mide solo después de comprobar equivalencia.
+- **Cierre**: T029–T031 requieren las implementaciones y mediciones correspondientes.
 
 ### Oportunidades de paralelismo
 
-- Fase 1: T001 y T005; luego T003 solo después de T002.
+- Fase 0: T001 es una barrera; ninguna prueba o código inicia antes de su commit.
+- Fase 1: después de T001, T002 puede prepararse; T003, T004 y T005 siguen sus dependencias.
 - Fase 3: T007–T015 son archivos distintos y pueden desarrollarse en paralelo después de T006.
 - US2: T024 puede desarrollarse en paralelo con T023 una vez disponible T020 y las pruebas.
-- Cierre: T028 y T029 pueden avanzar en paralelo una vez terminadas sus dependencias.
+- US3: T025 y T026 son secuenciales porque ambos afectan el flujo de `--forzar`; el primero cubre consola/controlador y el segundo GUI.
+- Cierre: T029 y T030 pueden avanzar en paralelo una vez terminadas sus dependencias.
 
 ## Ejemplos de ejecución en paralelo
 
@@ -244,7 +256,7 @@ Task: T024, bypass de verificación en controlador/controlador_replay.py
 
 ### MVP
 
-Completar Fases 1–3: consulta versionada de llaves, oráculo, verificador incremental y diagnóstico, formato y bloqueo de inicio normal. Validar G14–G17, casos de modelo y equivalencia con el oráculo antes de ampliar a CLI/forzado.
+Completar Fases 0–3: commit documental de T001, consulta versionada de llaves, oráculo, verificador incremental y diagnóstico, formato y bloqueo de inicio normal. Validar G14–G17, casos de modelo y equivalencia con el oráculo antes de ampliar a CLI/forzado.
 
 ### Entrega incremental
 
@@ -259,7 +271,7 @@ Completar Fases 1–3: consulta versionada de llaves, oráculo, verificador incr
 
 | Requisito/escenario | Tareas |
 |---|---|
-| FR-001 | T001–T004 |
+| FR-001 | T002–T005 |
 | FR-002 | T016 |
 | FR-003 | T016 |
 | FR-004 | T008, T016 |
@@ -270,76 +282,76 @@ Completar Fases 1–3: consulta versionada de llaves, oráculo, verificador incr
 | FR-009 | T012–T013, T016 |
 | FR-010 | T009, T016 |
 | FR-011 | T007, T014, T017–T018 |
-| FR-012 | T007, T011, T014, T018, T028 |
+| FR-012 | T007, T011, T014, T018, T029 |
 | FR-013 | T007, T015, T017 |
 | FR-014 | T022–T023 |
-| FR-015 | T010–T011, T019–T021, T025 |
-| FR-016 | T001, T005, T008, T012–T013, T016–T017 |
-| FR-017 | T006, T009, T016, T028 |
-| FR-018 | T001–T004, T020, T025 |
-| FR-019 | T001–T005, T012, T015, T020, T025 |
-| FR-020 | T005, T012, T016 |
-| FR-021 | T013–T015, T016, T018, T028 |
+| FR-015 | T010–T011, T019–T021, T025–T026 |
+| FR-016 | T001–T002, T005, T008, T012–T013, T016–T017 |
+| FR-017 | T006, T009, T016, T029 |
+| FR-018 | T002–T005, T020, T025–T026 |
+| FR-019 | T001–T002, T005, T012, T015, T020, T025–T026 |
+| FR-020 | T001, T012, T016 |
+| FR-021 | T013–T015, T016, T018, T029 |
 | FR-022 | T013, T017 |
-| FR-023 | T024, T026 |
-| FR-024 | T019, T021–T023, T029 |
-| SC-001 | T027, T030 |
-| SC-002 | T006, T026–T027 |
-| SC-003 | T009, T016, T019, T028 |
-| SC-004 | T013, T027, T030 |
-| SC-005 | T001–T004, T020, T023, T025, T030 |
-| G14 | T007, T017–T018, T030 |
-| G15 | T008, T016, T030 |
-| G16 | T009, T016, T019, T028, T030 |
-| G17 | T010, T020, T025, T030 |
-| RS-E01 | T011, T025, T030 |
-| RS-E02 | T011, T018, T030 |
-| RS-E03 | T011, T017, T030 |
-| RS-E04 | T011, T016, T030 |
-| RS-E05 | T011, T016–T017, T030 |
-| RS-E06 | T011, T017, T030 |
-| RS-E07 | T011, T016, T030 |
-| RS-E08 | T011, T016, T030 |
-| RS-E09 | T011, T016, T030 |
-| RS-E10 | T001–T004, T012, T020, T025, T030 |
-| RS-E11 | T001, T003–T004, T012, T030 |
-| RS-E12 | T006, T026–T027, T030 |
-| RS-E13 | T012, T016, T030 |
-| RS-E14 | T008, T012, T016, T030 |
-| RS-E15 | T012, T020, T025, T030 |
-| RS-E16 | T012, T016, T030 |
-| RS-E17 | T012, T016, T030 |
-| RS-E18 | T012–T013, T016–T017, T030 |
-| RS-E19 | T013, T016, T028, T030 |
-| RS-E20 | T013, T016, T030 |
-| RS-E21 | T013, T017, T030 |
-| RS-E22 | T013, T027, T030 |
-| RS-E23 | T022–T023, T030 |
-| RS-E24 | T001, T022–T023, T030 |
-| RS-E25 | T019–T021, T030 |
-| RS-E26 | T024, T030 |
-| RS-E27 | T027, T030 |
-| RS-E28 | T014, T018, T028, T030 |
-| RS-E29 | T014, T017–T018, T030 |
-| RS-E30 | T022–T023, T030 |
-| RS-E31 | T022–T023, T030 |
-| RS-E32 | T021, T025, T030 |
-| RS-E33 | T026–T027, T030 |
-| RS-E34 | T019, T022–T023, T029–T030 |
-| RS-E35 | T015, T020, T025, T030 |
-| RS-E36 | T015, T017, T028, T030 |
+| FR-023 | T024, T027 |
+| FR-024 | T019, T021–T023, T030 |
+| SC-001 | T028, T031 |
+| SC-002 | T006, T027–T028 |
+| SC-003 | T009, T016, T019, T029 |
+| SC-004 | T013, T028, T031 |
+| SC-005 | T002–T005, T020, T023, T025–T026, T031 |
+| G14 | T007, T017–T018, T031 |
+| G15 | T008, T016, T031 |
+| G16 | T009, T016, T019, T029, T031 |
+| G17 | T010, T020, T025–T026, T031 |
+| RS-E01 | T011, T025–T026, T031 |
+| RS-E02 | T011, T018, T031 |
+| RS-E03 | T011, T017, T031 |
+| RS-E04 | T011, T016, T031 |
+| RS-E05 | T011, T016–T017, T031 |
+| RS-E06 | T011, T017, T031 |
+| RS-E07 | T011, T016, T031 |
+| RS-E08 | T011, T016, T031 |
+| RS-E09 | T011, T016, T031 |
+| RS-E10 | T002–T005, T012, T020, T025–T026, T031 |
+| RS-E11 | T002, T004–T005, T012, T031 |
+| RS-E12 | T006, T027–T028, T031 |
+| RS-E13 | T012, T016, T031 |
+| RS-E14 | T008, T012, T016, T031 |
+| RS-E15 | T012, T020, T025–T026, T031 |
+| RS-E16 | T012, T016, T031 |
+| RS-E17 | T012, T016, T031 |
+| RS-E18 | T012–T013, T016–T017, T031 |
+| RS-E19 | T013, T016, T029, T031 |
+| RS-E20 | T013, T016, T031 |
+| RS-E21 | T013, T017, T031 |
+| RS-E22 | T013, T028, T031 |
+| RS-E23 | T022–T023, T031 |
+| RS-E24 | T002, T022–T023, T031 |
+| RS-E25 | T019–T021, T031 |
+| RS-E26 | T024, T031 |
+| RS-E27 | T028, T031 |
+| RS-E28 | T014, T018, T029, T031 |
+| RS-E29 | T014, T017–T018, T031 |
+| RS-E30 | T022–T023, T031 |
+| RS-E31 | T022–T023, T031 |
+| RS-E32 | T021, T026, T031 |
+| RS-E33 | T027–T028, T031 |
+| RS-E34 | T019, T022–T023, T030–T031 |
+| RS-E35 | T015, T020, T025–T026, T031 |
+| RS-E36 | T015, T017, T029, T031 |
 
 **Requisitos sin cobertura**: ninguno; FR-001–FR-024, SC-001–SC-005, G14–G17 y RS-E01–RS-E36 tienen al menos una tarea asignada.
 
 ## Resumen de ejecución
 
-- **Total**: 30 tareas.
+- **Total**: 31 tareas.
 - **US1 (P1)**: 15 tareas (T007–T021).
 - **US2 (P2)**: 3 tareas (T022–T024).
-- **US3 (P3)**: 1 tarea (T025).
-- **Compartidas/fundacionales/bench/cierre**: 11 tareas (T001–T006, T026–T030).
+- **US3 (P3)**: 2 tareas (T025–T026).
+- **Compartidas/fundacionales/bench/cierre**: 11 tareas (T001–T006, T027–T031).
 - **Criterio independiente US1**: pruebas G14–G17 y RS-E01–RS-E22/RS-E28–RS-E29/RS-E35–RS-E36; equivalencia incremental/oráculo.
 - **Criterio independiente US2**: reporte, código de salida 0/1/2, rechazo temprano, sin vista y replay sin verificación.
 - **Criterio independiente US3**: forzado de NO RESOLUBLE/NO VERIFICABLE en consola y GUI; error de datos siempre bloquea.
-- **MVP sugerido**: Fases 1–3 (US1).
-- **Formato**: las 30 tareas usan checkbox, id secuencial, etiqueta [P] solo en tareas paralelizables, etiquetas de historia en fases US, ruta, trazabilidad, criterio y dependencias.
+- **MVP sugerido**: Fases 0–3 (US1).
+- **Formato**: las 31 tareas usan checkbox, id secuencial, etiqueta [P] solo en tareas paralelizables, etiquetas de historia en fases US, ruta, trazabilidad, criterio y dependencias.
