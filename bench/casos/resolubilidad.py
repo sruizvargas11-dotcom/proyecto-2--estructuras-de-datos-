@@ -15,8 +15,9 @@ from modelo.verificador_resolubilidad import verificar_resolubilidad
 
 
 SEMILLA_BENCH = 42
-TAMANOS_BENCH = (96, 192, 384)
-REPETICIONES_BENCH = 50
+TAMANOS_BENCH = (128, 256, 512)
+REPETICIONES_BENCH = 100
+REPETICIONES_REFERENCIA_BENCH = 20
 
 
 @dataclass(frozen=True)
@@ -403,7 +404,7 @@ def correr():
                     recorrido_completo_repetido,
                     sintetica.cripta,
                     sintetica.ubicaciones,
-                    repeticiones=REPETICIONES_BENCH,
+                    repeticiones=REPETICIONES_REFERENCIA_BENCH,
                     deshabilitar_gc=True,
                 ),
                 extra=f"{extra} recorridos={referencia.recorridos_completos}",
