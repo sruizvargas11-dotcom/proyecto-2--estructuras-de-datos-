@@ -96,3 +96,51 @@ def test_oraculo_resuelve_ciclo_aparente_por_ruta_alternativa():
         for ronda in resultado.orden_por_rondas
     ] == [["llave-0000"], ["llave-0001"]]
     assert resultado.puerta_final.llave == "llave-0001"
+
+
+def test_incremental_igual_oraculo_en_criptas_sinteticas_deterministas():
+    """El recorrido incremental conserva el veredicto, las rondas y la puerta final (FR-017, SC-002)."""
+    from modelo.verificador_resolubilidad import verificar_resolubilidad
+
+    for estructura in ("cadena", "ciclo", "alternativa"):
+        for semilla in (61, 62, 63):
+            sintetica = generar_cripta_sintetica(
+                semilla=semilla,
+                cantidad_llaves=5,
+                estructura=estructura,
+            )
+            referencia = recorrido_completo_repetido(
+                sintetica.cripta, sintetica.ubicaciones
+            )
+            incremental = verificar_resolubilidad(
+                sintetica.cripta, sintetica.ubicaciones
+            )
+
+            assert incremental.veredicto == referencia.veredicto
+            assert tuple(
+                tuple(
+                    (llave.id, llave.sala, llave.enemigo)
+                    for llave in ronda
+                )
+                for ronda in incremental.orden_por_rondas
+            ) == tuple(
+                tuple(
+                    (llave.id, llave.sala, llave.enemigo)
+                    for llave in ronda
+                )
+                for ronda in referencia.orden_por_rondas
+            )
+            if referencia.puerta_final is None:
+                assert incremental.puerta_final is None
+            else:
+                assert (
+                    incremental.puerta_final.origen,
+                    incremental.puerta_final.direccion,
+                    incremental.puerta_final.destino,
+                    incremental.puerta_final.llave,
+                ) == (
+                    referencia.puerta_final.origen,
+                    referencia.puerta_final.direccion,
+                    referencia.puerta_final.destino,
+                    referencia.puerta_final.llave,
+                )

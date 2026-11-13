@@ -109,9 +109,9 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 
 ### Implementación de US1
 
-- [ ] T016 [US1] Implementar el recorrido incremental dirigido y las rondas en `modelo/verificador_resolubilidad.py`.
-  - **Atiende**: FR-002–FR-010, FR-016, FR-017, FR-020, FR-021; G15, G16; RS-E04, RS-E07–RS-E09, RS-E13–RS-E14, RS-E16–RS-E20.
-  - **Criterio**: `python -m pytest tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py -k "g15 or g16 or rs_e04 or rs_e07 or rs_e08 or rs_e09 or rs_e13 or rs_e14 or rs_e16 or rs_e17 or rs_e18_alcanzable or rs_e19_orden or rs_e20" -q` pasa; cubre solo recorrido, rondas, orden y puerta final. La expansión procesa salidas dirigidas y puertas pendientes; completa y ordena cada ronda antes de liberar puertas; incluye completa la ronda final y termina cuando la puerta final es cruzable. No usa costos ni modifica `CriptaModelo`; iguala al oráculo en veredicto y orden. Los selectores `rs_eNN` identifican pruebas individuales por escenario.
+- [X] T016 [US1] Implementar el recorrido incremental dirigido y las rondas en `modelo/verificador_resolubilidad.py`.
+  - **Atiende**: FR-002–FR-010, FR-016, FR-017, FR-020, FR-021; SC-002; G15, G16; RS-E04, RS-E07–RS-E09, RS-E12–RS-E14, RS-E16–RS-E20.
+  - **Criterio**: `python -m pytest tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_e01_e09.py tests/test_resolubilidad_e10_e18.py tests/test_resolubilidad_e19_e22.py -k "g15 or g16 or rs_e04 or rs_e07 or rs_e08 or rs_e09 or rs_e13 or rs_e14 or rs_e16 or rs_e17 or rs_e18_alcanzable or rs_e19_orden or rs_e20" -q` y `python -m pytest tests/test_resolubilidad_oraculo.py -k incremental_igual_oraculo -q` pasan; cubren solo recorrido, rondas, orden y puerta final. La expansión procesa salidas dirigidas y puertas pendientes; completa y ordena cada ronda antes de liberar puertas; incluye completa la ronda final y termina cuando la puerta final es cruzable. No usa costos ni modifica `CriptaModelo`; iguala al oráculo en veredicto, orden y puerta final. Los selectores `rs_eNN` identifican pruebas individuales por escenario.
   - **Dependencias**: T006–T015.
 
 - [ ] T017 [US1] Implementar diagnóstico de llaves inobtenibles, causas, frontera y dependencias en `modelo/verificador_resolubilidad.py`.
