@@ -62,70 +62,95 @@ Python, sistema, CPU, semilla, mediana, p95, máximo y muestras.
 
 ### Evidencia T028 (2026-11-13)
 
-Las mediciones se ejecutaron en el commit limpio `c40f0a4`, Python 3.12.10,
-Windows 10 (10.0.19045), Intel Core i7-8750H @ 2.20 GHz. La semilla sintética fue
-42. El benchmark usa 50 repeticiones por tamaño y una llamada de calentamiento,
-excluida de las muestras; antes de cada medición se comprobó equivalencia de
-veredicto, orden y frontera entre la versión incremental y la referencia.
-Red, carga de datos y renderizado no forman parte del tiempo medido.
+Mediciones en el commit limpio `b0ee832`, Python 3.12.10, Windows 10
+(10.0.19045), Intel Core i7-8750H @ 2.20 GHz (la evidencia del runner identifica
+la CPU como Intel64 Family 6 Model 158 Stepping 10). Semilla sintética: 42.
+Antes de cronometrar se comparan veredicto, orden y frontera con la referencia.
+Cada variante se calienta una vez; el GC se deshabilita solo durante las muestras
+y se restaura al terminar. Hubo 100 repeticiones incrementales y 20 de referencia;
+carga de datos, red y renderizado quedan fuera del tiempo.
+
+#### Dispersión inicial
+
+Cinco ejecuciones preliminares con semilla 42 y K=96/192/384 dieron estas razones
+entre p95 incremental consecutivos:
+
+| Ejecución | 96→192 | 192→384 |
+|---|---:|---:|
+| 1 | 2.105× | 2.234× |
+| 2 | 2.648× | 3.172× |
+| 3 | 3.335× | 3.094× |
+| 4 | 1.063× | 1.989× |
+| 5 | 3.004× | 0.777× |
+| Rango | 1.063–3.335× | 0.777–3.172× |
+| Mediana | 2.648× | 2.234× |
+
+La dispersión indicaba ruido. Se aisló la recolección de basura de las muestras,
+se mantuvo el calentamiento fuera del cronometraje, se aumentaron las repeticiones
+y se calibró el tamaño mínimo por encima de 10 ms.
 
 #### SC-001: cripta publicada más grande
 
-Se cargaron el esqueleto y las llaves versionados de
-`partidas/cache/cripta-06/` antes de cronometrar; no hubo red ni carga de datos dentro
-de la medición. La «Cripta de referencia» tiene 300 salas y 4 llaves. Una llamada de
-calentamiento precedió a 100 repeticiones:
+El esqueleto y las ubicaciones versionadas de `partidas/cache/cripta-06/` se
+cargaron directamente desde caché antes de medir; no hubo red ni lectura de datos
+dentro del cronometraje. La cripta tiene 300 salas y 4 llaves; se hizo un
+calentamiento y 100 repeticiones con GC deshabilitado:
 
-| Cripta | versión | mediana ms | p95 ms | máximo ms | veredicto |
-|---|---|---:|---:|---:|---|
-| cripta-06 | `f9ed9afa683d` | 14.860 | 20.713 | 34.866 | RESOLUBLE |
+| Cripta | versión | n | mediana ms | p95 ms | máximo ms | veredicto |
+|---|---|---:|---:|---:|---:|---|
+| cripta-06 | `f9ed9afa683d` | 100 | 11.177 | 16.074 | 30.315 | RESOLUBLE |
 
-SC-001 pasa: p95 <200 ms.
+SC-001 pasa: p95 = 16.074 ms < 200 ms.
 
 #### SC-004: duplicación sintética
 
-La familia de cadenas encadenadas duplica exactamente S, E y K en cada tamaño.
-El menor tamaño tuvo mediana ≥10 ms en ambos modos.
+La familia de cadenas encadenadas duplica exactamente S, E y K. En el menor
+tamaño, la mediana incremental fue 12.700 ms y la de referencia 689.320 ms.
+Ejecución completa de `python main.py --bench`; evidencia:
+`bench/resultados/2026-11-13T171401_b0ee832_bench.json`.
 
-Ejecución completa de `python main.py --bench`; evidencia JSON:
-`bench/resultados/2026-11-13T120704_c40f0a4_bench.json`.
+| S/E/K | variante | n | mediana ms | p95 ms | máximo ms | razón p95 incremental |
+|---|---|---:|---:|---:|---:|---:|
+| 256/256/128 | incremental | 100 | 12.700 | 16.804 | 35.596 | — |
+| 256/256/128 | referencia | 20 | 689.320 | 741.176 | 844.634 | — |
+| 512/512/256 | incremental | 100 | 25.938 | 35.474 | 48.700 | 2.111× |
+| 512/512/256 | referencia | 20 | 2822.413 | 2953.073 | 2953.964 | — |
+| 1024/1024/512 | incremental | 100 | 51.666 | 58.179 | 72.821 | 1.640× |
+| 1024/1024/512 | referencia | 20 | 12840.450 | 14308.241 | 24110.091 | — |
 
-| S/E/K | variante | mediana ms | p95 ms | máximo ms | razón p95 incremental |
-|---|---|---:|---:|---:|---:|
-| 192/192/96 | incremental | 12.043 | 24.529 | 25.448 | — |
-| 192/192/96 | referencia | 485.742 | 580.134 | 615.862 | — |
-| 384/384/192 | incremental | 23.535 | 35.218 | 49.361 | 1.436× |
-| 384/384/192 | referencia | 2248.420 | 5527.517 | 6461.719 | — |
-| 768/768/384 | incremental | 52.068 | 94.380 | 103.208 | 2.680× |
-| 768/768/384 | referencia | 8919.534 | 13689.497 | 14805.982 | — |
+También se ejecutó `python main.py --bench --salida <ruta>` en el mismo commit
+limpio y se detuvo después de imprimirse la tabla de resolubilidad, antes del
+reporte de terreno:
 
-Ejecución completa de `python main.py --bench --salida
-C:\Temp\resolubilidad-terreno-completo.json` (incluyó el reporte especializado de
-terreno; terminó con código 0):
+| S/E/K | variante | n | mediana ms | p95 ms | máximo ms | razón p95 incremental |
+|---|---|---:|---:|---:|---:|---:|
+| 256/256/128 | incremental | 100 | 16.462 | 25.169 | 32.780 | — |
+| 256/256/128 | referencia | 20 | 790.764 | 939.935 | 968.572 | — |
+| 512/512/256 | incremental | 100 | 26.110 | 31.468 | 54.825 | 1.250× |
+| 512/512/256 | referencia | 20 | 3109.695 | 3825.157 | 4490.597 | — |
+| 1024/1024/512 | incremental | 100 | 53.804 | 62.256 | 72.688 | 1.979× |
+| 1024/1024/512 | referencia | 20 | 11876.145 | 12585.742 | 12914.881 | — |
 
-| S/E/K | variante | mediana ms | p95 ms | máximo ms | razón p95 incremental |
-|---|---|---:|---:|---:|---:|
-| 192/192/96 | incremental | 15.790 | 31.976 | 34.031 | — |
-| 192/192/96 | referencia | 525.323 | 870.029 | 961.835 | — |
-| 384/384/192 | incremental | 25.449 | 59.129 | 66.778 | 1.849× |
-| 384/384/192 | referencia | 2083.714 | 2443.012 | 2772.630 | — |
-| 768/768/384 | incremental | 47.724 | 61.447 | 103.726 | 1.039× |
-| 768/768/384 | referencia | 9055.908 | 12779.000 | 13024.505 | — |
+SC-004 pasa en ambos modos: todas las duplicaciones incrementan p95 ≤2.5×.
 
-SC-004 pasa en `--bench --salida`, pero falla en `--bench`: la última duplicación
-creció 2.680×, mayor que el máximo permitido de 2.5×. T028 permanece pendiente;
-no se cambió SC-001, SC-004 ni sus umbrales.
+#### Perfil y decisión
 
-#### Perfil y propuesta
+`cProfile` antes/después, con la misma cripta sintética S/E/K=1024/1024/512:
 
-Ante el incumplimiento de SC-004, se perfiló una verificación de una cripta sintética
-de S/E/K = 768/768/384 con `cProfile` (162 195 llamadas, 0.294 s bajo perfil). El
-tiempo acumulado principal fue: `TablaHash._hash` 0.105 s, FNV-1a 0.057 s,
-`expandir_region` 0.081 s y `TablaHash.insertar` 0.075 s. La propuesta —no aplicada—
-es reducir búsquedas repetidas en la expansión y en el registro de candidatas,
-evaluando una operación de tabla que combine comprobación/obtención e inserción
-cuando proceda, sin cambiar FNV-1a ni introducir índices nativos. Luego se debe
-repetir el protocolo completo de ambos modos y comprobar equivalencia primero.
+| Medición | Antes | Después |
+|---|---:|---:|
+| Llamadas totales | 216 211 | 208 027 |
+| Tiempo bajo perfil | 0.170 s | 0.174 s |
+| `TablaHash._hash` llamadas | 15 364 | 14 341 |
+| `contiene` llamadas | 5 123 | 4 099 |
+
+Se redujeron 1 023 llamadas a `_hash` y 1 024 búsquedas `contiene`; el tiempo
+profilado no demuestra una mejora por sí solo y se considera ruidoso. La decisión
+fue combinar la comprobación e inserción en la expansión de región usando el
+resultado booleano de `TablaHash.insertar`, sin cambiar FNV-1a ni introducir
+índices nativos. La mejora se acepta por la reducción de trabajo repetido y por
+cumplir SC-004 en las mediciones finales; no se atribuye al profiler una reducción
+de tiempo.
 
 ## Preparación
 

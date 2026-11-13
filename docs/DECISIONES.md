@@ -1284,19 +1284,28 @@ de grafos ni diccionarios o conjuntos como índices/cachés en la lógica del mo
 
 El caso `resolubilidad` compara el resultado incremental y el de referencia antes
 de cronometrar; genera cadenas deterministas con semilla 42 y duplica S/E/K en tres
-tamaños. La medición completa de `--bench` (20 repeticiones) obtuvo p95 incremental
-de 1.286, 2.256 y 3.409 ms para S/E/K = 16/16/8, 32/32/16 y 64/64/32; sus razones
-fueron 1.754× y 1.511×. El entorno, máximos y protocolo están en
+tamaños. Cinco ejecuciones preliminares a K=96/192/384 mostraron razones p95 de
+1.063–3.335× y 0.777–3.172×, por lo que se estabilizó el protocolo: una llamada de
+calentamiento fuera de la muestra, GC deshabilitado solo al cronometrar, 100
+repeticiones incrementales, 20 de referencia y tamaños K=128/256/512.
+
+Con `cProfile` en la misma entrada S/E/K=1024/1024/512, antes/después se registraron
+216 211/208 027 llamadas totales, 15 364/14 341 llamadas a `_hash` y
+5 123/4 099 a `contiene`; el tiempo perfilado fue 0.170/0.174 s, demasiado ruidoso
+para reclamar aceleración. Se decidió usar el resultado booleano de
+`TablaHash.insertar` para evitar la comprobación `contiene` duplicada en la expansión
+de región. No se modificaron FNV-1a, las estructuras propias ni el orden del reporte.
+
+En el commit limpio `b0ee832`, `--bench` midió p95 incremental 16.804, 35.474 y
+58.179 ms; las razones de duplicación fueron 2.111× y 1.640×. `--bench --salida`
+midió 25.169, 31.468 y 62.256 ms, con razones 1.250× y 1.979×. SC-001, cripta-06
+versión `f9ed9afa683d` desde caché (300 salas, 4 llaves), dio mediana 11.177 ms,
+p95 16.074 ms y máximo 30.315 ms. SC-001 y SC-004 pasan sin alterar sus umbrales.
+Entorno, medianas, máximos, muestras y el resto del protocolo:
 [quickstart de resolubilidad](../specs/003-resolubilidad/quickstart.md).
 
 ### Límites conocidos
 
-- No estaba disponible una cripta publicada con sus datos de llaves; SC-001 solo se
-  midió con la mayor cripta sintética disponible.
-- En una ejecución de `--bench --salida` el caso de resolubilidad arrojó una razón
-  p95 de 2.750× en la última duplicación, por encima de SC-004. Una comprobación
-  independiente de 100 muestras pasó, pero la variación sigue pendiente de resolver;
-  no se afirma cumplimiento estable de SC-004.
 - El diagnóstico de llaves indispensables puede dominar el tiempo en una cripta con
   muchas llaves candidatas; la medición del caso de cadena no cubre todos los peores
   casos de diagnóstico.

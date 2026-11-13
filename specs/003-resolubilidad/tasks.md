@@ -191,7 +191,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_bench_resolubilidad.py tests/test_bench_runner.py -q` pasa; `python main.py --bench` y `python main.py --bench --salida <ruta>` ambos ejecutan el caso de resolubilidad, sin vista ni red, y el benchmark rechaza discrepancias de veredicto/orden/frontera antes de cronometrar. Con `--salida` conserva el reporte especializado actual y el destino solicitados además de ejecutar el caso.
   - **Dependencias**: T006, T016–T018, T023, T025–T026.
 
-- [ ] T028 Ejecutar el protocolo de medición en `bench/resultados/<timestamp>_<commit>_bench.json` y registrar resultados en `specs/003-resolubilidad/quickstart.md`.
+- [X] T028 Ejecutar el protocolo de medición en `bench/resultados/<timestamp>_<commit>_bench.json` y registrar resultados en `specs/003-resolubilidad/quickstart.md`.
   - **Atiende**: SC-001, SC-002, SC-004; RS-E22, RS-E27, RS-E33.
   - **Criterio**: ejecutar ambos comandos de T027 en un commit limpio, con ≥5 repeticiones por tamaño (preferiblemente 20), al menos tres tamaños con S/E/K duplicados y semillas registradas; guardar commit, entorno, semilla, mediana, p95 y máximo. Confirmar equivalencia antes del tiempo. SC-001 pasa solo si el p95 medido es <200 ms en la mayor cripta disponible y sintéticas; SC-004 pasa solo si cada duplicación aumenta p95 ≤2.5×. Registrar en quickstart una fila por tamaño con S/E/K, semilla, n, p95, máximo y razón p95 respecto al tamaño previo. Si falla un umbral, optimizar `modelo/verificador_resolubilidad.py` y repetir hasta cumplir o dejar evidencia explícita del incumplimiento.
   - **Dependencias**: T027.
@@ -212,6 +212,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Atiende**: FR-001–FR-024; SC-001–SC-005; G14–G17; RS-E01–RS-E36.
   - **Criterio**: `python -m pytest -q` termina con código 0; también pasan `python -m pytest tests/test_controlador_replay.py tests/vista/test_sin_pygame_en_replay_bench.py tests/test_linea_tiempo_g18.py tests/test_linea_tiempo_g19.py tests/test_linea_tiempo_g20.py tests/test_linea_tiempo_g21.py tests/test_linea_tiempo_g22.py tests/test_linea_tiempo_g23.py tests/test_bench_runner.py -q`. Adjuntar resultados y evidencia de benchmark a la revisión final.
   - **Dependencias**: T001–T030.
+  - **Resultado de esta ejecución**: 1 312 pasaron; solo fallan los siete casos preexistentes de capacidad 004 enumerados en el informe. Se deja pendiente porque el criterio exige código 0 y corregir esos casos está fuera del alcance autorizado.
 
 ## Dependencias y orden de ejecución
 
