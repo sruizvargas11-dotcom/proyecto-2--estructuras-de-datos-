@@ -11,7 +11,7 @@ from bench.medicion import Fila
 def test_caso_mide_incremental_y_referencia_tras_comprobar_equivalencia(monkeypatch):
     from bench.casos import CASOS
 
-    monkeypatch.setattr(resolubilidad, "TAMANOS_BENCH", (2, 4))
+    monkeypatch.setattr(resolubilidad, "TAMANOS_BENCH", (4, 8))
     monkeypatch.setattr(resolubilidad, "REPETICIONES_BENCH", 1)
 
     filas = resolubilidad.correr()
@@ -26,6 +26,24 @@ def test_caso_mide_incremental_y_referencia_tras_comprobar_equivalencia(monkeypa
         "referencia",
     ]
     assert all("semilla=42" in fila.extra for fila in filas)
+
+
+def test_familia_duplica_salas_salidas_y_llaves_en_tres_tamanos():
+    conteos = []
+    for cantidad_llaves in (4, 8, 16):
+        sintetica = resolubilidad.generar_cripta_sintetica(
+            semilla=42,
+            cantidad_llaves=cantidad_llaves,
+            estructura="cadena",
+            duplicar_topologia=True,
+        )
+        salidas = 0
+        for sala in sintetica.cripta.recorrer_salas():
+            salidas += len(sala.salidas)
+        conteos.append((len(sintetica.cripta), salidas, len(sintetica.ubicaciones)))
+
+    assert conteos[1] == tuple(valor * 2 for valor in conteos[0])
+    assert conteos[2] == tuple(valor * 2 for valor in conteos[1])
 
 
 def test_discrepancia_de_equivalencia_falla_antes_de_cronometrar(monkeypatch):

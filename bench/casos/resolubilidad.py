@@ -75,20 +75,36 @@ def _ordenar(vector, comparar):
     return tuple(vector.obtenerValor(i) for i in range(len(vector)))
 
 
-def generar_cripta_sintetica(semilla=42, cantidad_llaves=8, estructura="cadena"):
+def generar_cripta_sintetica(
+    semilla=42,
+    cantidad_llaves=8,
+    estructura="cadena",
+    duplicar_topologia=False,
+):
     """Genera una cripta dirigida, no densa y repetible a partir de una semilla."""
     if type(semilla) is not int:
         raise ValueError("La semilla debe ser un entero.")
     if type(cantidad_llaves) is not int or cantidad_llaves < 1:
         raise ValueError("cantidad_llaves debe ser un entero positivo.")
+    if type(duplicar_topologia) is not bool:
+        raise ValueError("duplicar_topologia debe ser booleano.")
     if estructura not in ("cadena", "ciclo", "alternativa"):
         raise ValueError("estructura debe ser cadena, ciclo o alternativa.")
     if estructura != "cadena" and cantidad_llaves < 2:
         raise ValueError("Las estructuras ciclo y alternativa requieren dos llaves.")
+    if duplicar_topologia and (estructura != "cadena" or cantidad_llaves < 4):
+        raise ValueError(
+            "La duplicación de topología requiere cadena y al menos cuatro llaves."
+        )
 
     azar = random.Random(semilla)
     base = 100 + (semilla % 17) * 3
-    ids_salas = [base + indice * 3 for indice in range(cantidad_llaves + 2)]
+    cantidad_salas = (
+        cantidad_llaves * 2
+        if duplicar_topologia
+        else cantidad_llaves + 2
+    )
+    ids_salas = [base + indice * 3 for indice in range(cantidad_salas)]
     salas = [Sala(sala_id, f"Sala sintética {indice}")
              for indice, sala_id in enumerate(ids_salas)]
     ids_llaves = [f"llave-{indice:04d}" for indice in range(cantidad_llaves)]
@@ -111,6 +127,12 @@ def generar_cripta_sintetica(semilla=42, cantidad_llaves=8, estructura="cadena")
             agregar_salida(indice, indice + 1, "A", ids_llaves[indice - 1])
         for indice, llave_id in enumerate(ids_llaves):
             ubicaciones.append(UbicacionLlave(llave_id, ids_salas[indice + 1]))
+        if duplicar_topologia:
+            primera_lateral = cantidad_llaves + 2
+            agregar_salida(0, primera_lateral, "X")
+            for indice in range(primera_lateral, cantidad_salas - 1):
+                agregar_salida(indice, indice + 1, "Y")
+            agregar_salida(cantidad_salas - 1, 0, "Z")
     elif estructura == "ciclo":
         agregar_salida(0, 1, "A", ids_llaves[1])
         agregar_salida(0, 2, "B", ids_llaves[0])
@@ -137,7 +159,7 @@ def generar_cripta_sintetica(semilla=42, cantidad_llaves=8, estructura="cadena")
         f"sintetica-{semilla}-{estructura}-{cantidad_llaves}",
         f"semilla-{semilla}",
         ids_salas[0],
-        ids_salas[-1],
+        ids_salas[cantidad_llaves + 1],
         ids_llaves[-1],
         presupuesto_solicitudes=0,
         inventario_max=0,
@@ -343,7 +365,10 @@ def correr():
     filas = []
     for cantidad_llaves in TAMANOS_BENCH:
         sintetica = generar_cripta_sintetica(
-            SEMILLA_BENCH, cantidad_llaves, "cadena"
+            SEMILLA_BENCH,
+            cantidad_llaves,
+            "cadena",
+            duplicar_topologia=True,
         )
         _, referencia = validar_equivalencia(sintetica)
         salas = len(sintetica.cripta)
