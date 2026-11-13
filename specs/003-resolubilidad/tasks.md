@@ -203,7 +203,7 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `python -m pytest tests/test_resolubilidad_restricciones.py -q` pasa y la revisión confirma que no se usan `dict`/`set` como índice/caché, `collections`, `heapq`, `bisect`, bibliotecas de grafos/rutas, `hash()` de cadenas ni `sorted()`/iteración nativa para ordenar el reporte; se reutilizan las estructuras y ordenamientos propios. El análisis distingue los mapeos necesarios para parsear/serializar JSON de su uso prohibido como índice o caché.
   - **Dependencias**: T003–T005, T016–T020, T027.
 
-- [ ] T030 Documentar la decisión y uso en `docs/DECISIONES.md`, `README.md`, `docs/PROMPTS_LLM.md` y `specs/003-resolubilidad/quickstart.md`.
+- [X] T030 Documentar la decisión y uso en `docs/DECISIONES.md`, `README.md`, `docs/PROMPTS_LLM.md` y `specs/003-resolubilidad/quickstart.md`.
   - **Atiende**: FR-001, FR-014, FR-015, FR-023, FR-024; SC-001–SC-004; RS-E10, RS-E23, RS-E33–RS-E34.
   - **Criterio**: `git diff --check` pasa; `docs/DECISIONES.md` contiene problema, alternativas, decisión, complejidad, evidencia y límites; README y quickstart documentan `--verificar`, `--forzar`, pruebas y ambos modos de bench; `docs/PROMPTS_LLM.md` registra el cambio.
   - **Dependencias**: T023, T025–T027.

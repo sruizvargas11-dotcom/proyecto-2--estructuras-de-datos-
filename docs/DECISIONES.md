@@ -1234,6 +1234,73 @@ Las pruebas de reversión usan el `Historial` real (`iniciar_accion`, `confirmar
 - Falta definir cómo una trampa o un enemigo aplicaría veneno directamente. `aplicar_veneno` ya recibe esos datos, pero ninguna ficha del catálogo actual (por ejemplo, `trp_dardos`) tiene un campo de daño por veneno, así que no se inventó la regla.
 - Al usar un objeto, `Partida.usar_objeto` consume las pociones y los antídotos; la antorcha no se consume al encenderse (`modelo/partida.py:344-361`).
 
+## 4.13 Verificación de resolubilidad
+
+### Problema
+
+Antes de comenzar, hay que determinar si desde la sala inicial se puede obtener la
+llave de salida y cruzar una puerta que la requiera para entrar en la sala de salida.
+Cuando no se puede, el reporte debe explicar las llaves inobtenibles, sus dependencias,
+los ciclos y la frontera bloqueada. El mismo resultado se presenta en consola y al
+iniciar una partida, sin revelar ubicaciones en el resumen de inicio.
+
+### Alternativas consideradas
+
+| Alternativa | Ventaja | Costo o límite |
+| --- | --- | --- |
+| Recorrer toda la región de nuevo por cada llave | Implementación directa y útil como oráculo independiente | Repite trabajo hasta O(K·(S+E)) en una cadena de K llaves |
+| Recorrido incremental con puertas pendientes | Cada sala y salida se explora al ser alcanzable; una llave libera las puertas que la requieren | Requiere conservar las puertas pendientes por llave y cerrar las rondas en orden determinista |
+| Diagnóstico mediante otro recorrido global por cada llave candidata | Sencillo de explicar | Aumenta el costo cuando se diagnostican muchas llaves |
+
+### Decisión
+
+El modelo calcula el veredicto y el resultado estructurado con un recorrido
+incremental, una cola de salas y puertas pendientes asociadas a sus llaves. Las
+llaves de cada ronda se ordenan por sala numérica e id antes de liberar las puertas
+para la ronda siguiente. Los costos de las salidas no intervienen. El recorrido
+completo repetido se conserva solo como referencia de benchmark y oráculo de
+equivalencia.
+
+La frontera se obtiene de las puertas pendientes al terminar ese recorrido. Para
+diagnosticar indispensabilidad se limita el análisis a la región exterior y a las
+llaves candidatas. Para cada llave participante se informa un ciclo simple más corto;
+los empates siguen el orden lexicográfico de ids y puertas. El modelo no formatea
+texto: la presentación produce el reporte estable y el resumen sin ubicaciones.
+`--verificar` no instancia la vista; al iniciar, el controlador bloquea estados no
+resolubles o no verificables salvo `--forzar`. Los errores de datos no se fuerzan.
+La consulta de llaves respeta el presupuesto de solicitudes y su persistencia se
+valida contra la versión de la cripta.
+
+### Análisis de complejidad
+
+Con S salas, E salidas y K llaves, el recorrido incremental esperado es
+O(S + E + K log K), dado el ordenamiento determinista de llaves por ronda. El
+diagnóstico de indispensabilidad puede costar O(|U|·(S+E)), donde U es el conjunto
+de llaves candidatas; no comparte el límite lineal del recorrido principal. La
+selección del ciclo más corto es polinómica y determinista. No se usan bibliotecas
+de grafos ni diccionarios o conjuntos como índices/cachés en la lógica del modelo.
+
+### Evidencia empírica
+
+El caso `resolubilidad` compara el resultado incremental y el de referencia antes
+de cronometrar; genera cadenas deterministas con semilla 42 y duplica S/E/K en tres
+tamaños. La medición completa de `--bench` (20 repeticiones) obtuvo p95 incremental
+de 1.286, 2.256 y 3.409 ms para S/E/K = 16/16/8, 32/32/16 y 64/64/32; sus razones
+fueron 1.754× y 1.511×. El entorno, máximos y protocolo están en
+[quickstart de resolubilidad](../specs/003-resolubilidad/quickstart.md).
+
+### Límites conocidos
+
+- No estaba disponible una cripta publicada con sus datos de llaves; SC-001 solo se
+  midió con la mayor cripta sintética disponible.
+- En una ejecución de `--bench --salida` el caso de resolubilidad arrojó una razón
+  p95 de 2.750× en la última duplicación, por encima de SC-004. Una comprobación
+  independiente de 100 muestras pasó, pero la variación sigue pendiente de resolver;
+  no se afirma cumplimiento estable de SC-004.
+- El diagnóstico de llaves indispensables puede dominar el tiempo en una cripta con
+  muchas llaves candidatas; la medición del caso de cadena no cubre todos los peores
+  casos de diagnóstico.
+
 ## Registro de cambio de especificación
 
 ### Terreno y cazador (2026-11-04)

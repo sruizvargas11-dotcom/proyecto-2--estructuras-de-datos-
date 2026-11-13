@@ -1,7 +1,6 @@
 # Quickstart de validación
 
-Esta guía define los comandos previstos una vez implementada la capacidad. No se han
-ejecutado en esta fase de planificación.
+Esta guía documenta los comandos de uso y la evidencia de validación ejecutada.
 
 ## Verificación por consola
 
@@ -61,11 +60,49 @@ completo repetido. Usar al menos tres tamaños duplicados y 20 repeticiones por 
 (mínimo requerido: cinco). Revisar evidencia JSON en `bench/resultados/`: commit limpio,
 Python, sistema, CPU, semilla, mediana, p95, máximo y muestras.
 
-Para SC-001 incluir la cripta publicada mayor disponible además de sintéticas; excluir
-red, carga de datos y renderizado. Registrar explícitamente el máximo. No reportar
-cumplimiento si p95 ≥200 ms o el crecimiento supera 2.5×. La combinación
-`--bench --salida` está pendiente de aclaración porque actualmente selecciona un reporte
-especializado distinto y omite los casos de `CASOS`.
+Las mediciones siguientes se hicieron en un árbol limpio en el commit `1781d41`,
+Python 3.12.10, Windows 10 (10.0.19045), Intel Core i7-8750H @ 2.20 GHz,
+semilla 42. No había una cripta publicada con datos de llaves disponible; por eso,
+SC-001 se midió con la mayor cripta sintética disponible (S/E/K = 64/64/32). Se
+excluyeron red, carga de datos y renderizado. La equivalencia de veredicto, orden y
+frontera se comprobó antes de medir.
+
+Ejecución completa de `python main.py --bench`, 20 repeticiones por tamaño; evidencia:
+`bench/resultados/2026-11-13T015255_1781d41_bench.json`.
+
+| S/E/K | variante | mediana ms | p95 ms | máximo ms | razón p95 |
+|---|---|---:|---:|---:|---:|
+| 16/16/8 | incremental | 0.694 | 1.286 | 1.443 | — |
+| 32/32/16 | incremental | 1.462 | 2.256 | 2.639 | 1.754× |
+| 64/64/32 | incremental | 3.168 | 3.409 | 3.599 | 1.511× |
+
+Para `python main.py --bench --salida C:\Temp\resolubilidad-terreno.json`, el caso
+de resolubilidad se ejecutó y midió antes del benchmark especializado de terreno.
+Ese benchmark legado seguía en la repetición 17/30, por lo que se detuvo el comando
+sin completar el reporte de terreno. Resultados de resolubilidad (20 repeticiones):
+
+| S/E/K | variante | mediana ms | p95 ms | máximo ms |
+|---|---|---:|---:|---:|
+| 16/16/8 | incremental | 0.938 | 0.996 | 1.282 |
+| 32/32/16 | incremental | 1.552 | 1.820 | 1.876 |
+| 64/64/32 | incremental | 3.793 | 5.006 | 5.105 |
+
+En esa ejecución, las razones p95 fueron 1.827× y 2.750×; el segundo crecimiento
+excedió SC-004. Como comprobación adicional de variabilidad, se repitió directamente
+el caso de benchmark con 100 muestras por tamaño, tras verificar equivalencia:
+
+| S/E/K | variante | mediana ms | p95 ms | máximo ms |
+|---|---|---:|---:|---:|
+| 16/16/8 | incremental | 1.977 | 2.973 | 3.133 |
+| 32/32/16 | incremental | 1.810 | 4.412 | 5.409 |
+| 64/64/32 | incremental | 3.368 | 4.622 | 8.140 |
+
+Las razones p95 de esta comprobación fueron 1.484× y 1.048×. SC-001 se cumple en
+las mediciones sintéticas (todos los p95 <200 ms); SC-004 pasa en el `--bench` completo
+y en la comprobación de 100 muestras, pero no en la ejecución de `--bench --salida`.
+Por tanto, el resultado de SC-004 es variable y T028 queda pendiente hasta resolver
+esa variación y completar el comando con `--salida`. No se afirma cumplimiento sobre
+una cripta publicada.
 
 ## Preparación
 

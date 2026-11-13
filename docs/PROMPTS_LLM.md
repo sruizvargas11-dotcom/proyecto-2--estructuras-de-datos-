@@ -1205,3 +1205,19 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
 - **Prompt:**
   > [17:04] entonces completa lo que falta haz las pruebas que falten la separacion MVC, cancela el pr y rehazlo
 - **Uso:** Mover el controlador gráfico al paquete controlador, corregir esperas y cancelación HTTP, ampliar pruebas y sustituir el PR anterior por el PR 28. Verificación final registrada: 1088 pruebas aprobadas.
+
+## Implementación de resolubilidad (2026-11-13)
+
+### Herramienta
+
+Copilot SDK en VS Code. El modelo específico no se registró.
+
+### Prompt y uso
+
+> Implementar `specs/003-resolubilidad` siguiendo `tasks.md`, con pruebas por tarea,
+> mediciones de benchmark reproducibles, separación MVC y sin inventar datos offline.
+
+Se completaron las tareas de integración CLI, replay, forzado, benchmark y revisión
+automatizada de restricciones. La medición con `--bench --salida` dejó pendiente
+SC-004 por variabilidad del p95; el reporte de mediciones y la falta de una cripta
+publicada con llaves se documentan en `specs/003-resolubilidad/quickstart.md`.
