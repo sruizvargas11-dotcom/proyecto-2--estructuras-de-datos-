@@ -15,8 +15,8 @@ from modelo.verificador_resolubilidad import verificar_resolubilidad
 
 
 SEMILLA_BENCH = 42
-TAMANOS_BENCH = (8, 16, 32)
-REPETICIONES_BENCH = 20
+TAMANOS_BENCH = (96, 192, 384)
+REPETICIONES_BENCH = 50
 
 
 @dataclass(frozen=True)
