@@ -1,0 +1,13 @@
+{
+  "version": "fd58f7743b9e",
+  "llaves": [
+    {
+      "id": "itm_llave_bronce",
+      "sala": 3
+    },
+    {
+      "id": "itm_llave_negra",
+      "sala": 4
+    }
+  ]
+}

@@ -205,6 +205,8 @@ python main.py --help
 | `--gui` | Abrir la interfaz gráfica (Pygame). No se combina con `--replay`, `--bench` ni `--solo-mapa`. |
 | `--offline-dir CARPETA` | Elegir otra carpeta de datos; requiere `--offline`. |
 | `--cripta ID` | Elegir una cripta sin pasar por el menú. |
+| `--verificar ID` | Verificar una cripta e imprimir el reporte sin iniciar partida ni crear la vista. |
+| `--forzar` | Permitir iniciar una partida no resoluble o no verificable; no permite ignorar errores de datos. |
 | `--solo-mapa` | Cargar y verificar el mapa sin iniciar una partida. Sin ID explícito usa la primera cripta. |
 | `--cache-size N` | Fijar la capacidad de la LRU del catálogo; el valor predeterminado es 25. |
 | `--cache-dir CARPETA` | Elegir dónde guardar la caché persistente. |
@@ -221,11 +223,21 @@ python main.py --help
 Ejemplos:
 
 ```console
+python main.py --offline --verificar cripta-01
 python main.py --offline --cripta cripta-01 --hilos
+python main.py --offline --cripta cripta-01 --forzar
+python main.py --offline --gui --cripta cripta-01 --forzar
 python main.py --offline --solo-mapa
 python main.py --offline --cache-size 50 --cache-dir partidas/cache-prueba
 python main.py --offline --partidas-dir partidas/ensayo --reportes partidas/ensayo/reportes.txt
 ```
+
+`--verificar ID` no inicia una partida ni crea la vista: devuelve 0 si es resoluble,
+1 si no lo es y 2 ante datos inválidos, fallos de red o estado no verificable. Al
+iniciar una partida, el reporte se muestra siempre. `--forzar` permite continuar
+ante un resultado no resoluble o no verificable, también con `--gui`; un error de
+datos sigue bloqueando. `--verificar` no se combina con `--replay` ni `--bench` e
+ignora `--forzar`.
 
 ## Guardado y reproducción
 
@@ -393,6 +405,12 @@ python -m pytest -q
 
 La suite bloquea las solicitudes HTTP reales y usa datos locales, fuentes simuladas y carpetas temporales. Incluye pruebas de estructuras, validación de datos, persistencia, combate, efectos, inventario, retroceso, comandos, caché, replay y determinismo.
 
+Para las pruebas focalizadas de resolubilidad, CLI, inicio forzado y restricciones:
+
+```console
+python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_g17.py tests/test_cli_resolubilidad.py tests/test_inicio_forzar_resolubilidad.py tests/test_resolubilidad_restricciones.py -q
+```
+
 [tests/vista/](tests/vista/) prueba la vista Pygame: el controlador en su hilo de
 fondo, el mapeo de teclas, el render de sala/enemigos, la paridad con la consola
 (misma semilla y acciones → mismo estado final y mismo `.log`) y que `--replay`/
@@ -412,11 +430,15 @@ La validación local del 16 de octubre de 2026 completó **665 pruebas**. Ese re
 
 ```console
 python main.py --bench
+python main.py --bench --salida docs/evidencia/terreno.json
 ```
 
-Se comparan la agenda con heap y búsqueda lineal, la LRU y una lista plana, la recuperación de fichas desde memoria y disco, las operaciones de inventario, el retroceso con deltas y copias, los ordenamientos y el guardado binario frente a JSON.
+Se comparan la agenda con heap y búsqueda lineal, la LRU y una lista plana, la recuperación de fichas desde memoria y disco, las operaciones de inventario, el retroceso con deltas y copias, los ordenamientos, el guardado binario frente a JSON y la verificación incremental de resolubilidad contra una referencia de recorridos repetidos. Ambos modos ejecutan el caso de resolubilidad; `--salida` conserva además su reporte especializado de terreno.
 
 Las alternativas pueden tener condiciones distintas: por ejemplo, la lista plana del ensayo de caché conserva todas las claves, mientras que la LRU tiene capacidad limitada. Hay que leer los resultados junto con la configuración del caso, especialmente antes de comparar aciertos o concluir que una estructura es más rápida.
+
+Los comandos focalizados, el protocolo y los resultados de resolubilidad están en
+[specs/003-resolubilidad/quickstart.md](specs/003-resolubilidad/quickstart.md).
 
 Para medir los algoritmos reales de ordenamiento y guardar el resultado:
 

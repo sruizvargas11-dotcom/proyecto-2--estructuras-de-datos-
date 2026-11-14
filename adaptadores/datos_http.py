@@ -124,6 +124,28 @@ class DatosHTTP(FuenteDeDatos):
         """Consulta una página del mapa de salas."""
         return self._get(f"/criptas/{cripta_id}/salas", params={"pagina": pagina})
 
+    def llaves_cripta(self, cripta_id: str) -> dict:
+        """Consulta y valida las ubicaciones de llaves de una cripta."""
+        ruta = f"/criptas/{cripta_id}/llaves"
+        respuesta = self._get(ruta)
+        llaves = respuesta.get("llaves")
+        if not isinstance(llaves, list):
+            raise ValueError(f"GET {ruta}: se esperaba una lista en 'llaves'.")
+        for indice, llave in enumerate(llaves):
+            if not isinstance(llave, dict):
+                raise ValueError(f"GET {ruta}: la llave {indice} debe ser un objeto.")
+            if not isinstance(llave.get("id"), str) or not llave["id"]:
+                raise ValueError(f"GET {ruta}: la llave {indice} requiere un id de texto no vacío.")
+            if type(llave.get("sala")) is not int:
+                raise ValueError(f"GET {ruta}: la llave {indice} requiere un id de sala entero.")
+            if (
+                "enemigo" in llave
+                and llave["enemigo"] is not None
+                and not isinstance(llave["enemigo"], str)
+            ):
+                raise ValueError(f"GET {ruta}: el enemigo de la llave {indice} debe ser texto.")
+        return respuesta
+
     def contenido_salas(self, cripta_id: str, sala_ids: list) -> dict:
         """Obtiene el contenido de un lote de hasta 10 salas."""
         if not sala_ids or len(sala_ids) > 10:

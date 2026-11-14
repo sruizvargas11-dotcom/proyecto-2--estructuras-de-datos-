@@ -1284,3 +1284,19 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
 - **Prompt:**
   > Corrige la exposición de salas avistadas y desconocidas en las vistas de la 002 (FR-003, FR-006, SC-002, NV-25). En VistaConsola._salidas y construir_estado de controlador_pygame, muestra el nombre del destino solo si partida.conocimiento.explorada(id) es verdadero; para un destino avistado muestra «sala avistada» sin nombre ni ID en el texto. Conserva dirección, costo y estado visible de la puerta actual. En ControladorPygame._leer_topologia publica una copia plana de salas exploradas y avistadas: nombres y aristas solo desde exploradas, nodos avistados sin nombre ni salidas, omite desconocidas. Construye esa copia en el hilo del modelo al publicar mostrar_estado, y publícala junto al estado bajo el lock existente. En la escena, recalcula el layout cuando cambie esa topología, incluida carga o retroceso; conserva el cálculo BFS existente. Añade pruebas de regresión para consola y snapshot/minimapa que comprueben sala avistada sin nombre, desconocida ausente y revelación al explorar. Ejecuta pruebas focalizadas de la 002 y las vistas. Limita los cambios a vistas, su controlador y pruebas. Reporta resultado y archivos.
 - **Uso:** Corregir la revelación anticipada de salas en consola y Pygame y verificar la regresión.
+
+## Implementación de resolubilidad (2026-11-13)
+
+### Herramienta
+
+Copilot SDK en VS Code. El modelo específico no se registró.
+
+### Prompt y uso
+
+> Implementar `specs/003-resolubilidad` siguiendo `tasks.md`, con pruebas por tarea,
+> mediciones de benchmark reproducibles, separación MVC y sin inventar datos offline.
+
+Se completaron las tareas de integración CLI, replay, forzado, benchmark y revisión
+automatizada de restricciones. La medición con `--bench --salida` dejó pendiente
+SC-004 por variabilidad del p95; el reporte de mediciones y la falta de una cripta
+publicada con llaves se documentan en `specs/003-resolubilidad/quickstart.md`.

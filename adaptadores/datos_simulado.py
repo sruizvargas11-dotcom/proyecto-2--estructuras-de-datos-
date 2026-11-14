@@ -44,6 +44,9 @@ class DatosSimulado(FuenteDeDatos):
     def esqueleto_cripta(self, cripta_id, pagina):
         return self._llamar("esqueleto_cripta", cripta_id, pagina)
 
+    def llaves_cripta(self, cripta_id):
+        return self._llamar("llaves_cripta", cripta_id)
+
     def contenido_salas(self, cripta_id, sala_ids):
         return self._llamar("contenido_salas", cripta_id, sala_ids)
 

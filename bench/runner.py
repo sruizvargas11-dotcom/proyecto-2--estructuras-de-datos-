@@ -72,10 +72,13 @@ def _guardar_evidencia(filas, commit, py, so, cpu, semilla=42):
 
 def main_bench(salida=None):
     if salida is not None:
+        from bench.casos import resolubilidad
+        filas = resolubilidad.correr()
+        imprimir_tabla(filas)
         from bench.terreno_cazador import crear_reporte
         crear_reporte(salida)
         print(f"evidencia: {salida}")
-        return []
+        return filas
     commit, py, so, cpu = _encabezado()
     filas = []
     for caso in CASOS:

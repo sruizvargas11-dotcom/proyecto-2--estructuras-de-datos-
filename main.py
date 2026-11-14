@@ -8,7 +8,7 @@
 import argparse
 from pathlib import Path
 from vista.vista_consola import informar
-from controlador.controlador_red import cargar_cripta
+from controlador.controlador_red import cargar_cripta, _carpeta_cache_por_defecto
 from controlador.reporte_red import motivo_error, motivo_partida, registrar_reporte
 from estructuras.listalru import CAPACIDAD_DEFECTO
 
@@ -26,6 +26,10 @@ def main(argumentos=None):
     parser = argparse.ArgumentParser(description='CRIPTA')
     parser.add_argument('--offline', action='store_true', help='Usar los archivos locales')
     parser.add_argument('--cripta', help='Identificador; si se omite, permite elegir una cripta')
+    parser.add_argument('--verificar', nargs='?', const=True, metavar='CRIPTA',
+                        help='Verificar una cripta sin iniciar una partida')
+    parser.add_argument('--forzar', action='store_true',
+                        help='Permitir iniciar aunque la cripta no sea resoluble')
     parser.add_argument('--cache-dir', help='Carpeta alternativa para la caché')
     parser.add_argument('--solo-mapa', action='store_true',
                         help='Solo cargar y verificar el mapa, sin jugar')
@@ -50,6 +54,8 @@ def main(argumentos=None):
     parser.add_argument('--gui', action='store_true',
                         help='Jugar con la vista Pygame en vez de la consola')
     opciones = parser.parse_args(argumentos)
+    if opciones.verificar is not None and (opciones.replay or opciones.bench):
+        parser.error('--verificar no se puede combinar con --replay ni --bench')
     if opciones.replay and opciones.bench:
         parser.error('--replay y --bench son modos excluyentes')
     if opciones.gui and (opciones.replay or opciones.bench or opciones.solo_mapa):
@@ -58,6 +64,14 @@ def main(argumentos=None):
         parser.error('--offline-dir requiere --offline')
     if opciones.bench_caso and not opciones.bench:
         parser.error('--bench-caso requiere --bench')
+    if opciones.verificar is True:
+        if not opciones.cripta:
+            parser.error('--verificar requiere un identificador de cripta')
+        cripta_id_verificar = opciones.cripta
+    elif opciones.verificar is not None:
+        cripta_id_verificar = opciones.verificar
+        if opciones.cripta and opciones.cripta != cripta_id_verificar:
+            parser.error('--cripta y --verificar indican criptas distintas')
     if opciones.bench:
         if opciones.bench_caso == 'niebla-viaje':
             from bench.niebla_viaje import ejecutar_benchmark
@@ -82,6 +96,10 @@ def main(argumentos=None):
         if opciones.offline_dir:
             args_fuente += ['--offline-dir', opciones.offline_dir]
         fuente = crear_fuente(args_fuente)
+        if opciones.verificar is not None:
+            return _verificar_sin_partida(
+                fuente, cripta_id_verificar, opciones.cache_dir
+            )
         if opciones.replay:
             return reproducir(fuente, opciones)
         if opciones.gui:
@@ -112,11 +130,60 @@ def main(argumentos=None):
             return 0
         return jugar(fuente, cripta_id, opciones)
     except (OSError, ValueError, RuntimeError) as error:
+        if opciones.verificar is not None:
+            informar(f'ERROR: {error}')
+            return 2
+        from controlador.inicio_partida import InicioBloqueado
+        if isinstance(error, InicioBloqueado):
+            from vista.formato_resolubilidad import formatear_resumen
+            informar(formatear_resumen(error.resultado).rstrip('\n'))
+            return 1
         informar(f'No se pudo cargar la cripta: {error}')
         if fuente is not None and not opciones.solo_mapa and not getattr(error, 'reportado', False):
             _mostrar_reporte(fuente, None, 'replay' if opciones.replay else 'partida',
                              motivo_error(error), opciones)
         return 1
+
+
+def _verificar_sin_partida(fuente, cripta_id, carpeta_cache):
+    """Imprime el reporte completo de resolubilidad sin iniciar una vista."""
+    from modelo.verificador_resolubilidad import verificar_resolubilidad
+    from persistencia.llaves_cripta import obtener_llaves
+    from vista.formato_resolubilidad import (
+        formatear_no_verificable,
+        formatear_reporte,
+    )
+
+    try:
+        cripta, _ = cargar_cripta(fuente, cripta_id, carpeta_cache)
+    except (OSError, ValueError, RuntimeError) as error:
+        informar(f'ERROR: {error}')
+        return 2
+
+    consulta_llaves = getattr(fuente, 'llaves_cripta', None)
+    if not callable(consulta_llaves):
+        informar(formatear_no_verificable().rstrip('\n'))
+        return 2
+
+    carpeta_cache_llaves = (
+        carpeta_cache
+        if carpeta_cache is not None
+        else _carpeta_cache_por_defecto()
+    )
+    try:
+        respuesta = obtener_llaves(
+            fuente, carpeta_cache_llaves, cripta_id, cripta.version
+        )
+    except (OSError, RuntimeError):
+        informar(formatear_no_verificable().rstrip('\n'))
+        return 2
+    except ValueError as error:
+        informar(f'ERROR: {error}')
+        return 2
+
+    resultado = verificar_resolubilidad(cripta, respuesta['llaves'])
+    informar(formatear_reporte(resultado).rstrip('\n'))
+    return 0 if resultado.veredicto == 'RESOLUBLE' else 1
 
 
 def _mostrar_reporte(fuente, sesion, modo, motivo, opciones, bitacora=None):
@@ -144,7 +211,11 @@ def jugar(fuente, cripta_id, opciones):
         ruta_bitacora=ruta_log,
         cache_size=opciones.cache_size,
         despachador=DespachoEnHilos() if opciones.hilos else None,
-        nombre_jugador=nombre_jugador)
+        nombre_jugador=nombre_jugador,
+        forzar=opciones.forzar)
+    if sesion.resultado_resolubilidad is not None:
+        from vista.formato_resolubilidad import formatear_resumen
+        informar(formatear_resumen(sesion.resultado_resolubilidad).rstrip('\n'))
     vista.mostrar_inicio(cripta_id, semilla)
     controlador = ControladorJuego(sesion, vista,
                                     str(Path(opciones.partidas_dir) / 'partida.sav'),
@@ -175,7 +246,8 @@ def jugar_gui(fuente, opciones):
     from vista_pygame.app import ejecutar as ejecutar_gui
 
     ejecutar_gui(fuente, carpeta_cache=opciones.cache_dir, cache_size=opciones.cache_size,
-                partidas_dir=opciones.partidas_dir, reportes=opciones.reportes)
+                partidas_dir=opciones.partidas_dir, reportes=opciones.reportes,
+                forzar=opciones.forzar)
     return 0
 
 

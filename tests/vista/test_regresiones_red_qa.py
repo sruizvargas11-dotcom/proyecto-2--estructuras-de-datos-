@@ -39,10 +39,13 @@ def test_dos_partidas_http_comparten_uuid_y_preservan_contadores(tmp_path):
             datos = fuente_local.catalogo(params['ids'].split(','))
         elif len(partes) == 2:
             datos = fuente_local.datos_cripta(partes[1])
+            datos['presupuesto_solicitudes'] += 10
         elif partes[2] == 'salas':
             datos = fuente_local.esqueleto_cripta(partes[1], params['pagina'])
         elif partes[2] == 'version':
             datos = fuente_local.version_cripta(partes[1])
+        elif partes[2] == 'llaves':
+            datos = fuente_local.llaves_cripta(partes[1])
         else:
             datos = fuente_local.contenido_salas(
                 partes[1], [int(x) for x in params['salas'].split(',')])

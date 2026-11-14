@@ -67,6 +67,23 @@ class DatosOffline(FuenteDeDatos):
             raise ValueError(f"numero pagina invalido {pagina}")
         return self._leer(os.path.join(cripta_id, f"salas_p{pagina}.json"))
 
+    def llaves_cripta(self, cripta_id):
+        """Lee ubicaciones de llaves solo si corresponden a la versión descargada."""
+        if not cripta_id:
+            raise ValueError("id de la cripta no puede ser vacio.")
+        version = self.version_cripta(cripta_id).get("version")
+        if not isinstance(version, str) or not version:
+            raise ValueError(f"Versión offline inválida para la cripta '{cripta_id}'.")
+        datos = self._leer(os.path.join(cripta_id, "llaves.json"))
+        if not isinstance(datos, dict) or datos.get("version") != version:
+            raise ValueError(
+                f"Versión de llaves offline obsoleta o inválida para '{cripta_id}'."
+            )
+        llaves = datos.get("llaves")
+        if not isinstance(llaves, list):
+            raise ValueError(f"Archivo de llaves inválido para la cripta '{cripta_id}'.")
+        return {"llaves": llaves}
+
     def contenido_salas(self, cripta_id, sala_ids):
         if not sala_ids:
             raise ValueError("sala_ids no puede estar vacío.")

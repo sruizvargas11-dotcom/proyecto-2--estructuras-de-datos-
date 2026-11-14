@@ -1,7 +1,8 @@
 """Menú de casos del --bench. Para agregar uno: crea casos/mi_caso.py con una
 función `correr()` que devuelva una lista de Fila, e impórtalo aquí."""
 from bench.casos import (heap, lru, recuperacion, inventario,
-                         historial, ordenamiento, binario_json, mensajes)
+                         historial, ordenamiento, binario_json, mensajes,
+                         resolubilidad)
 
 CASOS = [
     mensajes.correr,       # buffer circular frente a desplazamientos
@@ -12,4 +13,5 @@ CASOS = [
     historial.correr,      # historial de retroceso
     ordenamiento.correr,   # ordenamientos
     binario_json.correr,   # guardado/carga
+    resolubilidad.correr,  # verificación incremental frente a referencia
 ]
