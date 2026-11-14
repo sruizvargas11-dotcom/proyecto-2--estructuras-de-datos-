@@ -181,13 +181,18 @@ def construir_estado(partida, proximos_turnos=None, cargando=False):
     sala = jugador.sala_actual
 
     salidas = []
+    conocimiento = partida.conocimiento
     for salida in sala.salidas:
         destino = salida.sala_destino if salida.sala_destino is not None \
             else partida.cripta.sala_por_id(salida.sala_destino_id)
+        if conocimiento.explorada(salida.sala_destino_id) and destino is not None:
+            nombre_destino = destino.nombre
+        else:
+            nombre_destino = "sala avistada"
         salidas.append(SalidaVisual(
             direccion=salida.direccion,
             sala_destino_id=salida.sala_destino_id,
-            nombre_destino=destino.nombre if destino is not None else "",
+            nombre_destino=nombre_destino,
             cerrada=salida.cerrada,
             tiene_llave=partida.llave_para(salida) is not None if salida.cerrada else False,
             llave_tipo_id=salida.llave,
@@ -506,22 +511,34 @@ class ControladorPygame:
         self._hilo = threading.Thread(target=self._correr, name="cripta-modelo", daemon=False)
         self._hilo.start()
 
-    def _leer_topologia(self):
-        """Copia la topología al iniciar y tras cargar otra sesión.
-        Al iniciar aún no corre el hilo de modelo; al cargar se ejecuta
-        dentro de ese hilo. La vista recibe datos planos."""
-        cripta = self.sesion.partida.cripta
+    def _leer_topologia(self, partida=None):
+        """Copia plana de la topología conocida (exploradas y avistadas).
+        Se ejecuta en el hilo del modelo; publica nombres y salidas solo desde
+        salas exploradas, nodos avistados sin nombre ni salidas y omite las
+        desconocidas."""
+        from modelo.conocimiento import AVISTADA, EXPLORADA
+        if partida is None:
+            partida = self.sesion.partida
+        cripta = partida.cripta
+        conocimiento = partida.conocimiento
         topologia = []
-        for sala in cripta.recorrer_salas():
-            salidas = [(s.direccion, s.sala_destino_id) for s in sala.salidas]
-            topologia.append(SalaTopologia(sala.id, sala.nombre, salidas))
+        for registro in conocimiento.registros:
+            estado = registro.estado
+            if estado == EXPLORADA:
+                sala = registro.sala
+                salidas = [(s.direccion, s.sala_destino_id) for s in sala.salidas]
+                topologia.append(SalaTopologia(sala.id, sala.nombre, salidas))
+            elif estado == AVISTADA:
+                topologia.append(SalaTopologia(registro.id, "", []))
         self._topologia = topologia
         self._sala_inicial_id = cripta.sala_inicial_id
         self._sala_salida_id = cripta.sala_salida_id
+        return topologia
 
     def topologia_cripta(self):
-        """Lista de SalaTopologia; no cambia durante la partida."""
-        return self._topologia
+        """Lista publicada de SalaTopologia (exploradas y avistadas)."""
+        with self._lock:
+            return self._topologia
 
     def sala_inicial_id(self):
         return self._sala_inicial_id
@@ -705,8 +722,10 @@ class ControladorPygame:
         proximos = partida.reloj.proximos_eventos(5)
         foto = construir_estado(partida, proximos_turnos=proximos)
         foto = replace(foto,cripta_nombre=self.nombre_cripta(partida.cripta_id))
+        topologia = self._leer_topologia(partida)
         with self._lock:
             self._estado = foto
+            self._topologia = topologia
             self._esperando = False
 
     def agregar_mensaje(self, tiempo, texto):

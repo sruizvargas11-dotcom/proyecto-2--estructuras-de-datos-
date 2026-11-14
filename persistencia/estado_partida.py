@@ -30,7 +30,7 @@ MODULOS = (
     'modelo.entidades.objetos.pocion', 'modelo.entidades.objetos.antorcha',
     'modelo.entidades.objetos.antidoto', 'modelo.entidades.objetos.llave',
     'modelo.entidades.objetos.pergamino_retroceso',
-    'modelo.entidades.objetos.fabrica_objetos',
+    'modelo.entidades.objetos.fabrica_objetos', 'modelo.conocimiento',
 )
 OMITIDOS_PARTIDA = ('al_mensaje', 'al_morir_enemigo', 'al_entrar_sala',
                     'al_mover_enemigo', 'al_atacar', 'al_activar_trampa',

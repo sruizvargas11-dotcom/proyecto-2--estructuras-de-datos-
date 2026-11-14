@@ -1415,3 +1415,33 @@ en el JSON versionable, que registra el checksum del fixture
 La suite completa había pasado 1175 pruebas con Python 3.12.10 en la revisión anterior; tras
 la optimización final, las pruebas focalizadas de cazador y benchmark pasaron 15/15. No se
 ejecutaron `git add`, commit ni push.
+
+
+## 002: Niebla de guerra, antorcha y viaje automático
+
+Se separa el conocimiento del jugador de la topología real. Cada sala tiene un registro
+ordenado por ID que distingue si es desconocida, avistada o explorada. Las salidas
+mantienen su último estado observado, con un tercer valor para las puertas que el
+jugador todavía no observó. La antorcha explora las salas alcanzadas por su efecto
+usando el esqueleto cargado y deja la observación de puertas remotas para cuando el
+jugador esté en uno de sus extremos. Consola y Pygame reciben solo lo que el jugador
+puede ver. El minimapa se recalcula al cambiar la topología conocida.
+
+El viaje calcula cada paso con Dijkstra inverso sobre las salidas conocidas y abiertas.
+Reutiliza la cola de prioridad de la 001 y desempata por el ID de la primera vecina.
+Cada paso usa la ejecución normal de movimiento. La orden se guarda como comentario
+en la bitácora, mientras que cada movimiento se registra como acción reproducible.
+Los cambios de conocimiento se registran con deltas, se guardan con la partida y se
+pueden reconstruir en una copia aislada. La consulta histórica de interfaz se integra
+con la capacidad 004.
+
+En cripta-01, con semilla 42 y 100 muestras por operación, el máximo medido para
+calcular el siguiente paso fue 0,0444 ms frente al límite de 5 ms. El resultado
+corresponde a seis salas completamente exploradas. La preparación del mapa queda
+fuera del cronómetro. El JSON conserva el entorno, las muestras y la revisión de
+partida, con indicación de que se midieron cambios locales.
+
+- [Especificación](../specs/002-niebla-viaje/spec.md)
+- [Trazabilidad de los 34 casos](evidencia/2026-11-12-niebla-viaje-trazabilidad.md)
+- [Benchmark JSON](evidencia/2026-11-12-niebla-viaje-benchmark.json)
+- [Resultados de la validación](evidencia/2026-11-12-niebla-viaje-validacion.md)

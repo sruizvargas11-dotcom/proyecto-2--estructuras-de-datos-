@@ -27,3 +27,51 @@ def test_minimapa_respeta_y_restaura_un_recorte_preexistente():
     assert im.get_at((20,20))[:3]==(220,0,220)
     dibujar_minimapa(im,pygame.Rect(20,20,300,150),[],[],1,None)
     assert im.get_clip()==clip
+
+
+def test_escena_recalcula_layout_minimapa_cuando_cambia_topologia():
+    from controlador.controlador_pygame import SalaTopologia
+    from vista_pygame.escenas.partida import EscenaPartida
+
+    class ControladorFalso:
+        def __init__(self):
+            self.topologia = [
+                SalaTopologia(1, "Entrada", [("N", 2)]),
+                SalaTopologia(2, "", []),
+            ]
+        def esperando_red(self): return False
+        def estado(self): return None
+        def revision_sesion(self): return 0
+        def error_pendiente(self): return None
+        def topologia_cripta(self): return list(self.topologia)
+        def sala_inicial_id(self): return 1
+        def eventos_nuevos(self): return []
+
+    class ContextoFalso:
+        def __init__(self, controlador):
+            self.controlador = controlador
+            self.entrada_cinematica = False
+
+    ctl = ControladorFalso()
+    escena = EscenaPartida(ContextoFalso(ctl))
+    escena.al_entrar(None)
+    escena.actualizar(16)
+    assert [sid for sid, _, _ in escena._layout_minimapa] == [1, 2]
+
+    # Al explorar la sala 2 se revelan sus salidas hacia 3 y 5.
+    ctl.topologia = [
+        SalaTopologia(1, "Entrada", [("N", 2)]),
+        SalaTopologia(2, "Pasillo", [("S", 1), ("N", 3), ("E", 5)]),
+        SalaTopologia(3, "", []),
+        SalaTopologia(5, "", []),
+    ]
+    escena.actualizar(16)
+    assert [sid for sid, _, _ in escena._layout_minimapa] == [1, 2, 3, 5]
+
+    # Al retroceder vuelve a la topología previa.
+    ctl.topologia = [
+        SalaTopologia(1, "Entrada", [("N", 2)]),
+        SalaTopologia(2, "", []),
+    ]
+    escena.actualizar(16)
+    assert [sid for sid, _, _ in escena._layout_minimapa] == [1, 2]

@@ -857,6 +857,8 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
 
 Codex, con los modelos GPT-6 Astra y GPT-6.1 Sol según lo indicado por el autor. No se identifica qué modelo corresponde a cada intercambio.
 
+Antigravity, con Claude Opus 5.5 (Low), para la capacidad 002 de Spec Kit (entradas 27 a 29).
+
 ### Resumen de los prompts
 
 Se registran los prompts enviados entre el 5 y el 18 de octubre de 2026, agrupados por tema en 26 entradas. Las fechas y horas se recuperaron del historial local de la conversación, en hora de Costa Rica (UTC−06:00); la hora de cada prompt se indica entre corchetes al inicio de la cita. Los prompts se copian tal como se escribieron. Por su carácter se agrupan así:
@@ -867,6 +869,7 @@ Se registran los prompts enviados entre el 5 y el 18 de octubre de 2026, agrupad
 - **Puntajes:** criterio de clasificación documentado como decisión de diseño (9).
 - **Interfaz Pygame:** pantallas de muerte y estadísticas, portada, animaciones, inventario, trampas, candados, menús, temas por cripta y minimapa (10 a 23).
 - **QA y cierre:** auditoría por fases, datos offline oficiales, limpieza de assets y separación MVC final (24 a 26).
+- **Spec Kit 002 (Antigravity, 2026-11-11):** especificación, clarificación, plan, tareas e implementación de niebla de guerra, antorcha e ir a (27 a 29).
 
 La asistencia incluyó explicaciones, comparación de alternativas, revisión, pruebas, implementación y corrección de código, y generación o adaptación de recursos gráficos. Los apartados «Uso» resumen el alcance de la asistencia; no son respuestas literales.
 
@@ -1205,6 +1208,82 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
 - **Prompt:**
   > [17:04] entonces completa lo que falta haz las pruebas que falten la separacion MVC, cancela el pr y rehazlo
 - **Uso:** Mover el controlador gráfico al paquete controlador, corregir esperas y cancelación HTTP, ampliar pruebas y sustituir el PR anterior por el PR 28. Verificación final registrada: 1088 pruebas aprobadas.
+
+#### 27
+- **Fecha:** 2026-11-11, 18:03
+- **Herramienta/modelo:** Antigravity, Claude Opus 5.5 (Low)
+- **Prompt:**
+  > [18:03] /speckit-specify En la rama activa spec/jose, crea la especificación de niebla de guerra, antorcha e ir a en specs/002-niebla-viaje/. Usa docs/equipo/BORRADOR_NIEBLA_VIAJE_JOSE.md, la constitución y el trabajo de Daniel ya integrado en la base e5bd543. Incluye criterios verificables para conocimiento, puertas, antorcha, viaje, guardado, retroceso y evidencia de pruebas. Conserva el trabajo local de fase B. Solo genera spec.md y su checklist, configura la capacidad local si el skill lo pide y detente con un resumen. No cambies de rama, no implementes, no hagas commit, push, PR ni merge y no edites PROMPTS_LLM.md.
+- **Uso:** Generar `specs/002-niebla-viaje/spec.md` y su checklist de calidad.
+
+#### 28
+- **Fecha:** 2026-11-11, 18:06
+- **Herramienta/modelo:** Antigravity, Claude Opus 5.5 (Low)
+- **Prompt:**
+  > [18:06] /speckit-clarify Resuelve la 002 con estas decisiones propuestas para revisión de Daniel: destino igual a sala actual informa llegada sin consumir turno; si ya hay enemigos al ordenar el viaje, se detiene sin caminar; si coinciden causas, prioriza fin de partida, daño, enemigos y llegada; ID inválido o no explorado devuelve el mismo rechazo sin revelar información; mapa conocido muestra nombres, salidas y puertas recordadas de exploradas y existencia de avistadas; la antorcha revela vecinas y salidas sin observar puertas remotas, y el jugador observa puertas desde cualquiera de sus extremos. Conserva decisiones como propuestas explícitas para revisión, sin atribuir aprobación a Daniel. Continúa en orden con los skills /speckit-plan, /speckit-tasks y /speckit-analyze de esta misma capacidad; verifica y corrige bloqueos antes de implementar. Respeta la constitución, registra spec y plan/tareas en commits locales separados del código usando la identidad Git existente y el alcance exacto de la 002, sin incluir cambios pendientes de fase B. Si PowerShell impide ejecutar scripts de Spec Kit, usa sus plantillas y reglas en el proyecto sin cambiar la protección y documenta qué se hizo manualmente. Luego sigue /speckit-implement hasta completar la 002 con pruebas de aceptación, persistencia, retroceso, replay y benchmark del paso de ir a; adjunta resultados reales y trazabilidad en docs/evidencia, distinguiendo las dependencias de 004 y las mediciones que no pudiste ejecutar. Reutiliza el trabajo de Daniel sin cambiar el comportamiento de cazador. Trabaja exclusivamente en spec/jose, sobre e5bd543. No publiques, no hagas PR, no cambies main, ni toques archivos ajenos. Corre primero pruebas focalizadas y luego suite completa. Registra literalmente los mensajes de usuario de esta conversación de Antigravity en PROMPTS_LLM.md, o en docs/PROMPTS_LLM.md si es el registro existente; conserva su historial, no inventes mensajes. Deja el código y evidencia listos para revisión local, y reporta cualquier limitación real.
+- **Uso:** Clarificar la spec con propuestas pendientes de revisión, redactar plan y tareas en commits separados e iniciar la implementación.
+
+#### 29
+- **Fecha:** 2026-11-11, 23:52
+- **Herramienta/modelo:** Antigravity, Claude Opus 5.5 (Low)
+- **Prompt:**
+  > [23:52] Retoma la 002 en spec/jose tras el reinicio de cuota. Verifica qué quedó guardado antes del corte y continúa desde /speckit-analyze o la primera tarea pendiente de /speckit-implement. Usa como referencia el trabajo ya integrado de Daniel en specs/001-terreno-cazador y el informe JSON de docs/evidencia. Sigue el historial que usa el equipo: conserva separados los commits locales de spec y plan, marca tareas con evidencia real y registra resultados de pruebas focalizadas y suite, benchmark y dependencias pendientes. Primero guarda los tres mensajes reales de usuario de esta conversación, incluido este, literalmente y sin duplicar, al final de la sección de José en docs/PROMPTS_LLM.md. Sigue su formato por integrante, con herramienta/modelo, resumen y bitácora numerada; el historial de José termina en 26 según la revisión de GitHub. Luego completa la implementación y validación de la 002. Conserva los cambios locales de fase B. No hagas push, PR, merge ni cambios en main. Informa los archivos y las pruebas concretas al terminar.
+- **Uso:** Retomar tras el corte, completar la implementación y la validación de la 002 y registrar la evidencia.
+
+
+#### 30
+- **Fecha:** 2026-11-12
+- **Herramienta/modelo:** Antigravity, Gemini 4 Argon (Low)
+- **Prompt:**
+  > En spec/jose, modifica únicamente tests/test_niebla_viaje.py. En NV-12 y en la variante de NV-32 que espera «enemigos» sin trampa, crea el guardia dormido con velocidad 50. Permite pasar la velocidad a poner_dormido y conserva 100 como valor predeterminado para los demás casos.
+  >
+  > Así el guardia se activa al entrar, pero su primer ataque queda programado para después de la siguiente decisión del jugador. Conserva las aserciones de activación y parada, y la prioridad fin de partida > daño > enemigos > llegada.
+  >
+  > Ejecuta python -m pytest -q tests/test_niebla_viaje.py -k "nv12 or nv32" y reporta el resultado.
+- **Uso:** Separar la activación del guardia y su primer ataque en NV-12 y NV-32. Pasaron las seis pruebas seleccionadas.
+
+#### 31
+- **Fecha:** 2026-11-12
+- **Herramienta/modelo:** Antigravity, Gemini 4 Argon (Low)
+- **Prompt:**
+  > En spec/jose, modifica únicamente test_nv24_conocimiento_historico_aislado en tests/test_niebla_viaje.py. Cambia la secuencia de comandos a ["W", "E", "E"] para que el primer movimiento ocurra en t=100. Conserva las comprobaciones del mapa inicial en t=0, del mapa tras el primer movimiento en t=100 y de que editar la copia histórica no altera el mapa actual.
+  >
+  > Ejecuta python -m pytest -q tests/test_niebla_viaje.py -k nv24 y reporta el resultado.
+- **Uso:** Comprobar la reconstrucción histórica en dos instantes distintos. NV-24 pasó.
+
+#### 32
+- **Fecha:** 2026-11-12
+- **Herramienta/modelo:** Antigravity, Gemini 4 Argon (Low)
+- **Prompt:**
+  > En spec/jose, modifica únicamente test_nv16_replay_reproduce_viaje_en_cripta_01 en tests/test_niebla_viaje.py. Usa OfflineResistente de tests.test_controlador_replay como fuente tanto en nueva_partida como en reproducir. Elimina la asignación directa de vida y vida_max después de iniciar la partida.
+  >
+  > Conserva las comprobaciones del comentario «ir a 1», del replay verificado y de la igualdad del mapa conocido. Comprueba además que la bitácora registra al menos un movimiento ordinario del viaje después del comentario.
+  >
+  > Ejecuta python -m pytest -q tests/test_niebla_viaje.py y reporta los resultados, incluido el motivo de cualquier prueba omitida.
+- **Uso:** Usar la misma fuente de datos para la partida y su replay. Pasaron 37 pruebas y se omitió NV-15.
+
+#### 33
+- **Fecha:** 2026-11-12
+- **Herramienta/modelo:** Antigravity, Gemini 4 Argon (Low)
+- **Prompt:**
+  > En spec/jose, modifica únicamente test_nv15_no_abre_puertas_con_llave en tests/test_niebla_viaje.py. Construye la llave como Llave("l-1", "itm_llave", "Llave", 0, 0, abre="itm_llave") y elimina el try/except que omite la prueba. Después de insertar la llave, verifica que partida.llave_para(salida(s[1], "E")) devuelve esa llave.
+  >
+  > Conserva las comprobaciones de que «IR A 2» deja la puerta cerrada y no registra movimientos ni acciones de abrir. Ejecuta python -m pytest -q -rs tests/test_niebla_viaje.py y reporta el resultado.
+- **Uso:** Ejecutar NV-15 con una llave válida. Pasaron las 38 pruebas de la 002.
+
+#### 34
+- **Fecha:** 2026-11-12
+- **Herramienta/modelo:** Antigravity, Gemini 4 Argon (Low)
+- **Prompt:**
+  > Implementa T017 y T018 de la 002 en spec/jose. Crea bench/niebla_viaje.py y tests/test_bench_niebla_viaje.py. Conecta en main.py la opción --bench-caso niebla-viaje, válida con --bench, manteniendo el comportamiento actual cuando no se indica un caso. Carga cripta-01 mediante DatosOffline con semilla 42 y caché temporal. Fuera de la medición, explora todas las salas y observa sus puertas desde ambos extremos; conserva cerradas las puertas cerradas en el mapa real. Verifica que siguiente_paso(1, 4) devuelve un paso antes de cronometrar. Mide por separado estado_sala, puerta_recordada y siguiente_paso con bench.medicion.medir, 100 repeticiones por operación, calentamiento fuera de las muestras y sin iniciar ninguna vista. Guarda con --salida un JSON con cripta, número de salas, semilla, commit, Python, SO, CPU, muestras en ms, mínimo, mediana, p95, máximo y cumplimiento de 5 ms para siguiente_paso. Prueba el contrato JSON desde main con tmp_path, sin imponer el límite de tiempo como aserción de pytest. Ejecuta los tests de niebla y benchmark, y genera docs/evidencia/2026-11-12-niebla-viaje-benchmark.json con el comando real. Reporta resultados y archivos. Trabaja localmente y limita el cambio al benchmark, su prueba, la entrada de CLI y el JSON de evidencia.
+- **Uso:** Implementar el benchmark y su contrato JSON. Pasaron las 42 pruebas focalizadas.
+
+#### 35
+- **Fecha:** 2026-11-12
+- **Herramienta/modelo:** Antigravity, Gemini 4 Argon (Low)
+- **Prompt:**
+  > Corrige la exposición de salas avistadas y desconocidas en las vistas de la 002 (FR-003, FR-006, SC-002, NV-25). En VistaConsola._salidas y construir_estado de controlador_pygame, muestra el nombre del destino solo si partida.conocimiento.explorada(id) es verdadero; para un destino avistado muestra «sala avistada» sin nombre ni ID en el texto. Conserva dirección, costo y estado visible de la puerta actual. En ControladorPygame._leer_topologia publica una copia plana de salas exploradas y avistadas: nombres y aristas solo desde exploradas, nodos avistados sin nombre ni salidas, omite desconocidas. Construye esa copia en el hilo del modelo al publicar mostrar_estado, y publícala junto al estado bajo el lock existente. En la escena, recalcula el layout cuando cambie esa topología, incluida carga o retroceso; conserva el cálculo BFS existente. Añade pruebas de regresión para consola y snapshot/minimapa que comprueben sala avistada sin nombre, desconocida ausente y revelación al explorar. Ejecuta pruebas focalizadas de la 002 y las vistas. Limita los cambios a vistas, su controlador y pruebas. Reporta resultado y archivos.
+- **Uso:** Corregir la revelación anticipada de salas en consola y Pygame y verificar la regresión.
 
 ## Implementación de resolubilidad (2026-11-13)
 

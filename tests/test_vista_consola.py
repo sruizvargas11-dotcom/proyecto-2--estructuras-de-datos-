@@ -66,7 +66,9 @@ def test_estado_muestra_lo_necesario_para_decidir(tmp_path):
     texto = pantalla.texto()
     assert "Pasillo de las urnas (sala 2)" in texto
     assert "Vida" in texto and "/300" in texto
-    assert "E  Nicho sellado (cerrada, sin llave)" in texto
+    assert "S  Entrada derruida (abierta)" in texto
+    assert "E  sala avistada (cerrada, sin llave)" in texto
+    assert "Nicho sellado" not in texto
     assert "[costo 100]" in texto
     # Enemigos identificables por instancia_id.
     assert "1. Rata gigante #e-201" in texto and "2. Rata gigante #e-202" in texto
@@ -99,6 +101,11 @@ def test_puerta_abierta_con_cierre_automatico_muestra_cuando_se_cierra(tmp_path)
     partida.entrar_a_sala(sala)
     partida.abrir(sala.salida_hacia("E"))
     vista, pantalla = _vista()
+    vista.mostrar_estado(partida)
+    assert "E  sala avistada (abierta, se cierra en t=500)" in pantalla.texto()
+    partida.entrar_a_sala(partida.cripta.sala_por_id(5))
+    partida.entrar_a_sala(sala)
+    pantalla.lineas.clear()
     vista.mostrar_estado(partida)
     assert "E  Nicho sellado (abierta, se cierra en t=500)" in pantalla.texto()
 
@@ -181,3 +188,24 @@ def test_eventos_lejanos_no_se_narran(tmp_path):
     vista, _ = _vista(["W", "W", "W", "W"])
     ControladorJuego(sesion, vista).jugar()
     assert not [m for m in vista.mensajes() if "vuelve a estar armada" in m]
+
+
+def test_salidas_ocultan_nombre_de_avistadas_y_lo_revelan_al_explorar(tmp_path):
+    sesion = _sesion(tmp_path)
+    partida = sesion.partida
+    vista, pantalla = _vista()
+    vista.mostrar_estado(partida)
+    texto_inicial = pantalla.texto()
+    assert "N  sala avistada (abierta) [costo 100]" in texto_inicial
+    assert "Pasillo de las urnas" not in texto_inicial
+    assert "Cripta baja" not in texto_inicial
+
+    pantalla.lineas.clear()
+    partida.entrar_a_sala(partida.cripta.sala_por_id(2))
+    vista.mostrar_estado(partida)
+    texto_sala2 = pantalla.texto()
+    assert "S  Entrada derruida (abierta) [costo 100]" in texto_sala2
+    assert "N  sala avistada (abierta) [costo 100]" in texto_sala2
+    assert "E  sala avistada (cerrada, sin llave) [costo 100]" in texto_sala2
+    assert "Cripta baja" not in texto_sala2
+    assert "Nicho sellado" not in texto_sala2

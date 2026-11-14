@@ -6,6 +6,7 @@ MARCA     = "CRIPTA_LOG v1"
 SEPARADOR = "----------"
 CIERRE    = "fin"   # t=<tiempo> fin <estado>, seguida de las líneas del estado final
 ESTADO    = "= "    # prefijo de cada línea del estado final
+COMENTARIO = "# "   # comentario de depuración, no es una acción
 CAMPOS    = ("cripta_id", "version_cripta", "version_catalogo", "semilla")
 
 
@@ -78,6 +79,13 @@ class BitacoraPartida:
         self._archivo.write(f"t={tiempo} {accion}\n")
         self._archivo.flush()
 
+    def registrar_comentario(self, tiempo: int, texto: str):
+        """Comentario de depuración (spec 002: orden 'ir a'); el replay lo ignora."""
+        if self._archivo is None:
+            self._archivo = open(self.ruta, "a", encoding="utf-8")
+        self._archivo.write(f"{COMENTARIO}t={tiempo} {texto}\n")
+        self._archivo.flush()
+
     def registrar_cierre(self, tiempo: int, estado: str, lineas_estado):
         """Registra el cierre y las líneas del estado observable que compara el replay."""
         self.registrar(tiempo, f"{CIERRE} {estado}")
@@ -104,7 +112,7 @@ class BitacoraPartida:
 
             for linea in f:
                 linea = linea.rstrip("\n")
-                if not linea or linea.startswith(ESTADO):
+                if not linea or linea.startswith(ESTADO) or linea.startswith(COMENTARIO):
                     continue
                 tiempo, accion = self._partir(linea)
                 if accion.split(" ")[0] != CIERRE:
