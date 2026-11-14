@@ -28,6 +28,9 @@ class FuenteContada:
     def version_cripta(self, cripta_id):
         return self._fuente.version_cripta(cripta_id)
 
+    def llaves_cripta(self, cripta_id):
+        return self._fuente.llaves_cripta(cripta_id)
+
     def contenido_salas(self, cripta_id, sala_ids):
         assert 1 <= len(sala_ids) <= 10
         if self.fallar_contenido:

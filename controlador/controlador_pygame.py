@@ -28,12 +28,26 @@ from pathlib import Path
 
 from controlador.controlador_juego import ControladorJuego
 from controlador.estado_final import lineas_estado
-from controlador.inicio_partida import nueva_partida, ruta_bitacora_por_defecto
+from controlador.inicio_partida import (
+    InicioBloqueado,
+    nueva_partida,
+    ruta_bitacora_por_defecto,
+)
 from controlador.reporte_red import construir_reporte, motivo_error, motivo_partida, registrar_reporte
 from controlador.semilla import generar_semilla
 from estructuras.array_circular import ArrayCircular
 from persistencia.puntajes import ErrorTablaPuntajes, TablaPuntajes
 from vista_pygame.contratos import FilaPuntaje, ResumenPartida
+
+
+class InicioPygameBloqueado(RuntimeError):
+    """Inicio bloqueado con un resumen seguro listo para la interfaz."""
+
+    def __init__(self, resultado, resumen):
+        self.resultado = resultado
+        self.resumen = resumen
+        super().__init__(resumen)
+
 
 @dataclass(frozen=True)
 class PartidaGuardadaVisual:
@@ -296,13 +310,15 @@ class ControladorPygame:
     """Vista no interactiva para ControladorJuego + API de alto nivel para
     las escenas de menú, pausa, inventario y fin de partida."""
 
-    def __init__(self, fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas", reportes=None):
+    def __init__(self, fuente, carpeta_cache=None, cache_size=25, partidas_dir="partidas",
+                 reportes=None, forzar=False):
         self._fuente = fuente
         self._fuente_usada = False
         self._carpeta_cache = carpeta_cache
         self._cache_size = cache_size
         self._partidas_dir = partidas_dir
         self._ruta_reportes = reportes
+        self._forzar_inicio = forzar
 
         self._lock = threading.Lock()
         self._comandos = queue.Queue()
@@ -317,6 +333,7 @@ class ControladorPygame:
         # actualiza en _cerrar). Hacia pygame se publica una copia en filas.
         self._tabla = TablaPuntajes(str(Path(partidas_dir) / "puntajes.json"))
         self._filas_puntajes = None
+        self._resumen_resolubilidad = None
         self._error = None
         self._esperando = False
 
@@ -329,6 +346,10 @@ class ControladorPygame:
         self._sala_inicial_id = None
         self._sala_salida_id = None
         self._criptas_disponibles = ()
+
+    @property
+    def forzar_inicio(self):
+        return self._forzar_inicio
 
     # -- arranque / cierre (API para las escenas, hilo principal) --------
 
@@ -401,7 +422,17 @@ class ControladorPygame:
         self.iniciar_partida(datos['cripta_id'],datos.get('nombre_jugador'),semilla,
                             ruta_carga=str(ruta))
 
-    def iniciar_partida(self, id_cripta, nombre_jugador, semilla=None, *, ruta_carga=None):
+    def iniciar_partida(
+        self,
+        id_cripta,
+        nombre_jugador,
+        semilla=None,
+        *,
+        ruta_carga=None,
+        forzar=None,
+    ):
+        if forzar is None:
+            forzar = self._forzar_inicio
         if not isinstance(nombre_jugador,str) or not nombre_jugador.strip():
             raise ValueError('El nombre del jugador es obligatorio.')
         nombre_jugador=nombre_jugador.strip()
@@ -421,6 +452,7 @@ class ControladorPygame:
             self._historial_mensajes = ArrayCircular(CAPACIDAD_MENSAJES)
             self._panel_inventario = None
             self._panel_objeto = None
+            self._resumen_resolubilidad = None
             self._reporte_red = []
             self._filas_puntajes = None
         self.nombre_jugador = nombre_jugador
@@ -429,10 +461,20 @@ class ControladorPygame:
             id_cripta, semilla_real, str(Path(self._partidas_dir) / "bitacoras"))
         if ruta_carga is not None:
             ruta_log=str(Path(ruta_log).with_name('carga_'+uuid.uuid4().hex+'.log'))
-        self.sesion = nueva_partida(
-            self._fuente, id_cripta, self._carpeta_cache, semilla=semilla_real,
-            ruta_bitacora=ruta_log, cache_size=self._cache_size,
-            nombre_jugador=nombre_jugador)
+        try:
+            self.sesion = nueva_partida(
+                self._fuente, id_cripta, self._carpeta_cache, semilla=semilla_real,
+                ruta_bitacora=ruta_log, cache_size=self._cache_size,
+                nombre_jugador=nombre_jugador, forzar=forzar)
+        except InicioBloqueado as error:
+            from vista.formato_resolubilidad import formatear_resumen
+
+            resumen = formatear_resumen(error.resultado).strip()
+            self._publicar_resumen_resolubilidad(error.resultado, resumen)
+            raise InicioPygameBloqueado(error.resultado, resumen) from error
+        resultado = self.sesion.resultado_resolubilidad
+        if resultado is not None:
+            self._publicar_resumen_resolubilidad(resultado)
         if ruta_carga is not None:
             from controlador.guardado import cargar
             base=self.sesion
@@ -569,6 +611,19 @@ class ControladorPygame:
     def mensajes(self):
         with self._lock:
             return self._historial_mensajes.listar_en_orden()
+
+    def _publicar_resumen_resolubilidad(self, resultado, resumen=None):
+        if resumen is None:
+            from vista.formato_resolubilidad import formatear_resumen
+
+            resumen = formatear_resumen(resultado).strip()
+        with self._lock:
+            self._resumen_resolubilidad = resumen
+        self.agregar_mensaje(0, resumen)
+
+    def resumen_resolubilidad(self):
+        with self._lock:
+            return self._resumen_resolubilidad
 
     def panel_inventario(self):
         with self._lock:

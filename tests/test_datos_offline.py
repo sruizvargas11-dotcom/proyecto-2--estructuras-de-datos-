@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from adaptadores.datos_offline import DatosOffline
+from adaptadores.datos_simulado import DatosSimulado
 from adaptadores.fuente_datos import FuenteDeDatos
 
 CRIPTA = "cripta-01"
@@ -256,6 +257,74 @@ class TestCarpeta(unittest.TestCase):
                 self.assertEqual(datos["id"], CRIPTA)
             finally:
                 os.chdir(directorio_original)
+
+
+class TestLlavesOffline(unittest.TestCase):
+    """Las ubicaciones offline son sintéticas y quedan ligadas a una versión."""
+
+    def _crear_fuente(self, carpeta, version="v1", archivo=True):
+        ruta_cripta = os.path.join(carpeta, "cripta-sintetica")
+        os.makedirs(ruta_cripta)
+        with open(os.path.join(ruta_cripta, "version.json"), "w", encoding="utf-8") as f:
+            json.dump({"version": version}, f)
+        if archivo:
+            with open(os.path.join(ruta_cripta, "llaves.json"), "w", encoding="utf-8") as f:
+                json.dump({
+                    "version": version,
+                    "llaves": [{
+                        "id": "key-a",
+                        "sala": 7,
+                        "enemigo": "enemy-desconocido",
+                    }],
+                }, f)
+        return DatosOffline(carpeta)
+
+    def test_llaves_offline_valida_y_no_valida_el_enemigo(self):
+        """Una sala válida basta; el id de enemigo no se comprueba (FR-016, RS-E24)."""
+        with tempfile.TemporaryDirectory() as carpeta:
+            fuente = self._crear_fuente(carpeta)
+            self.assertEqual(
+                fuente.llaves_cripta("cripta-sintetica"),
+                {"llaves": [{
+                    "id": "key-a",
+                    "sala": 7,
+                    "enemigo": "enemy-desconocido",
+                }]},
+            )
+
+    def test_llaves_offline_ausentes_no_se_convierten_en_lista_vacia(self):
+        """Una fuente sin archivo no equivale a una consulta válida vacía (FR-018)."""
+        with tempfile.TemporaryDirectory() as carpeta:
+            fuente = self._crear_fuente(carpeta, archivo=False)
+            with self.assertRaises(FileNotFoundError):
+                fuente.llaves_cripta("cripta-sintetica")
+
+    def test_llaves_offline_rechaza_version_obsoleta(self):
+        """Los datos offline de otra versión no participan en el resultado (FR-001)."""
+        with tempfile.TemporaryDirectory() as carpeta:
+            self._crear_fuente(carpeta, version="v1")
+            ruta = os.path.join(carpeta, "cripta-sintetica", "llaves.json")
+            with open(ruta, "w", encoding="utf-8") as f:
+                json.dump({"version": "v0", "llaves": []}, f)
+            fuente = DatosOffline(carpeta)
+            with self.assertRaises(ValueError):
+                fuente.llaves_cripta("cripta-sintetica")
+
+    def test_datos_simulados_delegan_con_demora_determinista(self):
+        """El adaptador simulado conserva el método y la demora determinista (FR-001)."""
+        class FuenteFalsa:
+            def llaves_cripta(self, cripta_id):
+                return {"llaves": [{"id": cripta_id, "sala": 1}]}
+
+        demoras = []
+        fuente = DatosSimulado(
+            FuenteFalsa(), patron=23, maximo=0.01, esperar=demoras.append
+        )
+        primero = fuente.llaves_cripta("cripta-sintetica")
+        segundo = fuente.llaves_cripta("cripta-sintetica")
+        self.assertEqual(primero, segundo)
+        self.assertEqual(len(demoras), 2)
+        self.assertEqual(demoras[0], demoras[1])
 
 
 if __name__ == "__main__":

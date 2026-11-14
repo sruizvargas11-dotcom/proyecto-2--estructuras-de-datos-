@@ -1,4 +1,5 @@
 """Herramientas comunes de medición: estadísticas, cronometrar, imprimir tabla."""
+import gc
 import math
 from dataclasses import dataclass
 from time import perf_counter
@@ -58,23 +59,39 @@ def mediana(valores):
     return estadisticas(valores).ms_med
 
 
-def medir(accion, *argumentos, repeticiones=REPETICIONES, preparar=None):
+def medir(
+    accion,
+    *argumentos,
+    repeticiones=REPETICIONES,
+    preparar=None,
+    deshabilitar_gc=False,
+):
     """Corre `accion(*argumentos)` varias veces y devuelve Medicion.
 
     El calentamiento previo no se incluye en las muestras.
     `preparar`, si se pasa, se llama antes de cada repetición cronometrada
-    para reiniciar estado mutable fuera del tiempo medido.
+    para reiniciar estado mutable fuera del tiempo medido. `deshabilitar_gc`
+    excluye el costo variable de recolección solo durante las repeticiones.
     """
     if type(repeticiones) is not int or repeticiones < 1:
         raise ValueError('Las repeticiones deben ser positivas.')
+    if type(deshabilitar_gc) is not bool:
+        raise ValueError('deshabilitar_gc debe ser booleano.')
     accion(*argumentos)  # calentamiento excluido de las muestras
     muestras = []
-    for _ in range(repeticiones):
-        if preparar is not None:
-            preparar()
-        inicio = perf_counter()
-        accion(*argumentos)
-        muestras.append((perf_counter() - inicio) * 1000)
+    gc_habilitado = gc.isenabled()
+    if deshabilitar_gc and gc_habilitado:
+        gc.disable()
+    try:
+        for _ in range(repeticiones):
+            if preparar is not None:
+                preparar()
+            inicio = perf_counter()
+            accion(*argumentos)
+            muestras.append((perf_counter() - inicio) * 1000)
+    finally:
+        if deshabilitar_gc and gc_habilitado:
+            gc.enable()
     return estadisticas(muestras)
 
 
