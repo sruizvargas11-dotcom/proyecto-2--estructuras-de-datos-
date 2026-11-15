@@ -3,7 +3,7 @@ import ast
 import gc
 import glob
 
-from bench.casos import CASOS, heap, inventario, lru
+from bench.casos import CASOS, heap, inventario, lru, ordenamiento, binario_json, resolubilidad
 from bench.medicion import Fila, mediana, medir
 
 
@@ -27,10 +27,17 @@ def test_medir_deshabilita_gc_solo_durante_muestras_y_lo_restaura():
 
 def test_cada_caso_devuelve_filas_bien_formadas(monkeypatch):
     # tamaños pequeños para que el test sea rápido
-    monkeypatch.setattr(heap, "TAMANOS", (10, 20))
-    monkeypatch.setattr(heap, "EXTRACCIONES", 40)
-    monkeypatch.setattr(inventario, "TAMANOS", (5, 10))
-    monkeypatch.setattr(lru, "BUSQUEDAS", 50)
+    monkeypatch.setattr(heap, "TAMANOS", (10, 20), raising=True)
+    monkeypatch.setattr(heap, "EXTRACCIONES", 40, raising=True)
+    monkeypatch.setattr(inventario, "TAMANOS", (5, 10), raising=True)
+    monkeypatch.setattr(lru, "BUSQUEDAS", 50, raising=True)
+    monkeypatch.setattr(resolubilidad, "TAMANOS_BENCH", (4,), raising=True)
+    monkeypatch.setattr(resolubilidad, "REPETICIONES_BENCH", 1, raising=True)
+    monkeypatch.setattr(resolubilidad, "REPETICIONES_REFERENCIA_BENCH", 1, raising=True)
+    monkeypatch.setattr(ordenamiento, "TAMANOS", (5, 10), raising=True)
+    monkeypatch.setattr(ordenamiento, "REPETICIONES", 1, raising=True)
+    monkeypatch.setattr(ordenamiento, "MUESTRAS", 2, raising=True)
+    monkeypatch.setattr(binario_json, "TAMANOS_SALAS", (50,), raising=True)
     for caso in CASOS:
         filas = caso()
         assert len(filas) > 0
