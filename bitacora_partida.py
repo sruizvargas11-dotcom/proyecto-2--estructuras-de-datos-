@@ -8,6 +8,7 @@ CIERRE    = "fin"   # t=<tiempo> fin <estado>, seguida de las líneas del estado
 ESTADO    = "= "    # prefijo de cada línea del estado final
 COMENTARIO = "# "   # comentario de depuración, no es una acción
 CAMPOS    = ("cripta_id", "version_cripta", "version_catalogo", "semilla")
+CAMPOS_JUGADOR = ("vida_max", "ataque", "defensa", "velocidad")
 
 
 class ErrorVersionIncompatible(ValueError):
@@ -16,17 +17,33 @@ class ErrorVersionIncompatible(ValueError):
 
 class BitacoraPartida:
 
-    def __init__(self, ruta, cripta_id, version_cripta, version_catalogo, semilla):
+    def __init__(self, ruta, cripta_id, version_cripta, version_catalogo, semilla,
+                 datos_jugador=None):
         self.ruta             = ruta
         self.cripta_id        = cripta_id
         self.version_cripta   = version_cripta
         self.version_catalogo = version_catalogo
         self.semilla          = semilla
+        self.datos_jugador    = datos_jugador
         self._archivo         = None
 
     @classmethod
-    def partida_nueva(cls, ruta, cripta_id, version_cripta, version_catalogo, semilla):
+    def partida_nueva(cls, ruta, cripta_id, version_cripta, version_catalogo, semilla,
+                      datos_jugador=None):
         """Crea el archivo y escribe los datos de la partida al inicio."""
+        if datos_jugador is not None:
+            datos_jugador = {
+                campo: datos_jugador.get(campo)
+                for campo in CAMPOS_JUGADOR
+            }
+            for campo in CAMPOS_JUGADOR:
+                minimo = 1 if campo in ("vida_max", "velocidad") else 0
+                valor = datos_jugador[campo]
+                if type(valor) is not int or valor < minimo:
+                    raise ValueError(
+                        f"Bitácora inválida: jugador.{campo} debe ser "
+                        f"un entero >= {minimo}."
+                    )
         carpeta = os.path.dirname(ruta)
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
@@ -37,9 +54,15 @@ class BitacoraPartida:
             f.write(f"version_cripta: {version_cripta}\n")
             f.write(f"version_catalogo: {version_catalogo}\n")
             f.write(f"semilla: {semilla}\n")
+            if datos_jugador is not None:
+                for campo in CAMPOS_JUGADOR:
+                    f.write(f"jugador_{campo}: {datos_jugador[campo]}\n")
             f.write(f"{SEPARADOR}\n")
 
-        return cls(ruta, cripta_id, version_cripta, version_catalogo, semilla)
+        return cls(
+            ruta, cripta_id, version_cripta, version_catalogo, semilla,
+            datos_jugador,
+        )
 
     @classmethod
     def abrir(cls, ruta):
@@ -53,6 +76,7 @@ class BitacoraPartida:
 
             # Tupla alineada con CAMPOS: cuatro claves fijas, sin diccionario.
             valores = [None, None, None, None]
+            jugador = [None] * len(CAMPOS_JUGADOR)
             for linea in f:
                 if linea.strip() == SEPARADOR:
                     break
@@ -61,16 +85,41 @@ class BitacoraPartida:
                     for i in range(len(CAMPOS)):
                         if CAMPOS[i] == clave.strip():
                             valores[i] = valor.strip()
+                    for i in range(len(CAMPOS_JUGADOR)):
+                        if f"jugador_{CAMPOS_JUGADOR[i]}" == clave.strip():
+                            try:
+                                jugador[i] = int(valor.strip())
+                            except ValueError as error:
+                                raise ValueError(
+                                    f"La bitácora tiene un valor inválido para "
+                                    f"'jugador_{CAMPOS_JUGADOR[i]}'."
+                                ) from error
 
         for i in range(len(CAMPOS)):
             if valores[i] is None:
                 raise ValueError(f"La bitácora no tiene el campo '{CAMPOS[i]}' en el encabezado.")
+        datos_jugador = None
+        if any(valor is not None for valor in jugador):
+            if any(valor is None for valor in jugador):
+                raise ValueError("La bitácora tiene estadísticas de jugador incompletas.")
+            for i, campo in enumerate(CAMPOS_JUGADOR):
+                minimo = 1 if campo in ("vida_max", "velocidad") else 0
+                if jugador[i] < minimo:
+                    raise ValueError(
+                        f"La bitácora tiene un valor inválido para "
+                        f"'jugador_{campo}'."
+                    )
+            datos_jugador = {
+                CAMPOS_JUGADOR[i]: jugador[i]
+                for i in range(len(CAMPOS_JUGADOR))
+            }
         return cls(
             ruta             = ruta,
             cripta_id        = valores[0],
             version_cripta   = valores[1],
             version_catalogo = valores[2],
             semilla          = int(valores[3]),
+            datos_jugador    = datos_jugador,
         )
 
     def registrar(self, tiempo: int, accion: str):

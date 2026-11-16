@@ -127,6 +127,26 @@ def test_replay_de_la_ruta_completa_es_identico(tmp_path):
     assert len(vista.mensajes) - len(resultado.mensajes) == vista.rechazos > 0
 
 
+def test_replay_de_bitacora_anterior_sin_datos_jugador(tmp_path):
+    ruta, sesion, _ = _jugar(
+        tmp_path, ["W", "W"], fuente=DatosOffline(), nombre="bitacora-vieja.log"
+    )
+    _reescribir(
+        ruta,
+        lambda lineas: [
+            linea for linea in lineas if not linea.startswith("jugador_")
+        ],
+    )
+
+    bitacora = BitacoraPartida.abrir(ruta)
+    assert bitacora.datos_jugador is None
+
+    resultado = reproducir(ruta, DatosOffline(), _cache(tmp_path))
+
+    assert resultado.verificado is True
+    assert _texto(resultado.lineas_estado) == _texto(lineas_estado(sesion.partida))
+
+
 def test_replay_no_consulta_llaves(tmp_path):
     fuente = FuenteReplaySinConsulta()
     ruta, _, _ = _jugar(tmp_path, ["W"], fuente=fuente)

@@ -3,6 +3,7 @@ from controlador.estado_final import lineas_estado
 from modelo.efectos import apagar_antorcha
 from controlador.narrador_eventos import describir_evento
 from estructuras.vector_dinamico import Vector
+from modelo.historia import Historia
 from modelo.entidades.enemigo import Enemigo
 from modelo.entidades.objetos.arma import Arma
 from modelo.entidades.objetos.armadura import Armadura
@@ -41,6 +42,7 @@ _ALIAS = (
     ("L", "cargar"), ("CARGAR", "cargar"),
     ("IS", "siguiente"), ("IA", "anterior"), ("IC", "consultar"),
     ("IR", "ir"), ("M", "mapa"), ("MAPA", "mapa"),
+    ("HISTORIA", "historia"),
 )
 
 
@@ -83,6 +85,23 @@ def interpretar(texto):
         if len(resto) != 1:
             return None, "Indica la sala: IR A <id>."
         return Comando("ir", resto[0]), None
+    if nombre == "historia":
+        if len(resto) != 1:
+            return None, "Usa HISTORIA <t> o HISTORIA #<k>."
+        texto_numero = resto[0]
+        es_accion = texto_numero.startswith("#")
+        numero_texto = texto_numero[1:] if es_accion else texto_numero
+        try:
+            numero = int(numero_texto)
+        except ValueError:
+            return None, "El tiempo o número de acción debe ser un entero válido."
+        minimo = 1 if es_accion else 0
+        if not numero_texto.isdigit() or numero < minimo:
+            return None, (
+                "El número de acción debe ser positivo."
+                if es_accion else "El tiempo debe ser un entero no negativo."
+            )
+        return Comando("historia", ("accion" if es_accion else "tiempo", numero)), None
     maximo = 0 if nombre in ('esperar', 'pergamino', 'ayuda', 'salir', 'mapa',
                             'siguiente', 'anterior', 'consultar') or clave in DIRECCIONES else 1
     if len(resto) > maximo:
@@ -136,7 +155,8 @@ def _nodo_inventario(jugador, numero):
 
 
 class ControladorJuego:
-    def __init__(self, sesion, vista, ruta_guardado=None, tabla_puntajes=None):
+    def __init__(self, sesion, vista, ruta_guardado=None, tabla_puntajes=None,
+                 checkpoint_cada=None):
         """tabla_puntajes: TablaPuntajes donde registrar la partida al terminar en
         victoria o derrota; None (pruebas, replay) no registra nada."""
         self.sesion = sesion
@@ -147,6 +167,19 @@ class ControladorJuego:
         self.reloj = self.partida.reloj
         self.historial = self.partida.historial
         self.jugador = self.partida.jugador
+        self.historia = getattr(self.partida, "historia", None)
+        if self.historia is None:
+            self.historia = (
+                Historia() if checkpoint_cada is None
+                else Historia(checkpoint_cada)
+            )
+        elif (checkpoint_cada is not None
+              and checkpoint_cada != self.historia.k):
+            raise ValueError(
+                "La historia cargada ya usa un valor distinto de K."
+            )
+        self.partida.historia = self.historia
+        self.historia.inicializar(self.partida)
         self._salir = False
         self.ruta_guardado = ruta_guardado or 'partidas/partida.sav'
         self.tabla_puntajes = tabla_puntajes
@@ -221,6 +254,8 @@ class ControladorJuego:
         # 4. Programar la siguiente acción
         if actor is not None:
             self._programar_siguiente(actor, costo)
+        if actor is self.jugador:
+            self.historia.registrar_checkpoint_partida(self.partida)
         return entrada
 
     def _programar_siguiente(self, actor, costo):
@@ -286,6 +321,20 @@ class ControladorJuego:
                 continue
             if comando.nombre == "mapa":
                 self._mostrar_mapa()
+                continue
+            if comando.nombre == "historia":
+                tipo, numero = comando.argumento
+                try:
+                    if tipo == "accion":
+                        resumen = self.historia.consultar_accion(numero)
+                    else:
+                        resumen = self.historia.consultar_tiempo(
+                            numero, self.reloj.tiempo_actual
+                        )
+                except ValueError as error:
+                    self._rechazar(str(error))
+                else:
+                    self.vista.mostrar_resumen_historico(resumen)
                 continue
             if comando.nombre == "ir":
                 self._iniciar_viaje(comando.argumento)
@@ -402,6 +451,10 @@ class ControladorJuego:
             self.historial.abortar_accion()
             return None
         self.partida.contar_accion_jugador()
+        self.historia.registrar_accion(
+            self.reloj.tiempo_actual,
+            (comando.nombre, comando.argumento, costo),
+        )
         if comando.nombre != "mover":
             # El rastro de la sala actual se refresca en cada acción.
             self.partida.refrescar_rastro()
@@ -498,6 +551,7 @@ class ControladorJuego:
         if not self.historial.usar_pergamino(self.jugador, nodo):
             self._rechazar("No hay acciones que deshacer.")
             return False
+        self.historia.truncar(self.partida.acciones_jugador)
         self.red.reconciliar_enemigos_revividos(vivos_antes)
         if self.bitacora is not None:
             self.bitacora.registrar(momento, "pergamino")
@@ -645,7 +699,12 @@ class ControladorJuego:
             if self.bitacora is not None:
                 destino = Path(self.bitacora.ruta).with_name('carga_' + uuid.uuid4().hex + '.log')
                 cabecera = dict(nueva.partida.encabezado())
-                nueva.bitacora = BitacoraPartida.partida_nueva(str(destino), **cabecera)
+                nueva.bitacora = BitacoraPartida.partida_nueva(
+                    str(destino), **cabecera,
+                    datos_jugador={
+                        campo: getattr(nueva.partida.jugador, campo)
+                        for campo in ("vida_max", "ataque", "defensa", "velocidad")
+                    })
                 for tiempo, accion in nueva.acciones:
                     nueva.bitacora.registrar(tiempo, accion)
                 self.bitacora.cerrar()
@@ -655,6 +714,7 @@ class ControladorJuego:
             self.reloj, self.historial, self.jugador = (self.partida.reloj,
                                                        self.partida.historial,
                                                        self.partida.jugador)
+            self.historia = self.partida.historia
             # El guardado incluye las referencias LRU protegidas de este punto.
             self._protegidas = nueva.protegidas if nueva.protegidas is not None else Vector()
             self.partida.al_mensaje.agregarValor(self.vista.agregar_mensaje)

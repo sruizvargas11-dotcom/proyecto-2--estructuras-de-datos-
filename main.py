@@ -11,6 +11,27 @@ from vista.vista_consola import informar
 from controlador.controlador_red import cargar_cripta, _carpeta_cache_por_defecto
 from controlador.reporte_red import motivo_error, motivo_partida, registrar_reporte
 from estructuras.listalru import CAPACIDAD_DEFECTO
+from modelo.historia import K_POR_DEFECTO
+
+
+def _checkpoint_positivo(valor):
+    try:
+        numero = int(valor)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("K debe ser un entero positivo.") from error
+    if numero <= 0:
+        raise argparse.ArgumentTypeError("K debe ser un entero positivo.")
+    return numero
+
+
+def _tiempo_no_negativo(valor):
+    try:
+        numero = int(valor)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("t debe ser un entero no negativo.") from error
+    if numero < 0:
+        raise argparse.ArgumentTypeError("t debe ser un entero no negativo.")
+    return numero
 
 
 def crear_fuente(argumentos):
@@ -39,6 +60,11 @@ def main(argumentos=None):
                         help='Precarga de salas en segundo plano')
     parser.add_argument('--replay', metavar='LOG',
                         help='Reproducir una bitácora de partida sin interacción')
+    parser.add_argument('--hasta', type=_tiempo_no_negativo, metavar='T',
+                        help='Con --replay: resumir la partida en el instante T')
+    parser.add_argument('--checkpoint-cada', type=_checkpoint_positivo,
+                        default=K_POR_DEFECTO, metavar='K',
+                        help=f'Punto de control cada K acciones (por defecto {K_POR_DEFECTO})')
     parser.add_argument('--silencioso', action='store_true',
                         help='Con --replay: no listar cada acción, solo el resultado')
     parser.add_argument('--reportes', metavar='ARCHIVO',
@@ -58,6 +84,8 @@ def main(argumentos=None):
         parser.error('--verificar no se puede combinar con --replay ni --bench')
     if opciones.replay and opciones.bench:
         parser.error('--replay y --bench son modos excluyentes')
+    if opciones.hasta is not None and not opciones.replay:
+        parser.error('--hasta requiere --replay')
     if opciones.gui and (opciones.replay or opciones.bench or opciones.solo_mapa):
         parser.error('--gui no se puede combinar con --replay, --bench ni --solo-mapa')
     if opciones.offline_dir and not opciones.offline:
@@ -220,7 +248,10 @@ def jugar(fuente, cripta_id, opciones):
     controlador = ControladorJuego(sesion, vista,
                                     str(Path(opciones.partidas_dir) / 'partida.sav'),
                                     TablaPuntajes(str(Path(opciones.partidas_dir)
-                                                      / 'puntajes.json')))
+                                                      / 'puntajes.json')),
+                                    getattr(
+                                        opciones, 'checkpoint_cada', K_POR_DEFECTO
+                                    ))
     try:
         controlador.jugar()
     except Exception as error:
@@ -264,7 +295,9 @@ def reproducir(fuente, opciones):
     informar(f'Reproduciendo {opciones.replay}')
     try:
         resultado = replay(opciones.replay, fuente, opciones.cache_dir,
-                           escribir=None if opciones.silencioso else informar, cache_size=opciones.cache_size)
+                           escribir=None if opciones.silencioso else informar,
+                           cache_size=opciones.cache_size,
+                           checkpoint_cada=opciones.checkpoint_cada)
     except ErrorVersionIncompatible as error:
         informar(f'Replay detenido: {error}')
         _mostrar_reporte(fuente, getattr(error, 'sesion', None), 'replay',
@@ -288,6 +321,25 @@ def reproducir(fuente, opciones):
     else:
         informar('La bitácora no trae el estado final (la partida original no terminó '
               'de forma controlada); se reprodujeron todas sus acciones sin errores.')
+    if opciones.hasta is not None:
+        from modelo.resumen_historico import ResumenHistorico
+        from vista.vista_consola import VistaConsola
+
+        if opciones.hasta > partida.tiempo:
+            resumen = ResumenHistorico.desde_partida(partida)
+            informar(
+                f'La partida terminó antes del instante solicitado t={opciones.hasta}.'
+            )
+        else:
+            try:
+                resumen = partida.historia.consultar_tiempo(
+                    opciones.hasta, partida.tiempo
+                )
+            except ValueError as error:
+                informar(f'ERROR: {error}')
+                return 2
+        for linea in VistaConsola.formatear_resumen_historico(resumen):
+            informar(linea)
     verificacion = ('idéntico a la partida original' if resultado.verificado
                     else 'sin estado final para comparar')
     _mostrar_reporte(fuente, resultado.sesion, 'replay',

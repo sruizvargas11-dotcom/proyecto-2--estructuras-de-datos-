@@ -39,9 +39,11 @@ def _excluir_pergaminos(jugador):
 
 def _preparar_copia(partida, incluir_historial=True):
     historial = Historial() if incluir_historial else None
+    partida.historia = None
     partida.historial = historial
     partida.reloj.historial = historial
     partida.rastro.historial = historial
+    partida.conocimiento.historial = historial
     partida._resolver_ficha = None
     for nombre in _CALLBACKS:
         _vaciar(getattr(partida, nombre))
@@ -52,6 +54,9 @@ def _copiar_sin_auxiliares(partida):
     historial = partida.historial
     reloj_historial = partida.reloj.historial
     rastro_historial = partida.rastro.historial
+    conocimiento_historial = partida.conocimiento.historial
+    tiene_historia = "historia" in partida.__dict__
+    historia_linea = partida.__dict__.get("historia")
     resolver_ficha = partida._resolver_ficha
     callbacks = Vector()
     for nombre in _CALLBACKS:
@@ -75,6 +80,8 @@ def _copiar_sin_auxiliares(partida):
         partida.historial = None
         partida.reloj.historial = None
         partida.rastro.historial = None
+        partida.conocimiento.historial = None
+        partida.historia = None
         partida._resolver_ficha = None
         for nombre, _ in callbacks:
             setattr(partida, nombre, Vector())
@@ -90,6 +97,11 @@ def _copiar_sin_auxiliares(partida):
         partida.historial = historial
         partida.reloj.historial = reloj_historial
         partida.rastro.historial = rastro_historial
+        partida.conocimiento.historial = conocimiento_historial
+        if tiene_historia:
+            partida.historia = historia_linea
+        else:
+            del partida.historia
         partida._resolver_ficha = resolver_ficha
         for nombre, callback in callbacks:
             setattr(partida, nombre, callback)

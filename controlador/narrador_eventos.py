@@ -46,7 +46,10 @@ def describir_evento(partida, evento, vida_antes=None):
         ganada = 0 if vida_antes is None else dueno.vida - vida_antes
         if ganada <= 0:
             return None
-        return f"{_nombre_enemigo(partida, dueno)} se regenera: +{ganada} de vida."
+        return (
+            f"{dueno.nombre} se regenera: +{ganada} de vida "
+            f"(#{dueno.instancia_id})."
+        )
 
     if tipo == "fin_modificador_velocidad":
         if dueno is jugador:

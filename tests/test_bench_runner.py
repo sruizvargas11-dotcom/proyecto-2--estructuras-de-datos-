@@ -3,7 +3,10 @@ import ast
 import gc
 import glob
 
-from bench.casos import CASOS, heap, inventario, lru, ordenamiento, binario_json, resolubilidad
+from bench.casos import (
+    CASOS, binario_json, heap, inventario, linea_tiempo, lru, ordenamiento,
+    resolubilidad,
+)
 from bench.medicion import Fila, mediana, medir
 
 
@@ -38,6 +41,16 @@ def test_cada_caso_devuelve_filas_bien_formadas(monkeypatch):
     monkeypatch.setattr(ordenamiento, "REPETICIONES", 1, raising=True)
     monkeypatch.setattr(ordenamiento, "MUESTRAS", 2, raising=True)
     monkeypatch.setattr(binario_json, "TAMANOS_SALAS", (50,), raising=True)
+    monkeypatch.setattr(linea_tiempo, "ACCIONES_BENCH", 10, raising=True)
+    monkeypatch.setattr(
+        linea_tiempo, "K_EVALUADOS", (2, 5, 10), raising=True
+    )
+    monkeypatch.setattr(
+        linea_tiempo, "CONSULTAS_POR_TIPO", 2, raising=True
+    )
+    monkeypatch.setattr(
+        linea_tiempo, "REPETICIONES_BENCH", 1, raising=True
+    )
     for caso in CASOS:
         filas = caso()
         assert len(filas) > 0
