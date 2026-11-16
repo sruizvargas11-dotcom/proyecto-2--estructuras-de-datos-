@@ -31,3 +31,26 @@ def test_controlador_grafico_puede_importarse_sin_cargar_pygame():
     resultado = subprocess.run([sys.executable, '-B', '-c', codigo], cwd=RAIZ,
                                capture_output=True, text=True, timeout=15)
     assert resultado.returncode == 0, resultado.stderr
+
+
+def test_bench_no_instancia_la_vista(monkeypatch, tmp_path):
+    import main
+    from bench import runner
+    from vista import vista_consola
+
+    def bench_vacio(*args, **kwargs):
+        return []
+
+    def vista_prohibida(self, *args, **kwargs):
+        raise AssertionError("El modo --bench no debe instanciar la vista.")
+
+    monkeypatch.setattr(runner, "main_bench", bench_vacio)
+    monkeypatch.setattr(vista_consola.VistaConsola, "__init__", vista_prohibida)
+    monkeypatch.setattr(main, "informar", bench_vacio)
+    monkeypatch.setattr(main, "registrar_reporte", bench_vacio)
+
+    assert main.main([
+        "--bench",
+        "--reportes",
+        str(tmp_path / "reportes.txt"),
+    ]) == 0

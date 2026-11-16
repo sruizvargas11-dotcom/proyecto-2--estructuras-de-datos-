@@ -1,6 +1,7 @@
 """Datos independientes para presentar un estado historico."""
 
 from estructuras.vector_dinamico import Vector
+from modelo.conocimiento import DESCONOCIDA
 
 
 class ObjetoHistorico:
@@ -30,10 +31,11 @@ class EnemigoHistorico:
 
 
 class SalaConocidaHistorica:
-    def __init__(self, sala_id, nombre, tiempo_rastro):
+    def __init__(self, sala_id, nombre, tiempo_rastro, estado):
         self.sala_id = sala_id
         self.nombre = nombre
         self.tiempo_rastro = tiempo_rastro
+        self.estado = estado
 
 
 class ResumenHistorico:
@@ -125,13 +127,14 @@ class ResumenHistorico:
             )
 
         mapa_conocido = Vector()
-        for sala_conocida in partida.cripta.recorrer_salas():
-            if sala_conocida.tiempo_rastro >= 0:
+        for registro in partida.conocimiento.registros:
+            if registro.estado != DESCONOCIDA:
                 mapa_conocido.agregarValor(
                     SalaConocidaHistorica(
-                        sala_conocida.id,
-                        sala_conocida.nombre,
-                        sala_conocida.tiempo_rastro,
+                        registro.id,
+                        registro.sala.nombre,
+                        registro.sala.tiempo_rastro,
+                        registro.estado,
                     )
                 )
 

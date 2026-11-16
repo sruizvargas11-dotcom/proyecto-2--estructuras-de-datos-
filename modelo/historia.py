@@ -5,7 +5,7 @@ from modelo.resumen_historico import ResumenHistorico
 from modelo.punto_control import PuntoControl
 from modelo.reconstructor_historia import ReconstructorHistoria
 
-K_POR_DEFECTO = 100
+K_POR_DEFECTO = 200
 
 
 def _entero_positivo(valor, nombre, minimo=0):
