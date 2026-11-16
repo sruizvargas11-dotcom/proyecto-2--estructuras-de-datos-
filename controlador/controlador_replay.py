@@ -117,7 +117,7 @@ class ResultadoReplay:
 
 
 def reproducir(ruta_log, fuente, carpeta_cache=None, escribir=None, cache_size=25,
-               despachador=None):
+               despachador=None, checkpoint_cada=None):
     """Reproduce la bitácora. Lanza ErrorVersionIncompatible antes de ejecutar
     cualquier acción si los datos actuales no son los del log, y
     ErrorReplayDivergente si la reproducción se separa de lo registrado."""
@@ -135,8 +135,16 @@ def reproducir(ruta_log, fuente, carpeta_cache=None, escribir=None, cache_size=2
     sesion = nueva_partida(fuente, bitacora.cripta_id, carpeta_cache,
                            semilla=bitacora.semilla, ruta_bitacora=None, cache_size=cache_size,
                            despachador=despachador, verificar=False)
+    if bitacora.datos_jugador is not None:
+        jugador = sesion.partida.jugador
+        for campo in ("vida_max", "ataque", "defensa", "velocidad"):
+            setattr(jugador, campo, bitacora.datos_jugador[campo])
+        jugador.vida = jugador.vida_max
     try:
-        return _reproducir_sesion(sesion, bitacora, acciones, cierre_original, escribir)
+        return _reproducir_sesion(
+            sesion, bitacora, acciones, cierre_original, escribir,
+            checkpoint_cada,
+        )
     except (ErrorVersionIncompatible, ErrorReplayDivergente) as error:
         error.sesion = sesion        # el reporte de red la necesita
         raise
@@ -144,7 +152,8 @@ def reproducir(ruta_log, fuente, carpeta_cache=None, escribir=None, cache_size=2
         sesion.red.cerrar(5)
 
 
-def _reproducir_sesion(sesion, bitacora, acciones, cierre_original, escribir):
+def _reproducir_sesion(sesion, bitacora, acciones, cierre_original, escribir,
+                       checkpoint_cada=None):
     try:
         bitacora.verificar_compatibilidad(str(sesion.partida.version_cripta),
                                           str(sesion.partida.version_catalogo))
@@ -155,7 +164,9 @@ def _reproducir_sesion(sesion, bitacora, acciones, cierre_original, escribir):
     grabadora = _GrabadoraBitacora()
     sesion.bitacora = grabadora
     guion = GuionReplay(acciones, grabadora, escribir)
-    ControladorJuego(sesion, guion).jugar()
+    ControladorJuego(
+        sesion, guion, checkpoint_cada=checkpoint_cada
+    ).jugar()
 
     # Una acción rechazada ya se detectó en leer_comando: tras un rechazo el
     # controlador vuelve a pedir comando antes de que la partida pueda terminar.

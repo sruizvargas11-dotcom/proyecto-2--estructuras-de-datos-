@@ -6,7 +6,7 @@ from estructuras.ordenamientos import ordenar
 
 # "CRPT" en bytes — sirve para reconocer el archivo como nuestro
 MAGIC           = 0x43525054
-VERSION_FORMATO = 1
+VERSION_FORMATO = 2
 
 
 def _escribir(f, numero, n_bytes):
@@ -129,7 +129,8 @@ class PartidaBinaria:
         if version != VERSION_FORMATO:
             raise ErrorFormatoBinario(
                 f"Versión del archivo ({version}) no compatible "
-                f"con esta versión del programa ({VERSION_FORMATO})."
+                f"con esta versión del programa ({VERSION_FORMATO}); "
+                "los archivos de Parte I no se pueden cargar."
             )
         num_salas, inicio_datos = _leer(f, 2), _leer(f, 4)
         if not 12 + 8 * num_salas + 4 <= inicio_datos <= os.fstat(f.fileno()).st_size:

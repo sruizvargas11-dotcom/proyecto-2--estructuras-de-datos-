@@ -31,6 +31,7 @@ MODULOS = (
     'modelo.entidades.objetos.antidoto', 'modelo.entidades.objetos.llave',
     'modelo.entidades.objetos.pergamino_retroceso',
     'modelo.entidades.objetos.fabrica_objetos', 'modelo.conocimiento',
+    'modelo.historia', 'modelo.punto_control',
 )
 OMITIDOS_PARTIDA = ('al_mensaje', 'al_morir_enemigo', 'al_entrar_sala',
                     'al_mover_enemigo', 'al_atacar', 'al_activar_trampa',

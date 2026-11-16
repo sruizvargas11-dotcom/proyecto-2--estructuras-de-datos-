@@ -189,7 +189,11 @@ def nueva_partida(fuente, cripta_id, carpeta_cache=None, semilla=None,
     bitacora = None
     if ruta_bitacora is not None:
         bitacora = BitacoraPartida.partida_nueva(
-            ruta_bitacora, cripta.id, cripta.version, version_catalogo, semilla)
+            ruta_bitacora, cripta.id, cripta.version, version_catalogo, semilla,
+            datos_jugador={
+                campo: generales["jugador"][campo]
+                for campo in ("vida_max", "ataque", "defensa", "velocidad")
+            })
     return SesionPartida(
         partida,
         red,

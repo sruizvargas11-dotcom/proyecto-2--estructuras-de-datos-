@@ -107,7 +107,7 @@ def cargar(ruta, sesion_actual):
             raise ValueError(
                 f"Guardado incompatible: esquema de estado {datos.get('esquema_estado')!r}, "
                 f"se esperaba {ESQUEMA_ESTADO}. Un guardado de una versión anterior del "
-                "programa no se puede cargar.")
+                "programa de Parte I no se puede cargar.")
         actual = dict(sesion_actual.partida.encabezado())
         for campo in ('cripta_id', 'version_cripta', 'version_catalogo'):
             if datos.get(campo) != actual[campo]:

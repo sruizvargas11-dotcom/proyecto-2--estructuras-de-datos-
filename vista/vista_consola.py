@@ -23,6 +23,7 @@ AYUDA = """Comandos (no distingue mayúsculas; [n] es opcional y vale 1 por defe
   AP <n>   apagar antorcha (costo 50; no reinicia su duración)
   M        mapa conocido (sin costo)
   IR A <id> viajar a una sala explorada paso a paso (cada paso es un movimiento)
+  HISTORIA <t> / HISTORIA #<k> consultar un estado anterior (sin costo)
 """
 
 
@@ -168,6 +169,48 @@ class VistaConsola:
             for linea in self._panel:
                 e(linea)
             self._panel = Vector()
+
+    def mostrar_resumen_historico(self, resumen):
+        for linea in self.formatear_resumen_historico(resumen):
+            self._escribir(linea)
+
+    @staticmethod
+    def formatear_resumen_historico(resumen):
+        return (
+            f"Estado histórico | t={resumen.tiempo}",
+            f"{resumen.sala_nombre} (sala {resumen.sala_id})",
+            f"Vida {resumen.vida}/{resumen.vida_max} | Ataque {resumen.ataque} | "
+            f"Defensa {resumen.defensa} | Velocidad {resumen.velocidad}",
+            "Inventario: " + VistaConsola._nombres_historicos(resumen.inventario),
+            "Efectos: " + VistaConsola._efectos_historicos(resumen.efectos_activos),
+            "Enemigos: " + VistaConsola._enemigos_historicos(resumen.enemigos),
+            "Mapa conocido: " + VistaConsola._mapa_historico(resumen.mapa_conocido),
+        )
+
+    @staticmethod
+    def _nombres_historicos(objetos):
+        nombres = ", ".join(objeto.nombre for objeto in objetos)
+        return nombres or "vacío"
+
+    @staticmethod
+    def _efectos_historicos(efectos):
+        nombres = ", ".join(efecto.tipo for efecto in efectos)
+        return nombres or "ninguno"
+
+    @staticmethod
+    def _enemigos_historicos(enemigos):
+        nombres = ", ".join(
+            f"{enemigo.nombre} {enemigo.vida}/{enemigo.vida_max}"
+            for enemigo in enemigos
+        )
+        return nombres or "ninguno"
+
+    @staticmethod
+    def _mapa_historico(salas):
+        nombres = ", ".join(
+            f"{sala.nombre} (sala {sala.sala_id})" for sala in salas
+        )
+        return nombres or "sin salas conocidas"
 
     def _seccion(self, titulo, lineas, vacio):
         """Un elemento por renglón: así se lee el número para A/R sin contar."""
