@@ -1,6 +1,12 @@
 {
   "sala": 5,
-  "enemigos": [],
+  "enemigos": [
+    {
+      "instancia": "e-501",
+      "tipo": "ent_cazador",
+      "vida": 18
+    }
+  ],
   "objetos": [
     "itm_pergamino_retroceso",
     "itm_antidoto"

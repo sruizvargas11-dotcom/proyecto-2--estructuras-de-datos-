@@ -1412,6 +1412,18 @@ escenarios quedaron bajo el umbral de 20 ms. Se conserva el detalle de latencias
 en el JSON versionable, que registra el checksum del fixture
 `1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`. T020 queda completada.
 
+### Contenido offline del cazador (2026-11-17)
+
+Se añadió la ficha `ent_cazador` al catálogo offline con rango 200 y estadísticas
+moderadas. Se coloca una instancia en la sala 5, detrás de la puerta que requiere la llave
+de bronce, para que sea un encuentro opcional y no bloquee el recorrido principal. La cripta
+usa costo 100 por salida mediante el valor predeterminado, sin añadir costos explícitos al
+mapa. Se actualizaron las versiones de catálogo y cripta para invalidar contenido cacheado
+y mantener coherentes las versiones de `general.json`, `version.json` y `llaves.json`.
+Las versiones resultantes son `f7cb2431af96` y `d152eb846633`, respectivamente. La ficha
+está disponible solo en los datos offline; la fuente HTTP debe publicar su propia versión
+de la ficha si también se quiere ofrecer el cazador en partidas en línea.
+
 La suite completa había pasado 1175 pruebas con Python 3.12.10 en la revisión anterior; tras
 la optimización final, las pruebas focalizadas de cazador y benchmark pasaron 15/15. No se
 ejecutaron `git add`, commit ni push.

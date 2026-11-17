@@ -84,7 +84,7 @@ def test_partida_nueva_genera_semilla_y_la_escribe_en_la_bitacora(tmp_path):
     leida = BitacoraPartida.abrir(ruta)
     assert leida.semilla == partida.semilla
     assert leida.version_cripta == partida.version_cripta
-    assert leida.version_catalogo == partida.version_catalogo == 'be68d322d2f5'
+    assert leida.version_catalogo == partida.version_catalogo == 'f7cb2431af96'
 
 
 def test_semilla_recibida_se_reutiliza_para_replay(tmp_path):

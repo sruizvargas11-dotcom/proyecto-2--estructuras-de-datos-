@@ -24,10 +24,11 @@ repositorio. El PDF del curso no está disponible y no se consultó.
   crear la fuente de datos de juego. Pruebas existentes verifican que no se cargue Pygame.
   Herramientas de ciclo existentes usan medición local y semilla explícita, pero no cubren
   este algoritmo ni los ocho escenarios de la especificación.
-- El conjunto offline examinado no incluye un costo de salida ni una ficha cazador. Las
-  versiones de cripta y catálogo se administran por separado en persistencia; no se debe
-  inferir que sus identificadores de versión tienen que ser iguales entre sí.
-- La única cripta offline versionada disponible es `cripta-01`, versión `fd58f7743b9e`,
+- La cripta offline `cripta-01` incluye ahora una ficha de cazador con rango y una
+  instancia en su sala 5. Sus salidas omiten el campo de costo y usan el valor
+  predeterminado 100. Las versiones de cripta y catálogo se administran por separado; no
+  se debe inferir que sus identificadores tengan que ser iguales entre sí.
+- La única cripta offline versionada disponible es `cripta-01`, versión `d152eb846633`,
   con 6 salas; no cumple el requisito de benchmark de usar un mapa mayor. `bench/ciclo.py`
   genera un escenario sintético de 200 salas, pero no define un dataset de caminos fijo,
   versionado y con cambios de puertas para este feature.

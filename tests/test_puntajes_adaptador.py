@@ -38,7 +38,7 @@ def test_registro_valida_sus_campos(campo, valor):
 
 
 def test_registro_ida_y_vuelta_json():
-    original = registro(nombre="Sebastián", version="fd58f7743b9e")
+    original = registro(nombre="Sebastián", version="d152eb846633")
     copia = RegistroPuntaje.desde_json(json.loads(json.dumps(original.a_json())))
     assert copia.a_json() == original.a_json()
     assert set(original.a_json()) == {"nombre_jugador", "cripta_id", "version_cripta",

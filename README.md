@@ -1,6 +1,6 @@
 # CRIPTA
 
-CRIPTA es un juego de exploración por consola desarrollado para el curso de Estructuras de Datos. El jugador recorre salas, combate enemigos, recoge objetos y busca la salida de una cripta. Cada acción tiene un costo de tiempo, y un reloj virtual organiza los turnos de los actores y los efectos del entorno.
+CRIPTA es un juego de exploración por consola y Pygame desarrollado para el curso de Estructuras de Datos. El jugador recorre salas, combate guardianes, errantes, rastreadores y cazadores, recoge objetos y busca la salida de una cripta. El costo de las salidas determina el tiempo de movimiento; el cazador persigue por rutas de costo mínimo y solo ataca al compartir sala con el jugador.
 
 El proyecto utiliza estructuras de datos propias para resolver problemas del juego: una agenda de eventos con heap mínimo, un inventario con lista doble, una caché LRU para el catálogo y un historial de cambios que permite deshacer acciones. Puede obtener los datos desde un servicio HTTP o trabajar con los archivos locales incluidos en el repositorio.
 
@@ -26,8 +26,8 @@ El entorno de referencia es **Python 3.12**. La última validación local se rea
 Clona el repositorio y entra en su carpeta:
 
 ```console
-git clone https://github.com/sruizvargas11-dotcom/proyecto-1-estructuras-de-datos-.git
-cd proyecto-1-estructuras-de-datos-
+git clone https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-.git
+cd proyecto-2--estructuras-de-datos-
 ```
 
 En Windows, desde PowerShell:
@@ -81,7 +81,9 @@ Si omites `--cripta`, el programa muestra las disponibles. Puedes elegir una por
 
 La pantalla muestra la sala actual, las salidas, los enemigos, los objetos del suelo, las trampas, el inventario y el estado del jugador. También conserva los últimos 20 mensajes. Escribe `H` para consultar la ayuda o `Q` para terminar la sesión.
 
-Se gana al llegar a la sala de salida y se pierde cuando la vida del jugador llega a cero. Para atravesar una puerta cerrada primero hay que abrirla con la llave adecuada. Los enemigos se activan al entrar en su sala, y su comportamiento puede ser de guardián, errante o rastreador.
+Se gana al llegar a la sala de salida y se pierde cuando la vida del jugador llega a cero. Para atravesar una puerta cerrada primero hay que abrirla con la llave adecuada. Los enemigos se activan al entrar en su sala; pueden ser guardianes, errantes, rastreadores o cazadores.
+
+La cripta offline `cripta-01` incluye un cazador de rango 200 en la sala opcional 5, detrás de la puerta que requiere la llave de bronce. Sus salidas usan costo 100, el valor predeterminado cuando los datos no declaran un costo.
 
 ### Cómo avanza el tiempo
 

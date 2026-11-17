@@ -168,10 +168,10 @@ pertenece al modelo/estructura propia, no a la vista ni a un servicio externo.
   salida tenga otra representación de regreso. El spec ahora define que una salida sin
   inversa es válida como unidireccional y que los costos se comparan solo si ambos sentidos
   están presentes.
-- El repositorio no incluye una ficha de catálogo de cazador ni el campo `costo` en el
-  esqueleto offline actual. La disponibilidad de esos campos en la fuente de datos y su
-  política de publicación de versión debe confirmarse antes de desplegar; no suplirlos con
-  datos incrustados.
+- La cripta offline incluye ahora una ficha de cazador y una instancia en la sala 5.
+  Sus salidas omiten el campo `costo`, por lo que se aplica 100. La fuente online todavía
+  debe publicar fichas de cazador y costos si se quiere ofrecer el mismo contenido allí;
+  no se suplen esos datos con valores incrustados en la lógica.
 - El fixture de benchmark es sintético y no representa una cripta real. Los resultados
   acreditan el umbral solo para la dimensión y topología registradas, no para mapas de
   cualquier escala.

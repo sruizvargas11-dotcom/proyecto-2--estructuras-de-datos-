@@ -45,8 +45,9 @@ explícitamente. No se debe añadir un cazador artificial a los datos de producc
 ### Dataset fijo
 
 No hay un dataset de cripta versionado en el repositorio que satisfaga el tamaño requerido:
-`datos_offline/cripta-01` es versión `fd58f7743b9e` y contiene 6 salas. Se elige, por tanto,
-un fixture sintético de benchmark:
+`datos_offline/cripta-01` es versión `d152eb846633`, contiene 6 salas e incluye un
+cazador offline. Sigue siendo menor al tamaño requerido. Se elige, por tanto, un fixture
+sintético de benchmark:
 
 - **Identidad**: `bench-terreno-cazador-grid-16x16`
 - **Versión del fixture**: `1.0.0`

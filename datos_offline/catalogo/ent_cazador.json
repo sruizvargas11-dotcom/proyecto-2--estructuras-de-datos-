@@ -1,0 +1,11 @@
+{
+  "id": "ent_cazador",
+  "nombre": "Cazador de la cripta",
+  "clase": "enemigo",
+  "vida_max": 18,
+  "ataque": 6,
+  "defensa": 2,
+  "velocidad": 100,
+  "comportamiento": "cazador",
+  "rango": 200
+}

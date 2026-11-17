@@ -7,11 +7,11 @@ repositorio con el entorno ya instalado. No requiere acceso al PDF.
 
 - Python 3.12 y dependencias de `requirements.txt`.
 - `pytest`.
-- Una fuente/dataset versionado con esqueleto y catálogo compatibles. La cripta offline
-  presente actualmente no incluye el costo ni el cazador; no usarla como demostración de
-  esos campos sin preparar datos compatibles. El benchmark usa el fixture sintético
-  `bench-terreno-cazador-grid-16x16` v1.0.0, definido en el contrato; no representa una
-  cripta oficial.
+- La cripta offline `cripta-01` (versión `d152eb846633`) ahora incluye un cazador en la
+  sala 5, y el catálogo offline (`f7cb2431af96`) declara su rango. Las salidas de esa
+  cripta omiten el costo explícito y usan el valor predeterminado 100. El benchmark usa el
+  fixture sintético `bench-terreno-cazador-grid-16x16` v1.0.0, definido en el contrato;
+  no representa una cripta oficial.
 
 ## Pruebas focalizadas
 
