@@ -329,3 +329,17 @@ class TestLlavesOffline(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_catalogos_descargados_no_cambian_osario_menor():
+    fuente = DatosOffline()
+    fuente.datos_cripta("cripta-01")
+    version_local = fuente.version_catalogo()
+    assert fuente.catalogo(["ent_rata_gigante"])["entidades"][0]["vida_max"] == 12
+    nueva = fuente.para_nueva_partida()
+    nueva.datos_cripta("cripta-02")
+    assert nueva.catalogo(["ent_rata_gigante"])["entidades"][0]["vida_max"] == 8
+    assert fuente.version_catalogo() == version_local
+    assert fuente.catalogo(["ent_rata_gigante"])["entidades"][0]["vida_max"] == 12
+    nueva.datos_cripta("cripta-01")
+    assert nueva.version_catalogo() == version_local

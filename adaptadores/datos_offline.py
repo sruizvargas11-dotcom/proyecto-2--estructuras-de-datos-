@@ -11,6 +11,7 @@ class DatosOffline(FuenteDeDatos):
         if carpeta is None:
             carpeta = CARPETA_POR_DEFECTO # Usa los datos incluidos en el repositorio si no se indica otra carpeta.
         self._carpeta = carpeta
+        self._catalogo_cripta = None
         if not os.path.exists(self._carpeta):
             raise FileNotFoundError(
                 f"Carpeta '{self._carpeta}' no encontrada. "
@@ -55,10 +56,17 @@ class DatosOffline(FuenteDeDatos):
 
     # Cada método lee los archivos que corresponden a la misma consulta en HTTP.
 
+    def para_nueva_partida(self):
+        return DatosOffline(self._carpeta)
+
     def datos_cripta(self, cripta_id):
         if not cripta_id:
             raise ValueError("informacion de cripta vacia ")
-        return self._leer(os.path.join(cripta_id, "general.json"))
+        datos = self._leer(os.path.join(cripta_id, "general.json"))
+        self._catalogo_cripta = cripta_id if os.path.isfile(
+            os.path.join(self._carpeta, cripta_id, "catalogo_version.json")
+        ) else None
+        return datos
 
     def esqueleto_cripta(self, cripta_id, pagina):
         if not cripta_id:
@@ -107,6 +115,8 @@ class DatosOffline(FuenteDeDatos):
         resultado = [] # Conserva el orden de los tipos solicitado por el controlador.
         for tipo_id in tipo_ids:
             ruta = os.path.join("catalogo", f"{tipo_id}.json")
+            if self._catalogo_cripta is not None:
+                ruta = os.path.join(self._catalogo_cripta, ruta)
             resultado.append(self._leer(ruta))
         return {"entidades": resultado}
 
@@ -116,7 +126,10 @@ class DatosOffline(FuenteDeDatos):
         return self._leer(os.path.join(cripta_id, "version.json"))
 
     def version_catalogo(self):
-        return self._leer("catalogo_version.json")
+        ruta = "catalogo_version.json"
+        if self._catalogo_cripta is not None:
+            ruta = os.path.join(self._catalogo_cripta, ruta)
+        return self._leer(ruta)
 
     def modo(self):
         return "offline"

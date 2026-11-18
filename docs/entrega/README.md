@@ -7,3 +7,5 @@
 - [Benchmark contractual original de cazadores](../evidencia/2026-11-04-terreno-cazador-benchmark.json) y [repetición de cierre](CRIPTA-II-terreno-benchmark-entrega.json)
 - [Medición de IR A](cripta-06-benchmark-002.json) y [medición de estructuras](CRIPTA-II-medicion-estructuras.json)
 - [Registro del comando de auditoría en Antigravity](CRIPTA-II-registro-antigravity-cierre.md)
+
+- [Carga offline de los seis mapas](CRIPTAS-OFFLINE.json)

@@ -1,0 +1,18 @@
+{
+  "version": "f9186ac25124",
+  "llaves": [
+    {
+      "id": "itm_llave_bronce",
+      "sala": 2
+    },
+    {
+      "id": "itm_llave_negra",
+      "sala": 4
+    },
+    {
+      "id": "itm_llave_hierro",
+      "sala": 16,
+      "enemigo": "e-cripta-03-8"
+    }
+  ]
+}

@@ -505,6 +505,16 @@ python main.py --offline --offline-dir datos_ensayo --cripta cripta-prueba
 
 El generador exige una carpeta nueva. Copia los datos a esa ubicación y prepara la cripta de ensayo sin modificar `datos_offline/`.
 
+## Criptas descargadas
+
+El modo offline incluye Osario menor y cinco mapas oficiales descargados el 18 de noviembre de 2026, con 20, 40, 50, 24 y 300 salas. Se inician con:
+
+```powershell
+python main.py --offline --gui
+```
+
+Cada mapa oficial conserva su catálogo y su versión en su carpeta para mantener sus estadísticas. Osario menor conserva el catálogo local. Cripta sellada recibe el veredicto NO RESOLUBLE y requiere confirmar la continuación en la interfaz, o usar `--forzar` en consola. La [validación de los seis mapas](docs/entrega/CRIPTAS-OFFLINE.json) incluye carga, MAPA e HISTORIA.
+
 ## Evidencias
 
 La [documentación de entrega de CRIPTA II](docs/entrega/README.md) reúne las decisiones, la guía de demostración y los resultados de validación.

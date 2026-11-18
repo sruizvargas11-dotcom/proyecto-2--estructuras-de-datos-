@@ -43,3 +43,11 @@ La suite completa aprobó **1.381 pruebas**, con cero fallos y cero errores, en 
 ## Repetición contractual de terreno y cazador
 
 La repetición contractual en el equipo de cierre completó 8 escenarios, 30 repeticiones por escenario y 240.000 ciclos. Las decisiones coincidieron con la referencia. Hubo 5 ciclos por encima de 20 ms y el máximo fue 43,1008 ms. Este equipo no reprodujo el cumplimiento del máximo obtenido en el informe original. [JSON de cierre](CRIPTA-II-terreno-benchmark-entrega.json).
+
+## Descarga de mapas oficiales, 18 de noviembre de 2026
+
+Se incorporaron cripta-02 a cripta-06 con todas sus salas, contenido, llaves, versiones y fichas de catálogo, incluido el botín transitivo de enemigos. El modo offline lista seis mapas. El adaptador selecciona el catálogo del mapa al leer sus datos generales y crea una fuente independiente por partida. Una regresión comprueba que el cambio de mapa conserva las estadísticas de Osario menor.
+
+Se validaron la carga de cada mapa, MAPA e HISTORIA 0. Cripta sellada queda bloqueada por NO RESOLUBLE y permite continuar con forzar. En la interfaz gráfica online se recorrieron las salas 1 a 4 de Catacumbas menores; se observaron la carga de objetos, los costos de movimiento y el minimapa.
+
+Suite completa con los mapas descargados: 1.382 pruebas aprobadas, cero fallos y cero errores, en 341,81 s.
