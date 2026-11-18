@@ -100,6 +100,8 @@ Se utilizó Github Copilot, utilizando el modelo GPT Luna 6.
 
 Claude (claude.ai), modelo claude-opus-5-5.
 
+En la Parte II también se usó Copilot (SDK en VS Code) con Spec Kit para ejecutar los comandos `/speckit-*` y la implementación de la especificación 003; esas entradas se identifican con el campo **Herramienta**.
+
 ### Resumen de los prompts
 
 Se registran 33 prompts, enviados entre el 4 y el 18 de octubre de 2026, que contribuyeron de forma directa a la construcción del proyecto. Por su carácter se agrupan así:
@@ -111,6 +113,13 @@ Se registran 33 prompts, enviados entre el 4 y el 18 de octubre de 2026, que con
 - **Depuración y corrección:** resolver fallos de código propio o de pruebas a partir de la salida en consola (6, 7, 20, 27).
 - **Mediciones y documentación de decisiones:** redactar, revisar y uniformar las entradas del Documento de Decisiones, y obtener los comandos y resultados que respaldan su evidencia (17, 22 a 30).
 - **Documentación del repositorio:** README y esta bitácora (31 a 33).
+
+En la Parte II se registran 22 prompts más (34 a 55), enviados entre el 5 y el 17 de noviembre de 2026:
+
+- **Análisis y comparación de alternativas:** diseño de la tabla hash de la caché (34).
+- **Implementación guiada:** implementación de la tabla hash conectada a la ListaLRU (35).
+- **Preparación y seguimiento con Claude:** redactar los prompts de specify, clarify, plan y analyze, diagnosticar el bloqueo de T020, preparar la instrucción de cierre y verificar T031 (36, 38, 40, 44, 49, 52, 54, 55).
+- **Flujo Spec Kit e implementación (Copilot):** especificar, clarificar, planear, enmendar, descomponer en tareas, analizar e implementar la resolubilidad, y las instrucciones para continuar o cerrar la implementación (37, 39, 41 a 43, 45 a 48, 50, 51, 53).
 
 Cuando un prompt incluía código, archivos o salidas de consola, ese contenido se indica entre corchetes (por ejemplo `[código: …]` o `[adjunto: …]`) en lugar de copiarlo completo.
 
@@ -473,6 +482,430 @@ Cuando un prompt incluía código, archivos o salidas de consola, ese contenido 
 - **Prompt:**
   > adapta la estructura de los registros de José Fabio en PROMPTS_LLM.md, para que quede uniforme con el formato que tienen el resto de los registros
 - **Uso:** Uniformar la sección de José Fabio con el formato del resto de la bitácora, conservando el texto literal de sus prompts.
+
+#### 34
+- **Fecha:** 2026-11-05
+- **Prompt:**
+  > [adjuntos: Guia_operativa_CRIPTA_II_revision_base.pdf, plan_cripta_ii.md.pdf]
+  > Estamos empezando con el segundo proyecto, el cual es una continuación del primero (ver "Cripta II.pdf"). Estamos empezando con mejoras al primer proyecto para dejar como base para lo que se implementará luego. En mi caso, empiezo implementando una mejora al almacenado de la caché, la cual utiliza la estructura ListaLRU. Para mejorarla, tenemos que implementar un Hash Table con IDs unicos, conectada mediante un nodo a la ListLRU de la caché. Esta estructura debe de mantener la protección de las fichas en uso, capacidad y contadores, y debe procurar NO duplicar lo que ya existe para el diagnóstico de red, únicamente agregar lo que se implementa con esta funcionalidad para acceder a los datos de la caché (esto se detalla en la Pagina 18 del primer documento y en la Pagina 2 del segundo).
+  > Ya con esta información general, debo procurar entregar una implementación robusta y lo más completa posible. Por ello, antes de empezar con las implementaciones, necesito que analices la solución, y propongas preguntas con posibles soluciones basadas en lo que existe actualmente en el proyecto, explicando qué podría implicar cada solución y cómo quedaría su funcionamiento dentro del programa (ejemplos en los que ocupo explorar alternativas es en el algoritmo para llevar a cabo el hashing, el mantenimiento de las fichas, etc). Puedes recomendarme las alternativas que consideres que se acoplen mejor al proyecto.
+- **Uso:** Analizar la mejora de la caché con tabla hash y obtener 10 preguntas de diseño con alternativas, implicaciones y recomendaciones según el código actual.
+
+#### 35
+- **Fecha:** 2026-11-05
+- **Prompt:**
+  > Te responderé cada punto con la letra de recomendación que considero. Si hay un comentario adicional te lo hago saber:
+  >
+  > 1. A
+  > 2. A
+  > 3. B. Los detalles que sugieres son una buena observación para tomarlos en cuenta.
+  > 4. C
+  > 5. Agrega _verificar_invariantes(). El flujo que detallas en el primer punto se acomoda bien a lo que buscamos
+  > 6. C
+  > 7. De acuerdo con las métricas propuestas
+  > 8. B. Debes procurar que este comportamiento debe afectar lo menos posible módulos que corresponden a otros compañeros, para evitar más carga de trabajo de la que se propuso en las guías
+  > 9. A
+  > 10. B
+  >
+  > Además adjunto la carpeta en donde se está trabajando el proyecto. Sólo necesito que implementes la funcionalidad de la tabla hash, en la rama en la que me encuentro actualmente "Hash-Table". No hagas commit ni push a los cambios que implementes, de eso me encargo yo
+- **Uso:** Implementar la tabla hash propia (encadenamiento separado, FNV-1a, crecimiento por factor de carga), conectarla a la ListaLRU, agregar métricas al reporte de red, compatibilidad con guardados previos, modo lineal para comparación y pruebas.
+
+#### 36
+- **Fecha:** 2026-11-12
+- **Prompt:**
+  > [adjunto: borrador propio del prompt para spec.md de resolubilidad]
+  > Este fue el borrador resultante basado en las propuestas de temas a contemplar para el prompt para crear 'spec.md'
+  > con esto, elaborame un prompt eficiente en cuota pero lo suficientemente detallado para armar el 'spec.md' de la Resolubilidad.
+  > Si es necesario aclarar o concluir algo que quedó corto por definir, incluirlo en el prompt
+  > el agente no conoce detalles sobre el enunciado ni las guías elaboradas, debe trabajar a punta de lo que se establece y se conoce en el documento 'constitution.md'
+- **Uso:** Convertir el borrador en el prompt final de `/speckit-specify`, completando definiciones y reglas que faltaban.
+
+#### 37
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > /speckit-specify Trabaja exclusivamente en SPECIFY_FEATURE_DIRECTORY=specs/003-resolubilidad. No modifiques otras especificaciones ni escribas código.
+  >
+  > CAPACIDAD: Verificación de resolubilidad de la cripta. Antes de iniciar una partida, el programa determina si la cripta puede ganarse y, si no, explica por qué. Cumple .specify/memory/constitution.md (en especial: determinismo, separación MVC, ningún dato de una cripta concreta en el código, respeto de presupuesto_solicitudes, rendimiento respaldado con --bench).
+  >
+  > REGLA EDITORIAL: spec.md describe comportamiento observable (reglas, historias de usuario, escenarios Dado/Cuando/Entonces, requisitos numerados). NO nombres estructuras de datos, algoritmos (BFS, DFS, Dijkstra, colas, pilas, tablas hash), clases ni módulos. No inventes reglas: lo que no esté definido aquí márcalo [NEEDS CLARIFICATION].
+  >
+  > FUERA DE ALCANCE: caché, red (salvo lo indicado en "Entradas"), cálculo de rutas de menor costo, niebla de guerra, línea de tiempo, cazadores.
+  >
+  > ENTRADAS
+  > - Esqueleto de la cripta: salas, sala inicial, sala_salida, llave_salida; por cada sala sus salidas (dirección, sala destino, si está cerrada, llave que la abre, costo).
+  > - Ubicación de llaves (consulta "llaves" del servicio): lista {id llave, sala, enemigo opcional}. Si trae enemigo, la llave se obtiene en la sala donde ese enemigo INICIA.
+  > - La consulta de llaves cuenta en presupuesto_solicitudes, puede persistirse y deja de ser válida si cambia la versión de la cripta.
+  > - Cada salida vale solo en el sentido en que está descrita en su sala; no se asume que A→B implique B→A.
+  >
+  > SUPUESTOS DE LA VERIFICACIÓN (un requisito RS-FR cada uno; aplican solo a la verificación, no cambian las reglas de la partida)
+  > - Se puede cruzar toda salida abierta y toda salida cerrada cuya llave ya se obtuvo.
+  > - Las llaves no se consumen.
+  > - Todo enemigo puede ser derrotado.
+  > - Trampas y cierres automáticos no bloquean.
+  > - El costo de las salidas no afecta el veredicto ni el orden: solo importa la alcanzabilidad.
+  >
+  > DEFINICIONES (inclúyelas en la spec)
+  > - Región alcanzable: salas a las que se llega desde la sala inicial con las llaves obtenidas.
+  > - Resoluble: partiendo de la sala inicial, se obtiene llave_salida Y se entra a sala_salida cruzando una puerta que requiere llave_salida. Llegar a sala_salida por una puerta abierta o por una que pide otra llave NO cuenta.
+  > - Frontera bloqueada: puertas cerradas con origen dentro de la región alcanzable y destino fuera de ella.
+  > - Llave indispensable: kj es indispensable para ki si la sala de ki sigue siendo inalcanzable aun otorgando todas las llaves excepto kj.
+  > - Ciclo: secuencia k1 → k2 → … → k1 donde cada llave es indispensable para la anterior (incluye k → k). Si existe una ruta alternativa, no hay ciclo y no debe reportarse.
+  >
+  > RESULTADO SI ES RESOLUBLE
+  > - Veredicto RESOLUBLE.
+  > - Orden de llaves: cada entrada con id de llave, sala donde se obtiene y enemigo que la suelta (si aplica).
+  > - Puerta final: sala de origen y dirección por la que se entra a sala_salida con llave_salida.
+  > - Orden por rondas: ronda 0 = llaves alcanzables sin abrir puertas cerradas; ronda r = llaves nuevas alcanzables usando las de rondas anteriores; dentro de cada ronda, por id de sala ascendente y luego id de llave ascendente; la lista termina en la ronda en que la puerta final se vuelve cruzable (puede incluir llaves no indispensables obtenidas antes del corte).
+  > - Propiedades verificables: validez (cada llave es alcanzable usando solo llaves anteriores en la lista), completitud (llave_salida está en la lista y con ellas se cruza la puerta final), determinismo (misma cripta → mismo orden).
+  >
+  > RESULTADO SI NO ES RESOLUBLE
+  > - Veredicto NO RESOLUBLE con motivo: (a) llave_salida inobtenible; o (b) llave_salida obtenida pero no se alcanza ninguna puerta hacia sala_salida que la requiera (o no existe).
+  > - Resumen de región alcanzable: cantidad de salas y llaves obtenidas.
+  > - Llaves inobtenibles (orden por id): ubicación (sala / enemigo) y causa: en ciclo | depende de llave inobtenible <id> | sala inalcanzable aun con todas las llaves.
+  > - Frontera bloqueada (orden por sala de origen y dirección): origen, dirección, destino, llave requerida, ubicación de esa llave o "inexistente" si no aparece en la lista de llaves (no es error: la puerta simplemente nunca se abre).
+  > - Ciclos: cada uno como llaves y puertas en orden, iniciando por la llave de menor id; ciclos ordenados por esa llave.
+  > - Todo el reporte es determinista.
+  >
+  > INTERFAZ Y MODOS
+  > - --verificar <cripta>: solo verifica, imprime el reporte en consola y no crea la vista. Código de salida: 0 resoluble, 1 no resoluble, 2 error (datos o red).
+  > - Al iniciar una partida siempre se verifica y se muestra el reporte (también si es resoluble).
+  > - No resoluble sin --forzar: la partida no inicia y se muestra el reporte. Con --forzar: se muestra el reporte y la partida inicia.
+  > - [NEEDS CLARIFICATION] Si la consulta de llaves falla o no queda presupuesto: ¿veredicto "NO VERIFICABLE" que bloquea el inicio salvo --forzar? (propuesta por defecto).
+  > - [NEEDS CLARIFICATION] Datos inconsistentes (llave ubicada en una sala o enemigo inexistente): ¿error de datos (código 2) o se ignora la entrada? 
+  >
+  > REQUISITOS DE RENDIMIENTO (prefijo RS-PR)
+  > - RS-PR: la verificación completa toma ≤ 200 ms en la cripta publicada más grande, medido localmente sin red ni renderizado.
+  > - RS-PR: el trabajo crece aproximadamente lineal con salas, salidas y llaves; obtener una llave nueva no implica volver a recorrer la región ya explorada.
+  > - RS-PR: --bench compara la verificación incremental contra repetir el recorrido completo por cada llave, usando criptas sintéticas con muchas llaves encadenadas, deterministas por semilla.
+  >
+  > HISTORIAS DE USUARIO (con prioridad)
+  > - P1 Jugador: al iniciar, sabe si la cripta puede ganarse; si no, la partida no arranca y entiende por qué.
+  > - P2 Evaluador/desarrollador: ejecuta --verificar sin interfaz y obtiene reporte y código de salida.
+  > - P3 Jugador: fuerza el inicio con --forzar de una cripta no resoluble.
+  >
+  > ESCENARIOS DE ACEPTACIÓN OBLIGATORIOS (conserva el id entre paréntesis)
+  > - (G14) llave_salida está detrás de la única puerta que ella misma abre → NO RESOLUBLE, motivo (a), frontera muestra esa puerta, ciclo llave_salida → llave_salida.
+  > - (G15) una llave la suelta un enemigo errante → se considera ubicada en la sala inicial del enemigo.
+  > - (G16) existen varios órdenes válidos → dos ejecuciones producen exactamente el mismo orden (el de rondas).
+  > - (G17) cripta no resoluble sin --forzar → la partida no inicia y se muestra el reporte.
+  > ESCENARIOS ADICIONALES
+  > - Ciclo aparente: A está tras una puerta que pide B y B tras una que pide A, pero existe otra ruta a A → no se reporta ciclo.
+  > - Cadena bloqueada A → B → C con C inobtenible → causas "depende de" correctas.
+  > - Una llave abre una región con varias llaves → aparecen en la ronda siguiente sin recorrer de nuevo lo ya explorado.
+  > - sala_salida alcanzable solo por puerta abierta (sin puerta que pida llave_salida) → NO RESOLUBLE, motivo (b).
+  > - Puerta que pide una llave inexistente → aparece en la frontera con ubicación "inexistente".
+  > - Cambiar los costos de las salidas no cambia veredicto ni orden.
+  > - --verificar no crea la vista; --forzar inicia la partida mostrando el reporte.
+  >
+  > TRAZABILIDAD
+  > - Requisitos funcionales RS-FR-001…, rendimiento RS-PR-001…, identificadores estables.
+  > - Cada requisito referencia al menos un escenario y cada escenario al menos un requisito.
+  > - Incluye sección de criterios de éxito medibles y sección de supuestos.
+- **Uso:** Generar `specs/003-resolubilidad/spec.md` y su checklist de calidad con `/speckit-specify`.
+
+#### 38
+- **Fecha:** 2026-11-12
+- **Prompt:**
+  > listo, ahora ayudame a elaborar un prompt para el clarify el cual ayude al agente a buscar más allá de las ambiguedades y casos borde.
+  > >es necesario hacer un uso inteligente de la cuota del agente, entonces prefiero hacer que las 5 preguntas abarquen todas las clarificaciones necesarias/apuntadas en lugar de gastar cuota en otras 2 o 3 rondas de clarificaciones
+- **Uso:** Preparar el prompt de `/speckit-clarify` con las zonas de la especificación a examinar.
+
+#### 39
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > /speckit-clarify Revisa solo specs/003-resolubilidad/spec.md contra .specify/memory/constitution.md. No programes ni modifiques otras especificaciones.
+  >
+  > MODO: aplica directamente las CORRECCIONES y DECISIONES FIJAS sin preguntar; luego haz EXACTAMENTE las 4 PREGUNTAS, una a la vez, opción recomendada primero. No hagas preguntas adicionales: cualquier otra observación lístala al final con una propuesta. Crea la sección "## Clarifications" con "### Session 2026-11-12" y registra ahí cada decisión y cada Q/A.
+  >
+  > CORRECCIONES
+  > - Renumera requisitos a FR-001… (constitución) y convierte RS-PR-001..003 en criterios SC; actualiza todas las referencias.
+  > - Conserva solo los ids G14, G15, G16 y G17. Los demás escenarios usan ids propios RS-E01, RS-E02…; elimina G18–G35 (pertenecen a otras capacidades).
+  > - La regla de llave soltada aplica a cualquier enemigo, no solo al errante.
+  > - Registra en Clarifications las dos respuestas ya incorporadas: NO VERIFICABLE forzable; ubicación inexistente = error de datos no forzable.
+  >
+  > DECISIONES FIJAS
+  > - sala_salida o sala inicial inexistente en el esqueleto: error de datos (código 2, no forzable).
+  > - llave_salida en la sala inicial: válida, ronda 0. Si sala inicial = sala_salida, igual se exige entrar cruzando una puerta que requiere llave_salida.
+  > - Varias puertas válidas hacia sala_salida: se reporta la primera cruzable por (sala de origen asc, dirección).
+  > - Mismo id de llave en varias ubicaciones: obtenible si cualquiera es alcanzable; en el orden se reporta la de menor sala; en inobtenibles se listan todas.
+  > - "Depende de" lista todas las llaves indispensables de esa llave, por id.
+  > - Ids de sala se comparan numéricamente; ids de llave y enemigo, lexicográficamente por código de carácter.
+  > - La ronda en que la puerta final se vuelve cruzable se incluye completa (MUST) y ahí termina el orden.
+  > - Rendimiento: p95 < 200 ms sobre ≥ 5 repeticiones y se documenta el máximo; excluye red, carga de datos y renderizado; mientras no exista la cripta publicada más grande se mide con la mayor disponible y con sintéticas.
+  >
+  > PREGUNTAS
+  > P1. Reporte de ciclos (enumerar todos puede ser exponencial):
+  > P2. Reporte al iniciar una partida frente a la niebla de guerra (revela ubicaciones de llaves):
+  > P3. Criterio medible para el crecimiento "aproximadamente lineal" (reemplaza el lenguaje vago en FR y SC):
+  > P4. Relación con otros modos:
+  >
+  > AL TERMINAR: resume los FR, SC y escenarios cambiados y lista las observaciones no preguntadas.
+- **Uso:** Corregir identificadores y escenarios de la especificación, aplicar las decisiones fijas y resolver las cuatro preguntas abiertas con `/speckit-clarify`.
+
+#### 40
+- **Fecha:** 2026-11-12
+- **Prompt:**
+  > ya con eso tenemos el spec listo para ejecutar su planeamiento (plan.md), estructura un prompt robusto para definir las herramientas y lineamientos para la implementación de esta especificación
+- **Uso:** Preparar el prompt de `/speckit-plan` con restricciones, estructuras reutilizables, problemas de diseño y pruebas previstas.
+
+#### 41
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > /speckit-plan Trabaja exclusivamente en specs/003-resolubilidad. Lee spec.md y .specify/memory/constitution.md; usa specs/001-terreno-cazador/plan.md como referencia de formato y nivel de detalle. No escribas código ni tasks.md. No agregues reglas que no estén en spec.md: si falta algo, lístalo como hallazgo.
+  >
+  > ARTEFACTOS: plan.md, research.md (alternativas y decisión por problema), data-model.md (entidades lógicas: ubicación de llave, puerta pendiente, ronda, resultado/reporte), contracts/cli.md (--verificar, --forzar, códigos de salida 0/1/2, formato estable del reporte y del resumen al iniciar), contracts/fuente-llaves.md (consulta de llaves, presupuesto, versión, fallos), quickstart.md (cómo ejecutar verificación, pruebas y bench).
+  >
+  > RESTRICCIONES (constitución + curso)
+  > - Prohibido en la verificación: dict y set como índice o caché, collections (deque, OrderedDict, defaultdict, Counter), heapq, bisect, networkx o cualquier biblioteca de grafos/rutas. No usar hash() de cadenas ni el orden de iteración de estructuras nativas para decidir el orden.
+  > - Reutilizar estructuras propias existentes antes de crear nuevas: estructuras/cola.py (Cola), estructuras/tabla_hash.py (TablaHash, FNV-1a estable), estructuras/vector_dinamico.py (Vector), estructuras/pila.py, estructuras/ordenamientos.py (merge_sort/insertion_sort para todo orden determinista). Justifica cualquier estructura nueva.
+  > - Topología: leer modelo/mundo (CriptaModelo, Sala, Salida) sin modificarla y sin depender de modelo/buscador_rutas.py (Dijkstra); aquí importa la alcanzabilidad, no el costo. No asumir ids de sala densos; documentar el costo de sala_por_id o usar un índice propio.
+  > - MVC: el verificador vive en el modelo y devuelve un resultado de datos; el formato del texto lo hace la capa de presentación/consola. --verificar, --bench y --replay no instancian la vista.
+  >
+  > PROBLEMAS DE DISEÑO A RESOLVER (para cada uno: alternativas, decisión, complejidad, medición prevista, límites)
+  > 1. Recorrido incremental con rondas (FR-009, SC-004): evaluar al menos (A) recorrido con cola de salas + registro de puertas pendientes indexado por id de llave, liberado al obtener la llave, con rondas cuyas llaves se ordenan por (sala numérica, id de llave) antes de liberar la siguiente; (B) recorrido completo repetido por cada llave, que se conserva SOLO como referencia para pruebas y bench. Complejidad esperada de A: O(S + E + K log K).
+  > 2. Diagnóstico no resoluble (FR-011, FR-013, FR-022): obtener la frontera de las puertas pendientes al final del recorrido, sin recorrido extra. Para llaves indispensables ("todas las llaves menos kj"), limitar el trabajo a la región exterior y a las llaves candidatas; declarar la complejidad, p. ej. O(|U|·(S+E)), y su efecto sobre SC-001.
+  > 3. Ciclos (FR-012): analizar el costo de encontrar el ciclo lexicográficamente menor por llave. Si es exponencial o no cabe en SC-001, proponer una alternativa polinómica con desempate determinista (p. ej. ciclo más corto vía recorrido por capas con vecinos ordenados) y marcarla como ENMIENDA REQUERIDA de spec.md (la spec se corrige y confirma antes que el código). No la apliques tú.
+  > 4. Fuente de llaves (FR-001, FR-018, FR-019): agregar la consulta de llaves a adaptadores/fuente_datos.py y sus implementaciones (datos_http.py → GET /criptas/<id>/llaves; datos_offline.py → archivo de llaves por cripta, hoy inexistente en datos_offline/; datos_simulado.py para pruebas). Contarla en presupuesto_solicitudes como controlador/controlador_red.py; persistirla validando versión como el resto de datos de cripta. Definir qué fallo produce NO VERIFICABLE y cuál error de datos.
+  > 5. Integración CLI e inicio: main.py (--verificar <cripta>, --forzar); controlador/inicio_partida.py (verificar en nueva_partida, bloqueo, resumen sin ubicaciones según FR-015); --replay no verifica (FR-023); anotación en partida.log solo como comentario si aplica.
+  > 6. Bench (SC-001, SC-002, SC-004): nuevo caso en bench/casos/ registrado en bench/runner.py; generador de criptas sintéticas deterministas por semilla con muchas llaves encadenadas y ≥ 3 tamaños por duplicación; comparar A vs. B; protocolo: commit, entorno, semilla, ≥ 5 repeticiones, mediana, p95 y máximo, red y carga de datos excluidas, y verificar resultados equivalentes antes de comparar tiempos.
+  >
+  > PRUEBAS PREVISTAS
+  > - Un archivo por escenario obligatorio (G14–G17) y grupos para RS-E01..RS-E27; cada prueba cita los FR/SC que verifica (constitución).
+  > - Oráculo: el recorrido repetido (B) contra el incremental (A) en criptas sintéticas aleatorias por semilla: mismo veredicto, orden y frontera.
+  > - Determinismo: dos ejecuciones producen reportes byte a byte idénticos.
+  >
+  > PLAN.MD DEBE INCLUIR: resumen; contexto técnico; verificación de constitución (tabla principio → cumplimiento → evidencia) antes y después del diseño; decisiones de integración; código existente a tocar con ruta y motivo; módulos nuevos propuestos; riesgos visibles; seguimiento de complejidad; trazabilidad FR/SC → decisión → prueba prevista; borrador para la sección de resolubilidad de docs/DECISIONES.md (problema, alternativas, decisión, complejidad, evidencia planificada, límites conocidos). Al final, lista de hallazgos y enmiendas de spec propuestas.
+- **Uso:** Generar `plan.md`, `research.md`, `data-model.md`, `contracts/` y `quickstart.md` con `/speckit-plan`.
+
+#### 42
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > Aplica los hallazgos de specs/003-resolubilidad/plan.md como enmienda de spec.md. Solo edita spec.md y, para sincronizar, plan.md, research.md y contracts/. No escribas código.
+  >
+  > En spec.md agrega en Clarifications "### Session 2026-11-12 (enmienda post-plan)" con una línea por decisión, y actualiza FR, escenarios y casos borde afectados:
+  > 1. FR-012: por cada llave participante se reporta un ciclo simple más corto; entre ciclos de igual longitud, la secuencia de ids lexicográficamente menor; inicio canónico en el id menor; puertas desempatadas por sala de origen y dirección.
+  > 2. Direcciones: se comparan lexicográficamente por código de carácter (FR-008, FR-013 y puertas de dependencia).
+  > 3. Enemigos: la verificación no valida la existencia del enemigo (el esqueleto no lo trae); solo valida que la sala exista. Ajusta FR-019 y sus escenarios.
+  > 4. Varias ubicaciones del mismo id en la misma sala: primero la que no tiene enemigo y luego por id de enemigo lexicográfico.
+  > 5. Una llave con varias ubicaciones es inobtenible solo si todas siguen fuera de la región; la indispensabilidad se evalúa sobre todas sus ubicaciones.
+  > 6. Prioridad de causas: "en ciclo" para participantes de un ciclo reportado; "depende de" para las demás.
+  > 7. CLI: --verificar combinado con --replay o --bench es error de uso y se rechaza antes de verificar; --verificar ignora --forzar; --forzar aplica igual con --gui.
+  > 8. El caso de resolubilidad corre en --bench con y sin --salida.
+  > 9. Salida cerrada sin llave (nula o ausente): puerta que nunca abre; en la frontera la llave requerida se muestra como «inexistente».
+  > 10. El formato del reporte y del resumen inicial es el contrato de contracts/cli.md; agrega un FR que lo referencie como formato estable.
+  > 11. llave_salida ausente o nula: error de datos no forzable (FR-019).
+  >
+  > En plan.md marca cada hallazgo como "Resuelto en spec (enmienda post-plan)" y ajusta las decisiones afectadas. Al final lista los FR o escenarios nuevos y los modificados.
+- **Uso:** Aplicar los once hallazgos del plan como enmienda post-plan de la especificación y sincronizar el plan.
+
+#### 43
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > /speckit-tasks Trabaja exclusivamente en specs/003-resolubilidad a partir de spec.md (con su enmienda post-plan), plan.md, research.md, data-model.md y contracts/. Cumple .specify/memory/constitution.md. No implementes nada.
+  >
+  > FORMATO DE CADA TAREA
+  > - Id T001…, marca [P] si puede hacerse en paralelo y etiqueta [US1]/[US2]/[US3] cuando corresponda.
+  > - Ruta exacta de los archivos que crea o modifica.
+  > - Requisitos y escenarios que atiende (FR-xxx, SC-xxx, G14–G17, RS-Exx). Ninguna tarea sin requisito; ningún FR/SC sin tarea.
+  > - Criterio de terminado verificable (prueba que pasa, comando y salida esperada, o medición).
+  > - Dependencias explícitas. Tareas pequeñas: un PR revisable cada una.
+  >
+  > FASES
+  > 1. Base de datos de entrada: consulta de llaves en adaptadores/fuente_datos.py, datos_http.py, datos_offline.py (archivo de llaves por cripta) y datos_simulado.py; conteo en presupuesto_solicitudes; persistencia validada por versión; NO VERIFICABLE frente a error de datos.
+  > 2. Fundacional: generador de criptas sintéticas deterministas por semilla (cadenas de llaves, ciclos, rutas alternativas) y verificador de referencia por recorrido repetido (oráculo), antes del incremental.
+  > 3. US1 (P1): verificador incremental con rondas, puerta final, diagnóstico (inobtenibles, causas, frontera, ciclos según la enmienda), resumen al iniciar e integración en controlador/inicio_partida.py con --forzar (incluida GUI).
+  > 4. US2 (P2): --verificar en main.py, sin vista, códigos 0/1/2, formato de contracts/cli.md, rechazo de combinaciones con --replay/--bench.
+  > 5. US3 (P3): flujo --forzar con NO RESOLUBLE y NO VERIFICABLE; error de datos no forzable.
+  > 6. Rendimiento: caso en bench/casos/ registrado en bench/runner.py (con y sin --salida), comparación incremental vs. oráculo, ≥ 3 tamaños por duplicación, protocolo (commit, entorno, semilla, repeticiones, mediana, p95, máximo, equivalencia previa); SC-001 y SC-004.
+  > 7. Cierre: suite completa sin regresiones; revisión de importaciones prohibidas (dict/set como índice, collections, heapq, bisect, sorted para orden de reporte, bibliotecas de grafos); sección de resolubilidad en docs/DECISIONES.md desde el borrador del plan; README (--verificar, --forzar, pruebas); registro en PROMPTS_LLM.md.
+  >
+  > PRUEBAS
+  > - Cada prueba se escribe antes o junto a la tarea que la satisface y cita los FR/SC que verifica.
+  > - Un archivo por escenario obligatorio: tests/test_resolubilidad_g14.py … g17.py; RS-E01..RS-E27 agrupados por tema.
+  > - Equivalencia incremental vs. oráculo en criptas sintéticas por semilla; determinismo byte a byte del reporte.
+  >
+  > AL FINAL: lista FR/SC/escenario → tareas, y lista de cualquier requisito sin cobertura.
+- **Uso:** Generar `tasks.md` (T001–T031) con fases, criterios, dependencias y trazabilidad mediante `/speckit-tasks`.
+
+#### 44
+- **Fecha:** 2026-11-12
+- **Prompt:**
+  > ya con los tasks listos, lo natural sería avanzar con el analyze, para lo cual puedes ayudarme a preparar un prompt compacto el cual enliste los elementos a analizar y verificar previo a su fase de implementación tomando en cuenta los tasks definidos
+- **Uso:** Preparar el prompt de `/speckit-analyze` a partir de lo encontrado en tasks.md.
+
+#### 45
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > /speckit-analyze Analiza solo specs/003-resolubilidad (spec.md con la enmienda post-plan, plan.md, research.md, data-model.md, contracts/, tasks.md) contra .specify/memory/constitution.md. Solo lectura: no edites archivos. No repitas el conteo de cobertura salvo si encuentras huecos.
+  >
+  > REVISA
+  > 1. Enmienda post-plan reflejada en tareas y criterios: ciclo más corto con desempate lexicográfico (T014, T018); direcciones lexicográficas; enemigo NO validado (revisa el criterio de T001, que menciona "enemigo inexistente"); salida cerrada sin llave; llave_salida nula; combinaciones CLI; bench con y sin --salida.
+  > 2. Constitución:
+  >    - VII: T005 modifica un artefacto de especificación durante la implementación; debe resolverse antes.
+  >    - Restricciones: T028 revisa solo verificador, formato y bench; evalúa incluir adaptadores y persistencia/llaves_cripta.py y distinguir parseo JSON de uso de dict/set como índice.
+  >    - MVC: --verificar usa vista/formato_resolubilidad.py sin instanciar vista ni importar pygame.
+  >    - Determinismo, datos de cripta fuera del código (origen de datos_offline/<cripta>/llaves.json en pruebas), presupuesto (reintentos cuentan) y rendimiento respaldado por --bench.
+  > 3. Orden y dependencias: pruebas T007–T015 antes de T016–T018; T016–T018 en el mismo archivo sin [P]; main.py en T023, T025 y T026 en secuencia; T006 (oráculo) antes de las pruebas que lo usan; T027 después de T026. Detecta ciclos o [P] falsos.
+  > 4. Tamaño y verificabilidad: cada tarea tiene comando y resultado esperado; señala tareas demasiado grandes (T016–T018, T025) y propone divisiones; T027 debe verificar SC-001 (p95 < 200 ms) y SC-004 (≤ 2,5× por duplicación) con números explícitos.
+  > 5. Impacto en otras capacidades: archivos compartidos (main.py, controlador/inicio_partida.py, controlador_pygame.py, vista_pygame/escenas/menu_criptas.py, controlador/controlador_replay.py, bench/runner.py, docs/DECISIONES.md). Indica qué pruebas existentes deben seguir pasando (replay, línea de tiempo G18–G23, bench) y si alguna tarea cambia el comportamiento de otra capacidad.
+  > 6. Terminología y contratos: nombres de veredictos, códigos 0/1/2 y formato idénticos entre spec, contracts/cli.md y tareas.
+  >
+  > SALIDA: tabla con id, severidad (CRÍTICO/ALTO/MEDIO/BAJO), artefacto y línea, hallazgo y corrección exacta propuesta. Al final: veredicto LISTO / NO LISTO para implementar y la lista mínima de correcciones bloqueantes.
+- **Uso:** Revisar la consistencia entre especificación, plan, contratos y tareas antes de implementar con `/speckit-analyze`.
+
+#### 46
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > aplica las correcciones del análisis, con mayor enfasis en las de severidad CRÍTICO
+- **Uso:** Aplicar las correcciones del análisis antes de la implementación.
+
+#### 47
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > /speckit-implement Implementa specs/003-resolubilidad ejecutando tasks.md en el orden y con las dependencias definidas. Cumple .specify/memory/constitution.md, spec.md, plan.md y contracts/. Terminal: PowerShell; usa `python -m pytest`.
+  >
+  > CICLO POR TAREA
+  > 1. Toma la primera tarea sin marcar cuyas dependencias estén completas.
+  > 2. Implementa solo lo que la tarea describe, en los archivos que indica.
+  > 3. Ejecuta el comando de su "Criterio". Las tareas que solo crean pruebas antes de la implementación se validan con la recolección (`--collect-only`); se espera que fallen hasta su tarea de implementación.
+  > 4. Si falla, corrige el código y repite, con un máximo de 3 intentos. Nunca debilites, omitas ni borres una prueba, ni cambies spec.md, plan.md o contracts/ para que algo pase. Si el fallo indica un error de especificación o una contradicción, DETENTE y repórtalo.
+  > 5. Si pasa, cambia `- [ ]` por `- [X]` en tasks.md y haz commit local (sin push):
+  >    - T001: `docs(resolubilidad): T001 corrige data-model` (solo ese archivo, antes de cualquier código).
+  >    - Las demás: `feat|test|bench|docs(resolubilidad): T0NN <resumen> (FR-xxx…)`, incluyendo tasks.md.
+  > 6. Informa con este formato compacto:
+  >    T0NN ✔/✘ | archivos | comando → resultado (pasadas/fallidas) | correcciones hechas | FR/SC cubiertos
+  >
+  > AL CERRAR CADA FASE: ejecuta `python -m pytest -q` completo. Si algo de otra capacidad falla (replay, línea de tiempo G18–G23, terreno, bench), corrige solo si la causa es tu cambio; si no, repórtalo sin tocarlo. Resume la fase en 3 líneas.
+  >
+  > REGLAS
+  > - Prohibido en código nuevo: dict/set como índice o caché, collections, heapq, bisect, bibliotecas de grafos/rutas, hash() de cadenas, sorted() o la iteración nativa para ordenar el reporte. Usa estructuras/ (Cola, TablaHash, Vector, Pila, ordenamientos).
+  > - MVC: --verificar, --bench y --replay no instancian la vista ni importan pygame.
+  > - Ningún dato de una cripta concreta en el código; los datos de prueba van en fixtures o se generan por semilla.
+  > - En archivos compartidos (main.py, inicio_partida.py, controlador_pygame.py, menu_criptas.py, controlador_replay.py, bench/runner.py, docs/DECISIONES.md) haz cambios mínimos y no alteres el comportamiento de otras capacidades.
+  > - Medición (T027–T028): reporta números reales (mediana, p95, máximo, commit, semilla). Si SC-001 o SC-004 no se cumplen, no marques la tarea: reporta y propone la corrección.
+  >
+  > DETENTE si: una tarea falla 3 veces, hay una contradicción entre artefactos, falta un dato externo (p. ej. llaves.json oficial) o se acerca el límite de contexto. Termina la tarea en curso, deja tasks.md al día y resume qué falta. Al relanzar este mismo prompt, se continúa desde la primera tarea sin marcar.
+  >
+  > AL TERMINAR: tabla final T001–T031 con estado, resultado de la suite completa y números del bench frente a SC-001/SC-004.
+- **Uso:** Implementar las tareas en orden con `/speckit-implement`, con pruebas, commit y reporte por tarea.
+
+#### 48
+- **Fecha:** 2026-11-12
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > Antes de continuar con T011:
+  >
+  > 1. CORRIGE tasks.md (sin tocar spec.md, plan.md ni código):
+  >    - Cada prueba se exige en la tarea que completa su comportamiento: T016 solo recorrido, rondas, orden y puerta final; T017 diagnósticos (inobtenibles, causas «depende de», frontera) sin aserciones de ciclos; T018 ciclos y causa «en ciclo» (G14 completo, RS-E03/RS-E21 en su parte de ciclos, RS-E28, RS-E29). Si un archivo de prueba mezcla responsabilidades, el criterio de T016/T017 lo ejecuta con `-k` o marcas para excluir lo que pertenece a tareas posteriores.
+  >    - T002: ajusta su criterio a lo que realmente se probó y asigna los casos de sala inexistente a la tarea que los implementa, con su prueba explícita; ningún caso queda sin cubrir.
+  >    - Actualiza dependencias y la matriz de trazabilidad si cambian.
+  >    - Commit: `tasks(resolubilidad): ajusta criterios T002, T016-T018 por orden de dependencias`.
+  >
+  > 2. VERIFICA LOS 7 FALLOS: ejecútalos en el commit T001 (anterior a cualquier código) con `git worktree add ..\verif-base <commit>` y `python -m pytest <pruebas> -q` desde ahí; luego elimina el worktree.
+  >    - Si también fallan en la base: son preexistentes; lístalos (archivo::prueba y causa breve) para reportarlos y no los toques.
+  >    - Si pasan en la base: los causó esta implementación; corrígelos en el código antes de seguir.
+  >
+  > 3. CONFIRMA que los 5 fallos de compatibilidad se corrigieron en código y no editando pruebas de otras capacidades; si se modificó alguna prueba ajena, indica cuál y por qué.
+  >
+  > 4. Luego continúa la implementación desde T011 con el mismo ciclo por tarea y las mismas reglas de antes.
+- **Uso:** Corregir los criterios de T002 y T016–T018 en `tasks.md`, clasificar los fallos contra la base T001 y continuar desde T011.
+
+#### 49
+- **Fecha:** 2026-11-13
+- **Prompt:**
+  > llegué hasta acá:
+  > [respuesta del agente: detenido antes de T020 porque no existe datos_offline/<cripta>/llaves.json oficial]
+  > me extraña, porque se supone que esta ubicación debería de existir en el proyecto.
+  > analiza bien el proyecto para determinar qué ocurrió para poder terminar las tareas de implementación
+- **Uso:** Diagnosticar por qué faltaba el archivo de llaves offline y desbloquear T020.
+
+#### 50
+- **Fecha:** 2026-11-13
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > Continúa desde T020. Aclaración sobre la condición de parada: no existe ni se requiere un llaves.json oficial para T020–T026. datos_offline/ es el paquete de la Parte I; el archivo de llaves offline solo existirá cuando se descargue con herramientas/descargar_offline.py. Las pruebas usan objetos en memoria, fixtures y tmp_path, como ya lo hacen g17 y e10_e18. Sin ese archivo, el modo offline debe reportar NO VERIFICABLE (FR-018): eso es comportamiento esperado, no un bloqueo. No crees ni inventes llaves.json en datos_offline/.
+  > A partir de ahora detente por datos externos solo en T027–T028 (medición con criptas reales) si falta la descarga; en ese caso mide con criptas sintéticas, deja registrado qué falta y continúa con T029–T031.
+  > Mantén el mismo ciclo por tarea y las mismas reglas.
+- **Uso:** Aclarar que T020–T026 no requieren un `llaves.json` oficial y continuar desde T020.
+
+#### 51
+- **Fecha:** 2026-11-13
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > Contexto nuevo: cripta-01 fue retirada de la API; datos_offline/cripta-01/llaves.json ya existe (derivado del contenido oficial del paquete, commit de datos aparte). La API ahora publica cripta-02 a cripta-06; cripta-06 «Cripta de referencia» (300 salas) es la cripta publicada más grande y sus datos están en partidas/cache tras --verificar. No modifiques pruebas de otras capacidades.
+  >
+  > T031:
+  > 1. Ejecuta la suite completa y clasifica cada fallo contra la base del commit T001 (git worktree add ..\verif-base <commit T001>; ejecuta las mismas pruebas; elimina el worktree): preexistente (solo listarlo) o causado por resolubilidad (corregir en el código de esta capacidad).
+  > 2. Marca T031 solo con 0 fallos causados por resolubilidad.
+  >
+  > T028:
+  > 1. SC-001: mide la verificación sobre cripta-06 cargada desde caché (sin red, sin carga de datos, sin vista), con calentamiento y ≥ 50 repeticiones; reporta mediana, p95 y máximo.
+  > 2. SC-004: ajusta la familia sintética para que el tamaño menor tarde ≥ ~10 ms, con duplicación de S/E/K en ≥ 3 tamaños, calentamiento y ≥ 50 repeticiones; ejecuta `--bench` y `--bench --salida` COMPLETOS.
+  > 3. Si algo no se cumple, perfila con cProfile y propone la optimización; detente antes de aplicarla. No cambies SC-001, SC-004 ni sus umbrales.
+  > 4. Registra todo en quickstart.md (commit, entorno, semillas, tamaños, cripta-06) y marca T028 solo si ambos SC se cumplen en los dos modos.
+  >
+  > Un commit por tarea, con el formato de siempre.
+- **Uso:** Clasificar los fallos de T031 contra la base y medir SC-001 con cripta-06 y SC-004 con un protocolo estable (T028).
+
+#### 52
+- **Fecha:** 2026-11-13
+- **Prompt:**
+  > necesito que en la siguiente instrucción el agente complete todas las tareas pendientes, sin extenderlo de más como lo hemos venido haciendo.
+  > La instrucción debería de contener el permiso para perfilar y optimizar las mediciones, y de la instrucción de corregir los fallos causados tanto por la resolubilidad ya implementada, como los fallos que puedan surgir de ambas tareas (perfilado y corrección; debe "matar tres pajaros de un tiro", siendo los fallos generados por la optimización, la corrección de errores viejos y corregir de una vez los errores que vaya generando sobre la marcha), para así poder dejar implementada correctamente el spec y avanzar a la siguiente fase de desarrollo del proyecto
+- **Uso:** Preparar una sola instrucción para cerrar T028 y T031 con perfilado, optimización y corrección de regresiones.
+
+#### 53
+- **Fecha:** 2026-11-13
+- **Herramienta:** Copilot SDK en VS Code (Spec Kit)
+- **Prompt:**
+  > Completa T028 y T031 en esta misma ejecución, sin detenerte entre pasos salvo por las condiciones de parada de abajo. Tienes autorización para perfilar, optimizar y corregir dentro de los límites indicados.
+  >
+  > ALCANCE AUTORIZADO
+  > - Perfilar (cProfile) y optimizar modelo/verificador_resolubilidad.py y bench/casos/resolubilidad.py, incluido el protocolo de medición (calentamiento, gc.disable() durante el cronometraje, más repeticiones, tamaño menor ≥ 10 ms, ≥ 3 tamaños por duplicación de S/E/K).
+  > - Corregir todo fallo causado por resolubilidad: los ~9 fallos nuevos frente a la base T001 y cualquier fallo que provoquen tus propias optimizaciones o correcciones durante esta ejecución.
+  > - En pruebas de otras capacidades solo puedes ajustar preparación de datos o mocks (p. ej. responder la consulta de llaves en el mock HTTP, o dar ubicaciones de llaves a sus datos para que la cripta sea RESOLUBLE).
+  >
+  > PROHIBIDO
+  > - Cambiar spec.md, SC-001, SC-004 o sus umbrales; cambiar aserciones; borrar u omitir pruebas; usar forzar=True como parche.
+  > - Tocar los 7 fallos preexistentes de la capacidad 004 (G18–G22, historia K, test_guardado_carga_conserva_historia_y_mapa): solo lístalos.
+  > - Romper las restricciones de la constitución (estructuras propias; sin dict/set como índice, collections, heapq, bisect, sorted para el orden del reporte).
+  >
+  > PROCEDIMIENTO (itera hasta cumplir todo)
+  > 1. T028: corre resolubilidad.correr() 5 veces con la misma semilla y reporta la dispersión de la razón p95. Si es ruido, mejora el protocolo; si es consistentemente > 2.5×, perfila y optimiza la parte superlineal. Después de cada cambio en el verificador ejecuta todas las pruebas de resolubilidad (G14–G17, RS-E, oráculo, determinismo, restricciones); si alguna falla, corrígela antes de seguir. Repite `--bench` (con --salida solo hasta que se imprima la tabla de resolubilidad; la parte de terreno no se espera) y SC-001 con cripta-06 desde caché.
+  > 2. T031: corrige los fallos nuevos con el alcance autorizado. Ejecuta la suite completa; si aparece cualquier fallo nuevo frente a la base, corrígelo y vuelve a ejecutarla. Termina cuando solo queden los 7 preexistentes.
+  > 3. Verificación final: suite completa + pruebas de resolubilidad + `git diff --check`.
+  >
+  > COMMITS
+  > - Uno por cambio lógico: `perf(resolubilidad): …`, `bench(resolubilidad): …`, `fix(resolubilidad): …` y `test: adapta preparación de pruebas a verificación de inicio (sin cambiar aserciones)`, listando en el cuerpo archivo::prueba y su capacidad dueña.
+  > - Registra mediciones finales en quickstart.md (commit, entorno, semillas, tamaños, cripta-06, mediana, p95, máximo) y la decisión de optimización en docs/DECISIONES.md (antes y después, con números).
+  > - Marca [X] T028 y T031 en tasks.md solo al cumplirse sus criterios.
+  >
+  > DETENTE SOLO SI: cumplir un criterio exige cambiar spec.md o un umbral; un mismo fallo resiste 3 intentos distintos; o una corrección requeriría cambiar aserciones o lógica de otra capacidad. En ese caso deja todo commiteado y explica el bloqueo.
+  >
+  > INFORME FINAL (breve): T001–T031 con estado; SC-001 y SC-004 con números en ambos modos; fallos antes y después; lista de los 7 preexistentes; lista de pruebas ajenas adaptadas; hashes de los commits nuevos.
+- **Uso:** Cerrar T028 y T031 en una sola ejecución con perfilado, optimización y corrección de regresiones dentro de un alcance autorizado.
+
+#### 54
+- **Fecha:** 2026-11-17
+- **Prompt:**
+  > Ya actualicé mi respositorio, el cual cuenta con todas las specs ya implementadas, y con ella la linea de tiempo ya corregida.
+  > necesito que revises las pruebas de resolubilidad, la cual era el paso 31 que no logró completar el agente debido a los fallos en linea de tiempo, para corroborar si ya las pruebas pasan y marcar como completa esa tarea.
+  > De seguir fallando, necesito que verifiques qué genera el problema, y de ese diagnóstico me dés opciones para realizar las correcciones. Yo tomo las decisiones, y vos implementas
+- **Uso:** Verificar T031 sobre main; se encontraron 6 fallos causados por el cazador agregado a cripta-01 offline y se propusieron opciones de corrección.
+
+#### 55
+- **Fecha:** 2026-11-17
+- **Prompt:**
+  > [respuesta a pregunta de opciones: "A: actualizar pruebas"]
+- **Uso:** Elegir actualizar los valores esperados de las 6 pruebas y marcar T031.
 
 ## SEBASTIAN RUIZ VARGAS
 
