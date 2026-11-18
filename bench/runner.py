@@ -98,8 +98,8 @@ def main_bench(salida=None):
         'terreno-cazador', commit
     )
     print(
-        "Midiendo terreno y cazador (ocho escenarios sintéticos y cripta de referencia; "
-        "puede tardar varios minutos)...",
+        "Midiendo terreno y cazador (ocho escenarios sintéticos, cripta de referencia y "
+        "comparación de escala; puede tardar varios minutos)...",
         flush=True,
     )
     crear_reporte(ruta_terreno)

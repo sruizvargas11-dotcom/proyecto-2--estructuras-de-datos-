@@ -231,7 +231,7 @@ def _asignar_indices_benchmark(enemigos):
         enemigo._indice_benchmark = indice
 
 
-def _crear_partida(datos, rangos):
+def _crear_partida(datos, rangos, cantidad_cazadores=20, rango_unico=None):
     salas = []
     for dato in datos["salas"]:
         salas.append(Sala(dato["id"], "Sala " + str(dato["id"])))
@@ -251,11 +251,14 @@ def _crear_partida(datos, rangos):
     partida = Partida(cripta, jugador, datos["semilla"])
     partida.inicializar()
     enemigos = []
-    posiciones = datos["estado_inicial"]["cazadores"]["salas"]
-    rangos_actores = []
-    for rango in rangos:
-        for _ in range(10):
-            rangos_actores.append(rango)
+    posiciones = datos["estado_inicial"]["cazadores"]["salas"][:cantidad_cazadores]
+    if rango_unico is None:
+        rangos_actores = []
+        for rango in rangos:
+            for _ in range(10):
+                rangos_actores.append(rango)
+    else:
+        rangos_actores = [rango_unico] * cantidad_cazadores
     for indice, sala_id in enumerate(posiciones):
         enemigo = Enemigo(
             "cazador-%02d" % (indice + 1), "bench-cazador",
@@ -420,10 +423,15 @@ def _correr_referencia(datos):
     return duraciones, discrepancias
 
 
-def _correr_escenario(datos, vecinos, puertas, rangos, frecuencia, modalidad):
-    partida, enemigos = _crear_partida(datos, rangos)
+def _correr_escenario(
+    datos, vecinos, puertas, rangos, frecuencia, modalidad,
+    cantidad_cazadores=20, rango_unico=None,
+):
+    partida, enemigos = _crear_partida(
+        datos, rangos, cantidad_cazadores, rango_unico
+    )
     _asignar_indices_benchmark(enemigos)
-    posiciones = list(datos["estado_inicial"]["cazadores"]["salas"])
+    posiciones = list(datos["estado_inicial"]["cazadores"]["salas"][:cantidad_cazadores])
     jugador = datos["estado_inicial"]["jugador"]["sala"]
     cerradas = []
     duraciones = []
@@ -471,7 +479,9 @@ def _correr_escenario(datos, vecinos, puertas, rangos, frecuencia, modalidad):
         for indice, instancia_id, observada in observadas:
             esperada = _decision_individual(
                 vecinos, referencia_posiciones[indice], jugador,
-                (rangos[0] if indice < 10 else rangos[1]), cerradas
+                (rango_unico if rango_unico is not None else
+                 (rangos[0] if indice < 10 else rangos[1])),
+                cerradas
             )
             referencia.append((instancia_id, esperada))
             if observada != esperada:
@@ -517,6 +527,30 @@ def crear_reporte(ruta):
                     "modalidad": modalidad,
                     "repeticiones": repeticiones,
                 })
+    grupos_escala = []
+    for cantidad_cazadores in (1, 20):
+        repeticiones = []
+        for numero in range(1, 31):
+            duraciones, discrepancias = _correr_escenario(
+                datos, vecinos, puertas, [10000, 10000], 1, "compartida",
+                cantidad_cazadores=cantidad_cazadores, rango_unico=10000,
+            )
+            repeticiones.append({
+                "numero": numero,
+                "duraciones_ciclo_ns": duraciones,
+                "maximo_ciclo_ns": max(duraciones),
+                "discrepancias": discrepancias,
+            })
+            print(
+                "Benchmark escala, %s cazador(es): repeticion %s/30"
+                % (cantidad_cazadores, numero),
+                flush=True,
+            )
+        grupos_escala.append({
+            "cazadores": cantidad_cazadores,
+            "rango": 10000,
+            "repeticiones": repeticiones,
+        })
     referencia_datos, referencia_checksum = _fixture_referencia()
     referencia_repeticiones = []
     for numero in range(1, 31):
@@ -583,6 +617,27 @@ def crear_reporte(ruta):
         "semilla": datos["semilla"],
         "estado_inicial": datos["estado_inicial"],
         "escenarios": escenarios,
+        "comparacion_escala": {
+            "fixture": datos["identidad"],
+            "version_fixture": datos["version"],
+            "sha256_fixture": checksum,
+            "semilla": datos["semilla"],
+            "jugador_sala": datos["estado_inicial"]["jugador"]["sala"],
+            "accion_jugador": "W",
+            "puerta_cada_ciclos": 1,
+            "modalidad": "compartida",
+            "rango": 10000,
+            "ubicaciones_cazadores": datos["estado_inicial"]["cazadores"]["salas"][:20],
+            "repeticiones_por_grupo": 30,
+            "ciclos_por_repeticion": 1000,
+            "grupos": grupos_escala,
+            "impacta_cumple_umbral": False,
+            "decisiones_correctas": all(
+                not repeticion["discrepancias"]
+                for grupo in grupos_escala
+                for repeticion in grupo["repeticiones"]
+            ),
+        },
         "validacion_referencia": validacion_referencia,
         "cumple_umbral": all(
             repeticion["maximo_ciclo_ns"] <= 20_000_000

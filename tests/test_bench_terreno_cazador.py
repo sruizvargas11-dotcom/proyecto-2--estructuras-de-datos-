@@ -1,6 +1,7 @@
 import json
 
 from bench.terreno_cazador import (
+    _crear_partida,
     _correr_escenario,
     _fixture,
     _grafo,
@@ -19,6 +20,34 @@ def test_fixture_distribuye_diez_cazadores_por_rango():
     _, rangos = _estado(datos, [1, 100])
     assert rangos[:10] == [1] * 10
     assert rangos[10:] == [100] * 10
+
+
+def test_comparacion_escala_admite_uno_y_veinte_cazadores():
+    datos, _ = _fixture()
+
+    partida_uno, cazadores_uno = _crear_partida(
+        datos, [10000, 10000], cantidad_cazadores=1, rango_unico=10000
+    )
+    partida_veinte, cazadores_veinte = _crear_partida(
+        datos, [10000, 10000], cantidad_cazadores=20, rango_unico=10000
+    )
+
+    assert len(cazadores_uno) == 1
+    assert cazadores_uno[0].instancia_id == "cazador-01"
+    assert cazadores_uno[0].sala_actual.id == 118
+    assert cazadores_uno[0].rango == 10000
+    assert len(cazadores_veinte) == 20
+    assert all(cazador.rango == 10000 for cazador in cazadores_veinte)
+    assert cazadores_veinte[0].sala_actual.id == cazadores_uno[0].sala_actual.id
+
+    vecinos = _grafo(datos)
+    puertas = _puertas(datos, vecinos)
+    duraciones, discrepancias = _correr_escenario(
+        datos, vecinos, puertas, [10000, 10000], 1, "compartida",
+        cantidad_cazadores=1, rango_unico=10000,
+    )
+    assert len(duraciones) == 1000
+    assert not discrepancias
 
 
 def test_puertas_alternan_sus_dos_sentidos():

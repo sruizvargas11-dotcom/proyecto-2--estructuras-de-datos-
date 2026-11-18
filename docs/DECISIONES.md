@@ -1783,9 +1783,9 @@ La lectura conjunta de la evidencia mostró que no se debía describir la iterac
 resultado vigente sin mencionar la corrida integral posterior. `tracking-02` conserva cero
 discrepancias, pero su máximo sintético de 24.8793 ms supera el límite y su campo
 `cumple_umbral` es falso. El pico se repitió diagnósticamente 30 veces sin reproducirse; esa
-observación no invalida ni elimina la muestra original. El gate de 20 ms queda abierto hasta
-una nueva ejecución contractual completa que cumpla en todos los ciclos. Los reportes de
-iteración 5 y de seguimiento permanecen sin cambios.
+observación no invalida ni elimina la muestra original. En ese momento el gate de 20 ms quedó
+abierto a la espera de una nueva ejecución contractual. Los reportes de iteración 5 y de
+seguimiento permanecen sin cambios.
 
 También se añadió FR-015/AB-31 para la comparación que faltaba entre un cazador y veinte. La
 medición será emparejada sobre el mismo fixture, rango 10000, modalidad compartida, cambio de
@@ -1793,6 +1793,31 @@ puerta cada ciclo, semilla 42 y acción `W`; ejecutará 30 repeticiones de 1000 
 cada cantidad y validará decisiones contra el cálculo desde cero. Se reportará por separado
 y no alterará el umbral contractual ni sustituirá los ocho escenarios o `cripta-06`.
 
-La implementación y nueva medición quedan pendientes de T063–T069. Según el principio VII,
-primero debe confirmarse en un commit separado esta corrección documental; después se podrán
-modificar el arnés y sus pruebas.
+### Sexta iteración: comparación de escala y cierre del gate (2026-11-18)
+
+Se añadió al reporte de terreno/cazador el grupo diagnóstico `comparacion_escala`, sin
+modificar el cómputo de `cumple_umbral`. Compara uno y veinte cazadores en el mismo fixture,
+con rango 10000, modalidad compartida y cambios de puerta cada ciclo; ejecuta 30 repeticiones
+de 1000 ciclos por grupo y valida las decisiones fuera del cronómetro.
+
+La repetición diagnóstica del escenario que había registrado 24.8793 ms se ejecutó 30 veces
+(30 000 ciclos). El máximo fue 3.2179 ms, la mediana 0.2282 ms y el p95 0.3548 ms; no hubo
+ciclos sobre 20 ms ni discrepancias. El pico original no se reprodujo y no se identificó una
+fase del proyecto que lo causara. No se hizo un cambio especulativo al algoritmo de rutas y
+el reporte de seguimiento que contiene el pico se conserva intacto.
+
+La suite focalizada pasó 9 pruebas y la suite completa pasó 1399 pruebas con Python 3.12.10.
+Después se ejecutó la suite integral con `python main.py --bench --salida
+docs/evidencia/terreno-cazador-benchmark-iteracion-6.json`. El benchmark cubrió los ocho
+escenarios (30 × 1000 ciclos por escenario), la referencia `cripta-06` (30 × 1000 ciclos) y
+la comparación diagnóstica 1 vs. 20 (30 × 1000 ciclos por grupo). No hubo discrepancias.
+El máximo contractual sintético fue 18.7119 ms, en rango pequeño, modo compartido, puerta
+cada 100 ciclos; el máximo de `cripta-06` fue 1.2799 ms. El reporte indica
+`cumple_umbral=true` y `decisiones_correctas=true`. Este resultado nuevo cierra el gate
+actual; no cambia el estado ni los valores del reporte fallido `tracking-02`.
+
+En la comparación diagnóstica, un cazador tuvo mediana de 1.4301 ms, p95 de 2.0866 ms y
+máximo de 6.3323 ms. Veinte cazadores tuvieron mediana de 1.7143 ms, p95 de 2.3657 ms y
+máximo de 5.762 ms. Ambos grupos procesaron 30 000 ciclos y tuvieron cero discrepancias.
+Estas mediciones comparan la escala bajo la configuración declarada; son diagnósticas y no
+forman parte del umbral contractual.

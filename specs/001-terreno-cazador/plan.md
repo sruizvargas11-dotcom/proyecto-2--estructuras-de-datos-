@@ -454,3 +454,22 @@ cambiar código, según el principio VII de la Constitución:
    `cripta-06` cumple ≤20 ms. La comparación 1 vs. 20 se reporta por separado.
 6. Documentar cifras, causa confirmada o no reproducida, cambios, pruebas y estado final;
    mantener intactos los reportes previos.
+
+### Resultado de la sexta iteración
+
+Las pruebas de benchmark pasaron 9/9 y la suite completa 1399/1399 con Python 3.12.10. El
+escenario del pico anterior se repitió 30 veces (30 000 ciclos): máximo 3.2179 ms, p95
+0.3548 ms, cero ciclos sobre 20 ms y cero discrepancias. No se reprodujo el pico ni se
+identificó trabajo del proyecto atribuible a esa muestra; por ello no se alteró el algoritmo
+de rutas.
+
+La medición integral de T068 se conserva en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-6.json`. Ejecutó los ocho escenarios
+contractuales, `cripta-06` y la comparación diagnóstica 1 vs. 20. Hubo cero discrepancias; el
+máximo contractual sintético fue 18.7119 ms y el máximo de `cripta-06` 1.2799 ms, por lo que
+`cumple_umbral=true`. La comparación adicional procesó 30 000 ciclos por grupo: un cazador
+obtuvo mediana/p95/máximo 1.4301/2.0866/6.3323 ms y veinte 1.7143/2.3657/5.762 ms, sin
+discrepancias. Esos ciclos quedan fuera del indicador contractual.
+
+T062–T069 quedan completadas. El reporte `tracking-02` permanece intacto y conserva su
+resultado fallido; la iteración 6 es la corrida integral más reciente y aprobatoria.
