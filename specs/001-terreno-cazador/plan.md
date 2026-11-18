@@ -393,4 +393,17 @@ las decisiones con el cálculo individual desde cero y cubrirá cambios directos
 historizados de puertas. La medición contractual conservará el fixture, los ocho escenarios,
 `cripta-06`, 30 repeticiones y 1000 ciclos, sin alterar el umbral de 20 ms ni los reportes
 anteriores. Esta iteración debe quedar confirmada en Git antes de tocar el código, de acuerdo
-con el principio VII de la Constitución.
+con el principio VII de la Constitución. Se confirmó antes de la implementación en el commit
+`5de5cb4`.
+
+### Resultado de la quinta iteración
+
+La topología inversa se construyó una vez por caché y sus referencias a salidas se consultan
+en el estado actual. Las pruebas focalizadas (45) y la suite completa (1194) pasaron con
+Python 3.12.10. El reporte contractual `docs/evidencia/terreno-cazador-benchmark-iteracion-5.json`
+contiene los ocho escenarios y `cripta-06`, 30 repeticiones × 1000 ciclos por grupo, cero
+discrepancias y máximo global de 12.8721 ms; `cumple_umbral=true`.
+
+T056–T061 quedan completadas. T031, T039, T045 y T051 se cierran como gates históricos
+supersedidos por T060. Sus reportes anteriores permanecen intactos y sus resultados fallidos
+no se reclasifican como aprobados; la evidencia de iteración 5 es la medición vigente.

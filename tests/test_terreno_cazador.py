@@ -254,3 +254,76 @@ def test_cache_reutiliza_indices_entrantes_y_distancias():
     )
     assert distancias is not primera
     assert cache.indice_entrantes is not None
+
+
+def test_cache_reutiliza_topologia_y_consulta_estado_actual_de_puertas():
+    from modelo.buscador_rutas import CacheDistanciasCazador
+
+    cripta, salas = _mapa(1)
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    cazador = Enemigo("e", "cazador", "Cazador", 100, 1, 0, 100,
+                      "cazador", salas[0], rango=2)
+    cache = CacheDistanciasCazador(cripta)
+
+    distancias_abiertas = cache.obtener(jugador)
+    topologia = cache._entrantes
+    assert decidir_cazador(cazador, jugador, distancias_abiertas)[0] == "mover"
+
+    jugador.sala_actual = salas[1]
+    distancias_jugador_movido = cache.obtener(jugador)
+    assert distancias_jugador_movido is not distancias_abiertas
+    assert cache._entrantes is topologia
+    assert decidir_cazador(cazador, jugador, distancias_jugador_movido) == (
+        "mover", (salas[1], 1)
+    )
+    jugador.sala_actual = salas[2]
+    distancias_abiertas = cache.obtener(jugador)
+
+    salida = next(iter(salas[0].salidas.recorrer_valores()))
+    salida.cerrada = True
+    distancias_cerradas = cache.obtener(jugador)
+    assert cache._entrantes is topologia
+    assert distancias_cerradas is not distancias_abiertas
+    assert decidir_cazador(cazador, jugador, distancias_cerradas) == ("esperar", None)
+
+    salida.cerrada = False
+    distancias_reabiertas = cache.obtener(jugador)
+    assert cache._entrantes is topologia
+    assert decidir_cazador(cazador, jugador, distancias_reabiertas)[0] == "mover"
+
+
+def test_topologia_cacheada_funciona_con_ids_dispersos_y_reversion_de_puerta():
+    from modelo.buscador_rutas import CacheDistanciasCazador
+    from modelo.deltas import DeltaPuerta
+
+    cripta = CriptaModelo("prueba-dispersa", "1", 10, 1001, None, 0, 10)
+    salas = [Sala(10, "diez"), Sala(300, "trescientos"), Sala(1001, "mil")]
+    salas[0].salidas.insertar_al_final(Salida("E", 300, costo=3))
+    salas[1].salidas.insertar_al_final(Salida("E", 1001, costo=5))
+    for sala in salas:
+        cripta.agregar_sala(sala)
+    cripta.finalizar_carga()
+
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    cazador = Enemigo("e", "cazador", "Cazador", 100, 1, 0, 100,
+                      "cazador", salas[0], rango=8)
+    cache = CacheDistanciasCazador(cripta)
+    distancias_abiertas = cache.obtener(jugador)
+    topologia = cache._entrantes
+    assert decidir_cazador(cazador, jugador, distancias_abiertas) == (
+        "mover", (salas[1], 3)
+    )
+
+    salida = next(iter(salas[0].salidas.recorrer_valores()))
+    delta = DeltaPuerta(salida)
+    salida.cerrada = True
+    distancias_cerradas = cache.obtener(jugador)
+    assert cache._entrantes is topologia
+    assert decidir_cazador(cazador, jugador, distancias_cerradas) == ("esperar", None)
+
+    delta.revertir()
+    distancias_revertidas = cache.obtener(jugador)
+    assert cache._entrantes is topologia
+    assert decidir_cazador(cazador, jugador, distancias_revertidas) == (
+        "mover", (salas[1], 3)
+    )
