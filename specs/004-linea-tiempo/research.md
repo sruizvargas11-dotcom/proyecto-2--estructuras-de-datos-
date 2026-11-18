@@ -11,7 +11,7 @@
 - `persistencia/estado_partida.py` contiene la codificación/decodificación del estado actual, incluido `getstate()`/`setstate()` del generador aleatorio.
 - `controlador/controlador_replay.py` reproduce comandos en una partida nueva; la ruta actual no es una reconstrucción desde puntos de control.
 - `bench/bench_bloque3.py` ya mide escenarios de persistencia, pero sus casos actuales no equivalen a medir una reconstrucción histórica completa.
-- La cifra de ~72 ms para cargar 5.000 salas corresponde a la "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025". Es una referencia pendiente, no una medición verificada en esta rama.
+- La cifra de ~72 ms para cargar 5.000 salas corresponde a la "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025". Esa carga no se volvió a medir; T024/T025 midieron directamente las consultas históricas (ver "Resultados medidos").
 
 ## Decisiones de diseño
 
@@ -81,10 +81,21 @@ Todas las variantes se medirán sobre la misma historia fija de al menos 5.000 a
 
 | Comparación | Datos a registrar |
 |---|---|
-| `K = 10, 50, 100` y otros valores positivos | Mediana, p95, máximo, volumen/memoria conservada y cumplimiento SC-001 |
+| `K = 10, 50, 100 y 200` | Mediana, p95, máximo, volumen/memoria conservada y cumplimiento SC-001 |
 | Búsqueda binaria propia frente a búsqueda lineal | Tiempo de localización del punto para los mismos tiempos consultados |
 | Re-simulación frente a inversión | Tiempo total de consulta, p95, máximo, memoria y equivalencia del resumen |
 | Carga de punto de control | Lectura, decodificación y restauración por separado |
 | Guardado/carga con historia | Preservación de historia, mapa conocido y rechazo explícito de archivos Parte I |
 
-No se registran resultados numéricos de estas mediciones en esta fase. El valor predeterminado de `K` se fijará después de ejecutar el benchmark y será el mayor valor probado que cumpla SC-001.
+Los resultados están en la sección "Resultados medidos". Se eligió `K = 200`, el mayor valor probado que cumple SC-001.
+
+## Resultados medidos (actualizado 17 nov 2026)
+
+- **Decisión:** K_POR_DEFECTO = 200; reconstrucción hacia adelante desde el punto de control (re-simula como máximo K − 1 acciones).
+- **Criterio:** p95 < 50 ms con 5.000 acciones; el máximo se documenta aparte.
+- **Resultado (3 corridas):** p95 20,4 / 20,6 / 22,9 ms; máximo 43,6 / 42,1 / 68,9 ms; memoria pico 2,80 MiB.
+- **Alternativa medida (reconstruir desde el inicio):** p95 390,4 ms. Descartada.
+- **Búsqueda binaria vs. lineal (K = 200):** p95 0,004 ms vs. 0,013 ms.
+- **K descartados:** 10 (28,25 MiB de memoria pico) y 50 (máximo aislado de 225 ms).
+- **Inversión hacia atrás:** no implementada ni medida.
+- **Evidencia:** docs/evidencia/2026-11-16T160604_9c6f61b_bench.json
