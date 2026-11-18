@@ -2,7 +2,7 @@
 
 **Rama Git**: `feature/spec-kit-copilot` | **Feature**: `001-terreno-cazador` | **Fecha**: 2026-11-04 | **Especificación**: [spec.md](./spec.md)
 
-**Entrada**: Requisitos funcionales FR-001–FR-013 y escenarios AB-01–AB-29.
+**Entrada**: Requisitos funcionales FR-001–FR-014 y escenarios AB-01–AB-30.
 
 ## Resumen
 
@@ -31,11 +31,13 @@ continúa siendo multiplataforma dentro de los entornos actualmente soportados.
 
 **Tipo de proyecto**: Juego Python con modelo, controlador, vista de consola y vista Pygame.
 
-**Objetivo de rendimiento**: En el fixture fijo `bench-terreno-cazador-grid-16x16`,
-versión `1.0.0`, con 256 salas y exactamente 20 cazadores, ejecutar los ocho escenarios
-del spec con 30 repeticiones por escenario. Los perfiles usan rangos 1/100 o 1000/10000,
-con diez cazadores por valor. Cada ciclo de eventos entre decisiones del jugador debe ser
-≤20 ms. Toda decisión se contrasta con un recálculo de referencia desde cero.
+**Objetivo de rendimiento**: Mantener dos mediciones complementarias. La comparativa
+controlada ejecuta los ocho escenarios existentes en el fixture sintético
+`bench-terreno-cazador-grid-16x16` v1.0.0, con 256 salas, 20 cazadores y 30 repeticiones
+de 1000 ciclos por escenario. La validación del límite oficial ejecuta además 30
+repeticiones de 1000 ciclos con las 25 instancias de cazador de `cripta-06` en un snapshot
+fijo de 300 salas. En ambas mediciones cada ciclo debe ser ≤20 ms y las decisiones deben
+coincidir con un recálculo desde cero.
 
 **Restricciones**:
 - Solo estructuras propias para índices, colas de prioridad y cachés de rutas. No usar
@@ -47,10 +49,12 @@ con diez cazadores por valor. Cada ciclo de eventos entre decisiones del jugador
   reciben datos externos reproducibles.
 - No afirmar el cumplimiento de los 20 ms hasta tener evidencia de `--bench`.
 
-**Escala**: 20 cazadores sobre un fixture sintético fijo, versionado y externo a la lógica
-de producción. Sus 256 salas superan las 6 salas de `cripta-01`. La identidad, versión,
-topología y mutaciones de puertas quedan especificadas en
-[datos-entrada-y-benchmark.md](./contracts/datos-entrada-y-benchmark.md).
+**Escala**: La prueba comparativa conserva los 20 cazadores del fixture sintético fijo,
+versionado y externo a la lógica de producción. La prueba de referencia añade el mapa
+publicado `cripta-06` versión `f9ed9afa683d` y el catálogo versión `4b9e75a42be5`, con 300
+salas y 25 `ent_sabueso_oseo` de rango 600. Se materializa un snapshot con checksum para no
+consultar la API durante las mediciones. Las dos identidades, sus estados y sus protocolos
+quedan definidos en [el contrato](./contracts/datos-entrada-y-benchmark.md).
 
 ## Verificación de constitución
 
@@ -72,8 +76,10 @@ No se identifica una violación constitucional que requiera excepción.
 ### Fase 0 — Investigación
 
 Las decisiones y alternativas se consolidan en [research.md](./research.md). La investigación
-se limitó a los documentos y el código presentes en el repositorio; no se consultó el PDF ni
-servicios externos.
+inicial del 2026-11-04 se limitó a los documentos y el código presentes en el repositorio.
+La actualización del 2026-11-17 contrastó el PDF oficial y consultó la API para verificar la
+cripta de referencia y las versiones de sus datos; no midió rendimiento del juego en esa
+consulta.
 
 ### Fase 1 — Diseño y contratos
 
@@ -125,6 +131,119 @@ servicios externos.
    JSON UTF-8 indentado con dos espacios. La ejecución de referencia guarda el reporte en
    `docs/evidencia/2026-11-04-terreno-cazador-benchmark.json`, bajo control de versiones;
    el contrato define el esquema y los campos detallados.
+   Además, materializar y medir el snapshot de `cripta-06` versión `f9ed9afa683d` con
+   catálogo `4b9e75a42be5`, 300 salas y 25 cazadores activos. Integrar esta medición como
+   `validacion_referencia` sin alterar los ocho escenarios ni sobrescribir su evidencia
+   histórica. El reporte nuevo registra ambos grupos, sus versiones/checksums y metadatos;
+   los ciclos usan el mismo flujo real del modelo/reloj, sin red ni vistas.
+
+### Optimización posterior al diagnóstico de rendimiento
+
+El diagnóstico separado de la medición contractual identificó que `_buscar` se ejecuta
+2.498 millones de veces durante la construcción y recorrido de distancias compartidas en
+una ejecución representativa, acumulando 4.345 s bajo perfilador. Las cifras perfiladas
+permiten priorizar cambios, pero no sustituyen ni amplían la evidencia contractual de
+20 ms. No se modificarán el umbral, los ocho escenarios, el reparto 10/10, `cripta-06`, el
+protocolo de 30 repeticiones × 1000 ciclos ni el esquema del reporte.
+
+La optimización se aborda en este orden:
+
+1. **Eliminar búsquedas lineales o binarias repetidas en las tablas de distancias**.
+   `_construir_entrantes` y `_distancias_hacia_jugador` deben conservar Dijkstra ponderado,
+   aristas dirigidas, puertas abiertas y el desempate por menor ID. Se pueden usar
+   estructuras manuales propias, vectores de acceso directo por ID y colas propias existentes.
+   No se introducirá `dict`, `set`, `heapq`, `bisect`, `collections`, grafos externos ni
+   ningún índice/caché equivalente prohibido por la Constitución.
+   La optimización debe probar y admitir IDs de sala dispersos o no contiguos. El acceso
+   directo solo se aceptará si existe una construcción propia que mapee cada ID al índice
+   válido sin asumir que los IDs llenan un rango compacto. Si el mapa no permite ese mapeo
+   seguro, se conservará una alternativa propia correcta, como búsqueda binaria sobre
+   registros ordenados o índice compacto auxiliar, sin `dict`, `set` ni bibliotecas prohibidas.
+2. **Sustituir el escaneo completo de puertas en la caché cuando sea seguro**. La caché debe
+   observar cambios reales de sala del jugador y puertas de todas las formas posibles:
+   cambios directos del modelo, historial/reversión, replay, carga de partida y restauración
+   de estado. Debe incluir cualquier cambio de puerta que ocurra fuera del benchmark. Si una
+   puerta cambia cada ciclo, la revisión debe invalidar y recalcular las distancias; no debe
+   construir una caché artificialmente persistente que oculte ese cambio.
+   Esta revisión se implementará obligatoriamente y se verificará con cambios directos,
+   historial, replay y carga. No se dejará como opción condicionada a la existencia de otro
+   mecanismo previo.
+3. **Separar el arnés de medición del trabajo real del juego**. El benchmark debe precalcular
+   fuera del cronómetro la asociación entre instancia, cazador e índice. Dentro del intervalo
+   medido no deben quedar `enemigos.index(...)`, búsquedas posteriores por identificador para
+   observaciones ni validaciones auxiliares que no sean procesamiento del modelo/reloj.
+   Permanecen dentro el evento del jugador, los eventos de enemigos, sus decisiones,
+   movimientos, ataques, espera y reprogramaciones reales.
+4. **Conservar los modos individual y compartido**. La búsqueda individual recalculará rutas
+   desde cero para cada cazador y seguirá sirviendo como referencia independiente. La caché
+   compartida solo podrá reutilizar distancias válidas para el estado actual; no convertirá
+   el modo individual en una llamada compartida ni alterará el reparto de rangos ni los
+   resultados comparables.
+
+Cada optimización necesita criterios verificables:
+
+- Las decisiones coinciden con el recálculo independiente en mapas ponderados, puertas
+  abiertas/cerradas, conexiones unidireccionales, distancias iguales al rango, distancias
+  superiores al rango y salas sin ruta.
+- El resultado conserva el menor costo total y el menor ID entre vecinas empatadas.
+- La caché comparte solo distancias válidas para el mismo jugador y el mismo estado físico
+  de todas las puertas. Cambios por historial, replay o carga producen la misma revisión que
+  un cambio directo.
+- Si una puerta cambia cada ciclo, `obtener` invalidará y reconstruirá las distancias; si
+  el estado no cambia, no habrá una reconstrucción falsa.
+- En el benchmark, la asociación actor/índice queda fuera del cronómetro y la referencia
+  externa sigue fuera del tiempo medido.
+- El modo individual mantiene su cálculo independiente y el compartido mantiene la reutilización
+  solo mientras su snapshot siga válido.
+
+La revisión incremental no deberá concluir que todas las puertas están abiertas si puertas
+cerradas se restauraron desde el estado cargado o desde el historial. Toda modificación de
+puerta debe pasar por un mecanismo observable o revisar una revisión monotónica mantenida
+por el modelo; no se aceptará una implementación basada en suposiciones sobre el estado
+inicial o sobre el escenario concreto.
+
+### Segunda iteración de optimización para los escenarios sintéticos
+
+El reporte `terreno-cazador-benchmark-final.json` conserva una ejecución fallida: mantiene
+cero discrepancias, pero el máximo sintético es 35.9268 ms. Fallan los cuatro escenarios de
+rango grande y el escenario pequeño con cambio de puerta cada ciclo y modalidad compartida.
+Este diagnóstico no modifica ni reutiliza cifras perfiladas como evidencia contractual.
+
+Antes de optimizar, se ejecutará una medición separada y fuera de `--bench` con tres perfiles:
+
+1. rutas individuales de rango grande sobre el fixture sintético;
+2. reconstrucción de distancias compartidas cuando cambia una puerta;
+3. procesamiento real de turnos, incluyendo reloj, decisión, movimiento y reprogramación,
+   sin renderizado ni red.
+
+Cada perfil comparará el primer ciclo con los ciclos siguientes. Las mediciones perfiladas
+solo localizarán costos y no sustituirán el protocolo contractual de ocho escenarios,
+30 repeticiones por escenario y 1000 ciclos por repetición.
+
+La implementación de esta iteración conservará `_asignar_indices_benchmark` y el atributo
+`_indice_benchmark` ya asociado antes de iniciar los ciclos. No se volverán a buscar actores
+por instancia dentro del cronómetro. Las optimizaciones deben mantener Dijkstra ponderado,
+conexiones dirigidas, costos efectivos, rango, puertas abiertas/cerradas, desempates y
+equivalencia con el cálculo desde cero.
+
+Los modos individual y compartido conservarán su significado actual: individual ejecutará
+una búsqueda independiente por cazador; compartido reutilizará distancias solo para el
+mismo jugador y revisión de puertas válida. Ninguna optimización permitirá usar `dict`,
+`set`, `heapq`, `bisect`, `collections`, bibliotecas de grafos o cachés equivalentes
+prohibidas por la Constitución.
+
+El siguiente resultado contractual se guardará en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-2.json`. Se conservarán sin modificar
+`docs/evidencia/terreno-cazador-benchmark-final.json` y
+`docs/evidencia/terreno-cazador-benchmark-completo.json`. Si la iteración vuelve a fallar,
+el reporte seguirá conservándose y las tareas de aceptación permanecerán pendientes. El
+cierre exige cero discrepancias y máximo ≤20 ms en los ocho escenarios sintéticos y en
+`cripta-06`.
+
+Las tareas T034–T039 de la iteración anterior siguen siendo el alcance ya implementado y
+su evidencia previa, pero esta iteración puede actualizar T039 y su estado según el nuevo
+reporte contractual iteración-2. La frase que conserva ese alcance no impide marcar T039
+completa cuando el nuevo resultado cumpla el cierre ni dejarlo pendiente si vuelve a fallar.
 
 ## Estructura del proyecto
 
@@ -168,13 +287,12 @@ pertenece al modelo/estructura propia, no a la vista ni a un servicio externo.
   salida tenga otra representación de regreso. El spec ahora define que una salida sin
   inversa es válida como unidireccional y que los costos se comparan solo si ambos sentidos
   están presentes.
-- El repositorio no incluye una ficha de catálogo de cazador ni el campo `costo` en el
-  esqueleto offline actual. La disponibilidad de esos campos en la fuente de datos y su
-  política de publicación de versión debe confirmarse antes de desplegar; no suplirlos con
-  datos incrustados.
-- El fixture de benchmark es sintético y no representa una cripta real. Los resultados
-  acreditan el umbral solo para la dimensión y topología registradas, no para mapas de
-  cualquier escala.
+- Las versiones de la API pueden cambiar. El benchmark de referencia usa un snapshot
+  versionado y su checksum, no la respuesta viva del servidor; una nueva versión requiere
+  renovar el snapshot y su evidencia, sin modificar datos de producción.
+- La comparación sintética y la validación sobre `cripta-06` respaldan únicamente las
+  topologías, versiones, estados y cantidades de actores registradas; no se extrapolan a
+  mapas de cualquier escala.
 
 ## Seguimiento de complejidad
 
