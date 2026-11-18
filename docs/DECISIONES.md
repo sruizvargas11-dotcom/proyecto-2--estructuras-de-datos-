@@ -1310,6 +1310,99 @@ Entorno, medianas, máximos, muestras y el resto del protocolo:
   muchas llaves candidatas; la medición del caso de cadena no cubre todos los peores
   casos de diagnóstico.
 
+## 4.14 Línea de tiempo
+
+*Redacta: Sebastián (spec 004) · Revisa: Centeno*
+
+### Problema
+
+El jugador puede consultar el estado de la partida en un momento anterior: por tiempo virtual (`historia t`) o por número de acción (`historia #k`). La consulta no puede alterar la partida real, no cuenta como acción y no puede guardar una copia completa del estado en cada acción.
+
+| Operación | Cuándo ocurre | Frecuencia |
+| --- | --- | --- |
+| Registrar la acción | En cada acción del jugador | La más frecuente (el bench usa 5 000) |
+| Guardar un punto de control | Cada K acciones | 1 de cada K |
+| Consulta histórica | Cuando el jugador la pide | Ocasional |
+| Truncar al usar el pergamino | Al retroceder | Rara (máximo 5 acciones, ver 4.6) |
+
+### Alternativas consideradas
+
+| Alternativa | Ventaja | Por qué se descarta |
+| --- | --- | --- |
+| Copia completa del estado en cada acción | Consulta inmediata | La memoria crece con acciones × tamaño del estado: con K = 10 los puntos ya ocupan 23,1 MB para 5 000 acciones; con K = 1 serían unos 230 MB (estimado por extrapolación, no medido). |
+| Reconstruir siempre desde el inicio (**medida**) | Sin memoria extra | Re-simula hasta n acciones: con 5 000 acciones, p95 de 390,4 ms, frente a la meta de 50 ms. |
+| Búsqueda lineal del punto de control (**medida**) | Más simple | Con K = 200, p95 de 0,013 ms frente a 0,004 ms de la binaria; crece con el número de puntos. |
+| Reconstrucción hacia atrás (invertir deltas) | Reutiliza la idea del pergamino | No implementada ni medida: obligaría a conservar los deltas de toda la partida, y el pergamino solo guarda 5 intervalos. |
+| **Puntos de control cada K + re-simulación hacia adelante** | Memoria y tiempo acotados por K | **Elegida** |
+
+### Decisión
+
+- `modelo/historia.py`: registro de acciones en un arreglo propio, numeradas desde 1 y con su tiempo virtual. `K_POR_DEFECTO = 200`, configurable con `--checkpoint-cada K` (se rechaza K ≤ 0).
+- `modelo/punto_control.py`: cada K acciones se captura el estado necesario para continuar (jugador, entidades, estado de `random.Random`, agenda de eventos y conocimiento de la niebla). **No** incluye la caché LRU (infraestructura, ver 4.4) ni el historial del pergamino (4.6).
+- `historia t`: búsqueda binaria propia sobre los tiempos de los puntos de control.
+- `historia #k`: índice directo `(k − 1) // K`, porque el estado previo a la acción k es el estado después de k − 1 acciones.
+- `modelo/reconstructor_historia.py`: restaura el punto en una partida temporal y re-simula como máximo K − 1 acciones. La partida real no se toca.
+- Usar el pergamino trunca las acciones, cambios y puntos posteriores al límite revertido.
+- `--replay partida.log --hasta t` reutiliza la misma reconstrucción y el mismo resumen (`modelo/resumen_historico.py`), sin instanciar la vista.
+- El guardado binario lleva una versión nueva con la historia y los puntos. Un archivo de la Parte I se rechaza con un mensaje claro.
+- Sin `dict` como índice, `bisect`, `heapq`, `collections` ni `sorted`.
+
+### Análisis de complejidad
+
+Notación: n = acciones registradas, P = n/K puntos, S = tamaño del estado, c = costo de re-simular una acción.
+
+| Operación | Costo |
+| --- | --- |
+| Registrar una acción | O(1) amortizado |
+| Guardar un punto de control | O(S) cada K acciones, es decir, O(S/K) amortizado por acción |
+| `historia t` | O(log P) búsqueda + O(S) restaurar + O(K·c) re-simular |
+| `historia #k` | O(1) índice + O(S) restaurar + O(K·c) re-simular |
+| Truncar al usar el pergamino | O(1) amortizado por elemento eliminado |
+| Memoria | O(n) del registro + O((n/K)·S) de los puntos |
+
+El costo dominante de una consulta es re-simular, no buscar: con K = 200 la búsqueda tarda 0,004 ms y la consulta completa unos 13 ms de mediana. K regula el equilibrio entre memoria y tiempo.
+
+### Evidencia empírica
+
+**Bench (`--bench`, caso `linea_tiempo`).** Historia de 5 000 acciones, 30 consultas mixtas (`historia t` e `historia #k`) y 30 repeticiones por consulta.
+
+| K | Mediana | p95 | Máximo | Máx. re-simuladas | Bytes de puntos | Memoria pico |
+| --- | --- | --- | --- | --- | --- | --- |
+| 10 | 4,2 ms | 5,7 ms | 9,7 ms | 9 | 23 107 548 | 28,25 MiB |
+| 50 | 6,2 ms | 9,0 ms | 225,0 ms | 49 | 4 658 384 | 6,82 MiB |
+| 100 | 8,4 ms | 12,4 ms | 64,5 ms | 99 | 2 352 236 | 4,14 MiB |
+| **200 (usado)** | **13,4 ms** | **20,4 ms** | **43,6 ms** | **199** | **1 199 157** | **2,80 MiB** |
+| Sin puntos (descartada) | 204,0 ms | 390,4 ms | 425,5 ms | hasta 5 000 | 0 | — |
+
+**Estabilidad con K = 200** (3 corridas, commit `9c6f61b`): p95 de 20,4 / 20,6 / 22,9 ms; máximo de 43,6 / 42,1 / 68,9 ms. Se eligió K = 200 por ser el mayor valor probado que cumple p95 < 50 ms en todas las corridas, y el de menor memoria.
+
+- Frente a reconstruir desde el inicio, la consulta es unas 19 veces más rápida en p95.
+- El máximo de acciones re-simuladas es siempre K − 1, como confirma la prueba unitaria.
+
+Resultados: `docs/evidencia/2026-11-16T160604_9c6f61b_bench.json`. Equipo: Microsoft Windows 11 Home (10.0.26300), Intel(R) Core(TM) Ultra 7 155H (22 núcleos lógicos), 16 GB de RAM, Python 3.12.10. Fecha: 16-11-2026.
+
+**Pruebas.**
+
+- Aceptación G18–G23: rechazo de tiempo futuro, truncado por pergamino, eventos simultáneos, no alteración de la partida, paridad con el replay y rechazo de archivos de la Parte I.
+- `tests/test_linea_tiempo_limites_modelo.py`: recorre todas las acciones y verifica que ninguna consulta re-simula más de K, incluidos los bordes justo después y justo antes de cada punto.
+- `tests/test_linea_tiempo_integraciones.py`: la niebla se conserva en cada punto y el terreno se reproduce igual.
+- Suite completa: 1379 pruebas aprobadas (17-11-2026).
+
+**Comandos para verificar** (PowerShell, desde la raíz del repositorio):
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q tests\test_linea_tiempo_limites_modelo.py tests\test_linea_tiempo_g18.py tests\test_linea_tiempo_g19.py tests\test_linea_tiempo_g20.py tests\test_linea_tiempo_g21.py tests\test_linea_tiempo_g22.py tests\test_linea_tiempo_g23.py
+.\.venv\Scripts\python.exe main.py --bench
+```
+
+### Límites conocidos
+
+- **Picos aislados:** el máximo varía entre corridas (68,9 ms con K = 200; 225 ms con K = 50) por el recolector de basura de Python y la carga del equipo. Por eso el criterio es el p95 y el máximo se documenta aparte.
+- **Criptas más grandes:** con más enemigos y efectos sube c, y K = 200 podría superar los 50 ms. En ese caso se baja K con `--checkpoint-cada` y se vuelve a medir con esa cripta.
+- **Partidas muy largas:** la memoria de los puntos crece linealmente con n/K. Si S crece mucho, convendría guardar diferencias entre puntos en vez del estado completo.
+- **Medición sintética:** las 5 000 acciones las genera el bench, no provienen de una partida real.
+
+Especificación: [spec.md](../specs/004-linea-tiempo/spec.md) · [plan.md](../specs/004-linea-tiempo/plan.md) · [research.md](../specs/004-linea-tiempo/research.md)
 ## Registro de cambio de especificación
 
 ### Terreno y cazador (2026-11-04)
