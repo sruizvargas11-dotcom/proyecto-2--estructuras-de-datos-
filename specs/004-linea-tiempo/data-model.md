@@ -13,7 +13,7 @@ Representa la historia vigente desde el inicio de la partida.
 | Registros de acciones | Arreglo permanente ordenado con una entrada por decisión del jugador vigente. | Numeración entera positiva desde 1; contiene solo acciones vigentes. |
 | Registros de cambios | Información suficiente para reproducir los cambios o invertirlos. | Persiste aparte de los deltas consumibles del pergamino. |
 | Puntos de control | Arreglo de estados completos restaurables, ordenado por tiempo y asociado al conteo de acciones. | Incluye el estado inicial y un punto cada `K` acciones; `K` positivo. |
-| Valor `K` | Intervalo configurable de puntos de control. | El predeterminado se decide por medición: mayor valor probado que cumpla SC-001. |
+| Valor `K` | Intervalo configurable de puntos de control. | Predeterminado: `K = 200`, el mayor valor probado que cumple SC-001 (ver `research.md`, "Resultados medidos"). |
 
 La reversión con el pergamino corta las acciones y registros de cambios posteriores al punto revertido, además de los puntos de control posteriores. Una consulta no modifica ninguno de estos arreglos.
 

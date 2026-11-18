@@ -124,6 +124,23 @@ Los comandos aceptan mayúsculas y minúsculas. Los índices empiezan en 1; si u
 
 El pergamino puede revertir los cambios del jugador, enemigos y efectos incluidos en el último intervalo registrado. El historial conserva hasta cinco intervalos. El propio pergamino se consume de forma irreversible y no genera una nueva acción que pueda deshacerse.
 
+### Consultar el pasado (línea de tiempo)
+
+| Comando | Qué muestra |
+| --- | --- |
+| `HISTORIA <t>` | El estado de la partida en el tiempo virtual t. |
+| `HISTORIA #<k>` | El estado justo antes de la acción número k (se cuenta desde 1). |
+
+- Las consultas no modifican la partida, no consumen tiempo y no cuentan como acción.
+- Un tiempo futuro o una acción que no existe se rechazan con un mensaje.
+- Si usas un pergamino de retroceso, la historia posterior al punto revertido se descarta.
+- El intervalo entre puntos de control se cambia con `--checkpoint-cada K`. La justificación de K = 200 está en `docs/DECISIONES.md` (4.14).
+
+Pruebas de esta capacidad:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q tests -k "linea_tiempo or historia"
+```
 ## Vista gráfica (Pygame)
 
 ```console
@@ -215,6 +232,8 @@ python main.py --help
 | `--hilos` | Precargar salas en segundo plano durante una partida nueva. |
 | `--partidas-dir CARPETA` | Cambiar la carpeta de bitácoras, la ruta predeterminada del guardado y la tabla de puntajes. |
 | `--replay LOG` | Reproducir las acciones de una bitácora sin pedir comandos. |
+| `--hasta T` | Con `--replay`, reproducir solo hasta el tiempo virtual T y mostrar el estado histórico en ese instante. |
+| `--checkpoint-cada K` | Guardar un punto de control cada K acciones para las consultas `HISTORIA` (por defecto 200; K debe ser positivo). |
 | `--silencioso` | Omitir el detalle de acciones durante el replay. |
 | `--reportes ARCHIVO` | Cambiar el archivo del historial de reportes de red. |
 | `--bench` | Ejecutar las mediciones de estructuras y persistencia. |
@@ -232,6 +251,8 @@ python main.py --offline --gui --cripta cripta-01 --forzar
 python main.py --offline --solo-mapa
 python main.py --offline --cache-size 50 --cache-dir partidas/cache-prueba
 python main.py --offline --partidas-dir partidas/ensayo --reportes partidas/ensayo/reportes.txt
+python main.py --offline --cripta cripta-01 --checkpoint-cada 100
+python main.py --offline --replay partidas/bitacoras/ARCHIVO.log --hasta 500
 ```
 
 `--verificar ID` no inicia una partida ni crea la vista: devuelve 0 si es resoluble,

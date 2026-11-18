@@ -13,7 +13,7 @@ Ejecutar desde la raíz del repositorio con Python 3.12 y las dependencias de `r
 ## Escenarios de la capacidad
 
 1. Crear una historia fija de al menos 5.000 acciones con semilla y secuencia deterministas.
-2. Distribuir al menos 30 instantes/puntos de consulta por la historia; medir cada uno 30 veces con el `K` predeterminado.
+2. Distribuir al menos 30 instantes/puntos de consulta por la historia; medir cada uno 30 veces con el `K` predeterminado (200).
 3. Comprobar p95 menor de 50 ms y registrar mediana, p95 y máximo de las mediciones.
 4. Consultar `historia t` en tiempos antes, en y entre puntos de control; comparar cada resumen con una reproducción de referencia.
 5. Consultar `historia #1`, `historia #K`, `historia #(K+1)` y el último número vigente; verificar que el resultado es anterior a la acción indicada.
@@ -31,7 +31,7 @@ El proyecto dispone de `--bench` para mediciones de estructuras y persistencia:
 .\.venv\Scripts\python.exe main.py --bench
 ```
 
-Los casos de esta capacidad deberán incorporarse al runner de benchmarks para aceptar `K = 10, 50, 100` y otros valores, ejecutar las mismas consultas en todas las variantes y reportar mediana, p95, máximo y memoria. No se fija aquí una sintaxis adicional para seleccionar casos que el CLI actual no documenta.
+Los casos de esta capacidad están incorporados al runner de benchmarks (`bench/casos/linea_tiempo.py`, T024/T025) para aceptar `K = 10, 50, 100` y otros valores, ejecutar las mismas consultas en todas las variantes y reportar mediana, p95, máximo y memoria. No se fija aquí una sintaxis adicional para seleccionar casos que el CLI actual no documenta.
 
 ## Prueba manual de la interfaz de consola
 

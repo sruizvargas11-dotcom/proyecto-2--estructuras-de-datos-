@@ -15,7 +15,7 @@ Se rechazan con mensaje claro los instantes anteriores al inicio o posteriores a
 
 ## Configuración de puntos de control
 
-`--checkpoint-cada K` establece un `K` positivo. Un valor inválido se rechaza con el motivo y sin alterar la partida. El valor predeterminado será el mayor `K` probado que cumpla el p95 de SC-001; su valor debe justificarse con mediciones reproducibles antes de fijarlo.
+`--checkpoint-cada K` establece un `K` positivo. Un valor inválido se rechaza con el motivo y sin alterar la partida. El valor predeterminado es `K = 200`, el mayor `K` probado que cumple el p95 de SC-001; la justificación y las mediciones están en `research.md` y `docs/DECISIONES.md`.
 
 ## Replay
 
