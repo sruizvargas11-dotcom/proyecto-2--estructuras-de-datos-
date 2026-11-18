@@ -240,10 +240,53 @@ el reporte seguirá conservándose y las tareas de aceptación permanecerán pen
 cierre exige cero discrepancias y máximo ≤20 ms en los ocho escenarios sintéticos y en
 `cripta-06`.
 
-Las tareas T034–T039 de la iteración anterior siguen siendo el alcance ya implementado y
-su evidencia previa, pero esta iteración puede actualizar T039 y su estado según el nuevo
-reporte contractual iteración-2. La frase que conserva ese alcance no impide marcar T039
-completa cuando el nuevo resultado cumpla el cierre ni dejarlo pendiente si vuelve a fallar.
+### Tercera iteración: índice inmutable por cripta para búsquedas individuales
+
+La iteración 2 confirmó cero discrepancias, pero dejó una única combinación sintética
+fallida: rango grande (1000/10000), cambio de puerta cada 100 ciclos y cálculo individual.
+El ciclo 2 realiza 39 decisiones individuales. El diagnóstico estableció que las 39
+decisiones recrean juntas sus tablas/índices y que esas inicializaciones suman alrededor de
+5.3 ms perfilados dentro del ciclo completo. Esa cifra es el costo agregado de las 39
+inicializaciones, no el costo de una llamada individual ni una constante por decisión. Se
+conserva solo como diagnóstico; no cuenta como evidencia contractual.
+
+La optimización acotada será:
+
+1. Construir una sola vez por cripta un índice propio e inmutable que relacione el ID de
+   cada sala con su posición en el vector ordenado de salas. El índice pertenece a la cripta
+   y se reutiliza por todas las búsquedas individuales.
+2. Mantener separadas para cada búsqueda sus distancias, predecesores y cola de prioridad.
+   Cada llamada a `_decidir_cazador_individual` conserva su frontera, estados y desempates
+   locales; no reutilizará decisiones ni resultados de ruta de otra búsqueda.
+3. Conservar Dijkstra ponderado, aristas dirigidas, costos efectivos, rango, puertas abiertas
+   y cerradas, menor costo total y desempate por menor ID. No convertir el modo individual
+   en compartido ni usar BFS.
+4. Probar IDs densos, dispersos y muy grandes sin memoria proporcional al ID máximo. Para
+   mapas que admitan un vector compacto seguro, usar acceso directo propio. Para IDs dispersos
+   o grandes, usar registros propios ordenados con búsqueda binaria o un índice compacto
+   auxiliar basado en posiciones reales de las salas; no usar `dict`, `set`, `heapq`, `bisect`,
+   `collections`, grafos externos ni bibliotecas equivalentes prohibidas.
+
+Criterios verificables:
+
+- Mismo resultado que el cálculo individual desde cero en mapas densos, dispersos y de IDs
+  grandes, criptas distintas, costos ponderados, conexiones dirigidas, puertas abiertas/
+  cerradas, rango exacto y excedido y salas sin ruta.
+- Dos búsquedas individuales simultáneas o consecutivas no comparten distancias, predecesores
+  ni cola mutable.
+- El índice estático no apunta a registros mutables de Dijkstra ni contiene resultados de ruta.
+- La optimización elimina la reconstrucción por decisión, sin reducir la cobertura contractual
+  ni cambiar los ocho escenarios, rangos, 30 repeticiones × 1000 ciclos o el límite de 20 ms.
+- El siguiente reporte se conserva en
+  `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`, sin modificar ninguna evidencia
+  anterior. Si falla el umbral o hay discrepancias, `cumple_umbral=false` y las tareas de
+  aceptación quedan pendientes.
+
+Las tareas T034–T039 conservan su alcance y evidencia anterior. Esta iteración puede
+actualizar el estado de T031 y T039 según el nuevo reporte contractual de iteración 3,
+guardado en `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`, sin sobrescribir
+los reportes previos. Si ese reporte cumple el cierre y pasan las pruebas requeridas, T052
+puede marcar T031 y T039 como completadas; si falla, ambas permanecen pendientes.
 
 ## Estructura del proyecto
 

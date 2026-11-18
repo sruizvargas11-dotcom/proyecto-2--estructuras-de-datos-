@@ -1418,5 +1418,6 @@ histórico, el reporte completo anterior ni el reporte final anterior. Todas las
 coincidieron con la referencia. `cripta-06` tuvo máximo de 17.7811 ms. Los máximos sintéticos
 fueron 18.9263 ms, 14.7685 ms, 11.8523 ms, 3.7667 ms, 18.2386 ms, 16.5073 ms, 24.7046 ms
 y 13.3062 ms por escenario. Por ello `cumple_umbral=false`; el único escenario sintético
-que supera 20 ms es rango grande, puerta cada ciclo, modalidad individual. T039 y T045
+que supera 20 ms es rango grande (1000/10000), puerta cada 100 ciclos, modalidad
+individual. T039 y T045
 quedan pendientes. T046 queda completada al conservar y documentar el resultado real.
