@@ -228,3 +228,15 @@ cambian sus rangos, mapas, puertas, repeticiones, modalidades ni umbral.
 - T050 depende de T048 y T049 y debe mantener independiente toda búsqueda individual.
 - T051 depende de T050 y ejecuta primero todas las pruebas antes del único benchmark contractual.
 - T052 depende de T051 y documenta aprobación o fallo según el reporte real.
+
+## Revisión final de rendimiento
+
+- [X] T053 Revisar los máximos del reporte de iteración 3 y ejecutar un diagnóstico no contractual de cinco repeticiones por escenario compartido de rango grande y `cripta-06`; observar eventos GC sin modificar el cronómetro contractual. Registrar que el máximo diagnóstico fue 7.385 ms, que no se reprodujeron ciclos >20 ms, que el resultado no prueba la causa de los picos anteriores y que la suite completa pasó 1192 pruebas. No modificar el modo compartido ni atribuir cumplimiento a este diagnóstico (FR-011, FR-014; AB-13, AB-29, AB-30).
+- [X] T054 Después de confirmar las pruebas focalizadas, replay/carga y suite completa con Python 3.12, ejecutar una sola medición contractual completa con el código actual y guardar `docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`. Conservar los ocho escenarios sintéticos y `cripta-06`, 30 repeticiones × 1000 ciclos en cada grupo, cero discrepancias y máximo ≤20 ms. No usar perfilador, filtrar ciclos, cambiar el cronómetro ni modificar reportes anteriores. Si cumple, puede cerrar T031, T039, T051 y T054; si falla, mantener `cumple_umbral=false`, dejar T031/T039/T051 pendientes y conservar el reporte completo de fallo. T054 puede marcarse completada al ejecutar y clasificar íntegramente el resultado, aunque no cumpla el umbral (FR-011, FR-014; AB-13, AB-29, AB-30).
+- [X] T055 Actualizar `docs/DECISIONES.md` con el resultado real de T054, las versiones y checksum, las pruebas previas y el estado de T031/T039/T051. No declarar cumplimiento si cualquier ciclo supera 20 ms ni cambiar el criterio (FR-011, FR-014; AB-13, AB-29, AB-30).
+
+### Dependencias de la revisión final
+
+- T053 registra el diagnóstico ya realizado y puede cerrarse junto con la actualización documental.
+- T054 depende de las pruebas focalizadas, replay/carga y suite completa; solo se ejecuta una vez y conserva el reporte aunque falle.
+- T055 depende de T054 y registra aprobación o fallo sin alterar los criterios de aceptación.

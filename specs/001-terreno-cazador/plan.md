@@ -342,3 +342,31 @@ pertenece al modelo/estructura propia, no a la vista ni a un servicio externo.
 No aplica: el diseño respeta la constitución y reutiliza la arquitectura existente. La
 cola de prioridad específica de caminos se considera una estructura propia del problema,
 no una dependencia externa.
+
+## Revisión final del rendimiento (2026-11-18)
+
+La cola compacta redujo el cálculo individual de rango grande por debajo de 20 ms en los
+dos escenarios objetivo del reporte iteración 3: 16.6045 ms con cambio de puerta cada ciclo
+y 13.3090 ms cada 100 ciclos. El reporte conserva cero discrepancias, pero sigue fallando el
+umbral por máximos registrados en el modo compartido y en `cripta-06`.
+
+Un diagnóstico local separado ejecutó cinco repeticiones de cada escenario compartido de
+rango grande y de `cripta-06`, con observación auxiliar de recolecciones GC. Ningún ciclo
+superó 20 ms; el máximo observado fue 7.385 ms. Este ensayo es exploratorio, no contractual,
+no demuestra la causa de los picos del reporte y no sustituye ni modifica la evidencia de
+iteración 3. La suite completa también se verificó con 1192 pruebas pasadas.
+
+No se identificó un costo alto y repetible en el modo compartido que respalde otro cambio
+de código. La siguiente acción es una única medición contractual completa con el código y
+el arnés actuales, en el equipo local y sin perfilador, guardada en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`. Debe conservar exactamente los
+ocho escenarios, `cripta-06`, 30 repeticiones por grupo, 1000 ciclos por repetición, todas
+las decisiones y el umbral de 20 ms. No se filtran ciclos ni se cambia la medición para
+ocultar pausas del sistema. Se conservan íntegros los reportes anteriores. Si la nueva
+medición vuelve a superar el umbral, se documenta el fallo y no se afirma cumplimiento; no
+se repite hasta una nueva iteración planificada.
+
+La medición de iteración 4 se ejecutó el 2026-11-18 con Python 3.12.10. Las decisiones
+coincidieron con la referencia, pero el máximo global fue 24.8583 ms y
+`cumple_umbral=false`; T031, T039 y T051 siguen pendientes. `cripta-06` tuvo máximo de
+16.1787 ms. El reporte completo se conserva en la ruta de iteración 4.

@@ -1457,3 +1457,46 @@ La optimización redujo el objetivo rango grande, puerta cada 100 ciclos y modo 
 a 13.3090 ms. Sin embargo, `cumple_umbral=false` por otros máximos sintéticos y por
 `cripta-06`. T031, T039 y T051 permanecen pendientes. T052 conserva documentado el fallo
 real sin cambiar el umbral.
+
+### Revisión local posterior a la optimización (2026-11-18)
+
+Se verificó con Python 3.12.10 que las pruebas focalizadas de rutas y benchmark pasan
+27/27 y que la suite completa pasa 1192/1192. En la primera ejecución de la suite, 29
+pruebas no pudieron escribir en la carpeta temporal restringida del entorno; al redirigir
+`TEMP` y `TMP` a una carpeta temporal dentro del repositorio, todas pasaron. La carpeta
+temporal se eliminó al terminar. Las pruebas focalizadas de replay/carga pasaron 51/51.
+
+Como diagnóstico no contractual se hicieron cinco repeticiones por cada escenario compartido
+de rango grande con cambio de puerta cada ciclo y cada 100 ciclos, y cinco de `cripta-06`.
+Se observaron los ciclos y eventos de GC sin instrumentar los reportes contractuales. Ningún
+ciclo superó 20 ms; el máximo fue 7.385 ms. Este muestreo no demuestra la causa de los
+máximos del reporte iteración 3 ni reemplaza sus 30 × 1000 ciclos por grupo. No se encontró
+un costo compartido alto y repetible que justifique modificar ese modo. El reporte
+`terreno-cazador-benchmark-iteracion-3.json` permanece intacto y con
+`cumple_umbral=false`; no se afirma cumplimiento. T031, T039 y T051 siguen pendientes.
+
+La siguiente verificación contractual planificada usará una sola vez
+`docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`, con el protocolo vigente y sin
+filtrar ciclos ni cambiar el cronómetro. Si algún ciclo vuelve a superar 20 ms, se conservará
+el fallo sin repetir la medición hasta una nueva iteración planificada.
+
+### Medición contractual de iteración 4 (2026-11-18)
+
+Con Python 3.12.10 se completaron las 30 repeticiones × 1000 ciclos de los ocho escenarios
+sintéticos y de `cripta-06`, sin perfilador. La cripta sintética conserva SHA-256
+`1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`; el snapshot de
+`cripta-06` conserva SHA-256
+`42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5` y las versiones
+fijadas de cripta `f9ed9afa683d` y catálogo `4b9e75a42be5`. El equipo registrado fue
+Windows 11, AMD64 Family 25 Model 33 Stepping 2, 16 núcleos y 34 282 184 704 bytes de
+memoria. Las decisiones coincidieron con la referencia en todos los ciclos.
+
+Los máximos sintéticos, en el orden de los ocho escenarios, fueron 2.3902 ms, 16.8371 ms,
+3.3395 ms, 15.2547 ms, 11.5151 ms, 24.8583 ms, 22.2927 ms y 21.5781 ms. El máximo de
+`cripta-06` fue 16.1787 ms. Hubo cinco ciclos sobre 20 ms: uno en rango grande compartido
+con cambio de puerta cada ciclo, tres en rango grande individual con cambio cada 100 ciclos
+y uno en rango grande compartido con cambio cada 100 ciclos. Por tanto
+`cumple_umbral=false`, aunque no hubo discrepancias. El reporte completo se conserva en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`; no se modificó ni reemplazó
+ninguna evidencia previa. T054 y T055 quedan completadas al ejecutar y documentar el
+resultado; T031, T039 y T051 siguen pendientes porque el límite contractual aún falla.
