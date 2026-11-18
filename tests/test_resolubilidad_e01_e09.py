@@ -148,8 +148,7 @@ def test_rs_e03_ciclo_asigna_causa_en_ciclo_solo_a_participantes():
         ciclo.llaves for ciclo in resultado.ciclos
     ) == (
         ("key-b", "key-c", "key-b"),
-        ("key-b", "key-c", "key-b"),
-    )
+    )  # FR-012: el ciclo compartido por key-b y key-c se reporta una vez
 
 
 def test_rs_e04_las_llaves_de_la_region_abierta_quedan_en_la_ronda_siguiente():

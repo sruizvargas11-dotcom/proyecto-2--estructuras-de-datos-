@@ -46,15 +46,19 @@ def _formatear_reporte_no_resoluble(resultado):
 
     lineas.append("FRONTERA_BLOQUEADA:")
     for puerta in resultado.frontera_bloqueada:
-        llave = (
-            puerta.llave
-            if puerta.llave is not None and puerta.ubicaciones_llave
-            else "inexistente"
-        )
-        lineas.append(
+        existe = puerta.llave is not None and puerta.ubicaciones_llave
+        linea = (
             f"  - origen={puerta.origen} | direccion={puerta.direccion} "
-            f"| destino={puerta.destino} | llave={llave}"
+            f"| destino={puerta.destino} "
+            f"| llave={puerta.llave if existe else 'inexistente'}"
         )
+        if existe:
+            ubicaciones = "; ".join(
+                _formatear_ubicacion(ubicacion)
+                for ubicacion in puerta.ubicaciones_llave
+            )
+            linea += f" | ubicaciones=[{ubicaciones}]"
+        lineas.append(linea)
 
     lineas.append("CICLOS:")
     for ciclo in resultado.ciclos:

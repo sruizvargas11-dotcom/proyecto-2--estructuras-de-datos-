@@ -157,3 +157,40 @@ def test_resumen_no_verificable_coincide_con_el_contrato():
         "VEREDICTO: NO VERIFICABLE | "
         "MOTIVO: consulta de llaves no disponible\n"
     ).encode("utf-8")
+
+
+def test_frontera_muestra_ubicaciones_de_llave_existente():
+    """FR-013 / RS-E06: cada puerta de la frontera indica dónde está su llave."""
+    from modelo.verificador_resolubilidad import (
+        PuertaBloqueada,
+        ResultadoResolubilidad,
+        UbicacionLlaveResultado,
+    )
+    from vista.formato_resolubilidad import formatear_reporte
+
+    resultado = ResultadoResolubilidad(
+        "NO RESOLUBLE",
+        (),
+        None,
+        "a",
+        (1,),
+        (),
+        (
+            PuertaBloqueada(
+                1, "E", 2, "key-a",
+                (
+                    UbicacionLlaveResultado("key-a", 7),
+                    UbicacionLlaveResultado("key-a", 9, "enemy-b"),
+                ),
+            ),
+            PuertaBloqueada(1, "N", 3, "missing-key", ()),
+        ),
+        (),
+    )
+
+    reporte = formatear_reporte(resultado)
+    assert (
+        "  - origen=1 | direccion=E | destino=2 | llave=key-a "
+        "| ubicaciones=[sala:7; sala:9, enemigo:enemy-b]\n"
+    ) in reporte
+    assert "  - origen=1 | direccion=N | destino=3 | llave=inexistente\n" in reporte
