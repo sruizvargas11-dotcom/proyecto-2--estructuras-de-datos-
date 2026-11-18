@@ -370,3 +370,27 @@ La medición de iteración 4 se ejecutó el 2026-11-18 con Python 3.12.10. Las d
 coincidieron con la referencia, pero el máximo global fue 24.8583 ms y
 `cumple_umbral=false`; T031, T039 y T051 siguen pendientes. `cripta-06` tuvo máximo de
 16.1787 ms. El reporte completo se conserva en la ruta de iteración 4.
+
+## Quinta iteración: evitar reconstruir las aristas entrantes al invalidar la caché
+
+El perfil diagnóstico actual se ejecutó con Python 3.12.10 sobre el escenario sintético
+de rango grande, puertas alternadas cada ciclo y cálculo compartido. El perfilador se usó
+solo para localizar trabajo; sus tiempos no son evidencia contractual. En 1000 ciclos,
+`CacheDistanciasCazador.obtener` acumuló 6.914 s perfilados; `_distancias_hacia_jugador`,
+4.934 s; y `_construir_entrantes`, 1.932 s. La caché vuelve a recorrer las salidas y a
+recrear el vector de aristas inversas cada vez que cambia la revisión de puertas.
+
+La siguiente optimización conservará el recálculo ponderado de distancias al cambiar la
+sala del jugador o una puerta, pero construirá una vez por instancia de caché la topología
+inversa dirigida, incluyendo referencias a las salidas. Durante cada búsqueda se consultará
+el estado abierto/cerrado actual de cada salida; no se almacenarán rutas ni distancias entre
+revisiones. El cambio debe mantener costos, empates, direccionalidad, determinismo y el
+comportamiento de replay, carga y retroceso.
+
+La topología se implementará con estructuras propias del proyecto; no se usarán `dict`,
+`set`, `heapq`, `bisect`, `collections` ni bibliotecas de grafos/rutas. La prueba comparará
+las decisiones con el cálculo individual desde cero y cubrirá cambios directos e
+historizados de puertas. La medición contractual conservará el fixture, los ocho escenarios,
+`cripta-06`, 30 repeticiones y 1000 ciclos, sin alterar el umbral de 20 ms ni los reportes
+anteriores. Esta iteración debe quedar confirmada en Git antes de tocar el código, de acuerdo
+con el principio VII de la Constitución.

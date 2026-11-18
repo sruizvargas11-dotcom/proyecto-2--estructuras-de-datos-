@@ -240,3 +240,19 @@ cambian sus rangos, mapas, puertas, repeticiones, modalidades ni umbral.
 - T053 registra el diagnóstico ya realizado y puede cerrarse junto con la actualización documental.
 - T054 depende de las pruebas focalizadas, replay/carga y suite completa; solo se ejecuta una vez y conserva el reporte aunque falle.
 - T055 depende de T054 y registra aprobación o fallo sin alterar los criterios de aceptación.
+
+## Quinta iteración: reutilizar topología inversa del cazador compartido
+
+- [X] T056 Perfilar un escenario sintético de rango grande, cambios de puerta cada ciclo y modalidad compartida con Python 3.12.10, sin usar el resultado perfilado como evidencia de rendimiento. En 1000 ciclos se observaron 6.914 s acumulados en `CacheDistanciasCazador.obtener`, 4.934 s en `_distancias_hacia_jugador` y 1.932 s en `_construir_entrantes`; estos tiempos incluyen el costo del perfilador y solo sirven para localizar trabajo repetido (FR-008, FR-011, FR-014; AB-09, AB-13, AB-30).
+- [ ] T057 Añadir pruebas para una topología inversa persistente por instancia de caché: cambios de puerta abierta/cerrada, cambios directos e historizados, movimiento del jugador, conexiones dirigidas, mapas con IDs dispersos y equivalencia de decisiones frente a la referencia individual. Comprobar que las salidas se consultan en su estado actual y que la caché no conserva distancias entre revisiones (FR-006–FR-011; AB-07–AB-13, AB-18–AB-21).
+- [ ] T058 Implementar en `modelo/buscador_rutas.py` la construcción única de aristas entrantes por instancia de `CacheDistanciasCazador`; almacenar referencias a las salidas y revisar su estado abierto/cerrado durante la búsqueda. Mantener el recálculo ponderado de distancias al cambiar el jugador o la revisión de puertas, sin reutilizar rutas ni introducir estructuras/bibliotecas prohibidas (FR-006–FR-011; AB-07–AB-13, AB-18–AB-21).
+- [ ] T059 Ejecutar las pruebas nuevas y focalizadas de terreno/cazador, replay/carga y la suite completa con Python 3.12. Registrar resultados reales y corregir cualquier discrepancia funcional antes del benchmark contractual; no modificar reportes anteriores (FR-006–FR-011, FR-014; AB-07–AB-13, AB-18–AB-21, AB-30).
+- [ ] T060 Tras T057–T059, ejecutar una sola medición contractual y guardar `docs/evidencia/terreno-cazador-benchmark-iteracion-5.json`. Conservar ocho escenarios y `cripta-06`, 30 repeticiones × 1000 ciclos en cada grupo, decisiones coincidentes con la referencia y máximo ≤20 ms. Si falla cualquier condición, conservar el reporte, `cumple_umbral=false` y las tareas de aceptación pendientes; no filtrar ciclos ni cambiar el cronómetro o el umbral (FR-011, FR-014; AB-13, AB-29, AB-30).
+- [ ] T061 Actualizar `docs/DECISIONES.md` con el diseño aplicado, pruebas, metadatos y resultado real de T060; aclarar que los tiempos perfilados de T056 son diagnóstico y no evidencia contractual. Mantener intactos los reportes de iteraciones anteriores y anotar el estado de las tareas de aceptación históricas (FR-011, FR-014; AB-13, AB-29, AB-30).
+
+### Dependencias de la quinta iteración
+
+- T056 es diagnóstico completado y respalda esta propuesta; no acredita el límite de rendimiento.
+- T057 prepara las regresiones y debe preceder a cualquier cambio de código.
+- T058 depende de T057 y no puede comenzar hasta que esta actualización de especificación quede confirmada en un commit separado.
+- T059 depende de T058; T060 depende de que las pruebas de T059 pasen; T061 depende de T060.

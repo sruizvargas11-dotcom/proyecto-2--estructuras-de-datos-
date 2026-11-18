@@ -1500,3 +1500,19 @@ y uno en rango grande compartido con cambio cada 100 ciclos. Por tanto
 `docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`; no se modificó ni reemplazó
 ninguna evidencia previa. T054 y T055 quedan completadas al ejecutar y documentar el
 resultado; T031, T039 y T051 siguen pendientes porque el límite contractual aún falla.
+
+### Quinta iteración propuesta: topología inversa persistente (2026-11-18)
+
+Se perfiló una repetición de 1000 ciclos del escenario sintético de rango grande, puerta
+cada ciclo y modo compartido. Bajo cProfile, `CacheDistanciasCazador.obtener` acumuló
+6.914 s; `_distancias_hacia_jugador`, 4.934 s; y `_construir_entrantes`, 1.932 s. La ruta
+compartida reconstruye las aristas inversas cada vez que una puerta invalida las distancias.
+Estas cifras incluyen el perfilador y no deben compararse con el umbral contractual.
+
+La siguiente iteración propuesta es conservar, por instancia de caché, las referencias a
+las aristas inversas y consultar el estado actual de cada salida al recorrerlas. Las
+distancias se recalcularían cuando cambie el jugador o la revisión de puertas, sin conservar
+rutas entre revisiones. La propuesta requiere pruebas para puertas directas e historizadas,
+movimiento del jugador, direccionalidad y equivalencia con la referencia individual. No se
+modificó código ni se generó otro reporte contractual. Por la Constitución, el plan/tareas
+de esta iteración deben confirmarse en Git antes de implementar el cambio.
