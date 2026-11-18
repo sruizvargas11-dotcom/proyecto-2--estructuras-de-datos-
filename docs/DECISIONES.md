@@ -1547,7 +1547,7 @@ partida, con indicación de que se midieron cambios locales.
 - [Benchmark JSON](evidencia/2026-11-12-niebla-viaje-benchmark.json)
 - [Resultados de la validación](evidencia/2026-11-12-niebla-viaje-validacion.md)
 =======
-### Quinta iteración: topología inversa persistente (2026-11-18)
+## 001: Quinta iteración de rendimiento de terreno y cazador (2026-11-18)
 
 El perfil diagnóstico de 1000 ciclos del escenario sintético de rango grande, puerta cada
 ciclo y modo compartido atribuyó bajo cProfile 6.914 s acumulados a
@@ -1582,4 +1582,54 @@ T051 se cierran como gates históricos supersedidos por el resultado aprobado de
 no reclasifica los reportes de iteraciones 2–4: conservan sus resultados fallidos y no se
 presentan como aprobados. T039 queda satisfecho por el reporte vigente de iteración 5; el
 archivo `terreno-cazador-benchmark-final.json` se conserva sin sobrescribir.
+
+## 004: Línea de tiempo de partida
+
+### Problema
+
+Las consultas históricas deben reconstruir un estado anterior sin alterar la partida en
+curso. El historial crece con las acciones y el contrato mide consultas sobre 5.000 acciones,
+con al menos 30 instantes y el valor predeterminado de K.
+
+### Alternativas consideradas
+
+- Reproducir desde el inicio: referencia simple, pero su p95 medido fue 390,4 ms.
+- Invertir los cambios desde el estado actual: no se implementó ni se midió; requeriría
+  conservar lógica inversa para cada efecto y cambio del mundo.
+- Reanudar desde el punto de control anterior y repetir acciones hacia adelante: limita el
+  trabajo de cada consulta a K−1 acciones y mantiene la reconstrucción en una copia aislada.
+
+### Decisión
+
+Se conserva un registro ordenado de acciones y metadatos de puntos de control cada K acciones.
+La búsqueda binaria propia localiza el último punto válido; `ReconstructorHistoria` restaura
+una copia temporal y aplica las acciones posteriores necesarias. `K_POR_DEFECTO` es 200, el
+mayor valor medido que cumple SC-001. Las consultas por instante y por número de acción usan
+el mismo mecanismo; una consulta no modifica la partida real, el reloj ni el pergamino.
+
+### Complejidad
+
+Con N acciones vigentes, C puntos de control y K como intervalo, la localización del punto
+cuesta O(log C) y la re-simulación cuesta O(K), con un máximo de K−1 acciones bajo el
+protocolo de consultas. El registro de acciones ocupa O(N); los snapshots adicionales
+crecen con la cantidad de puntos de control y el tamaño del estado capturado.
+
+### Evidencia empírica
+
+En tres corridas de 5.000 acciones, K=200 dio p95 de 20,4 ms, 20,6 ms y 22,9 ms frente al
+límite p95 < 50 ms. Los máximos respectivos fueron 43,6 ms, 42,1 ms y 68,9 ms; la memoria
+pico fue 2,80 MiB. El máximo se registra por separado y no cambia el criterio, que se evalúa
+por p95. La búsqueda binaria obtuvo p95 de 0,004 ms frente a 0,013 ms para la lineal. La
+evidencia está en `docs/evidencia/2026-11-16T160604_9c6f61b_bench.json`.
+
+La validación posterior ejecutó 85 pruebas focalizadas de línea de tiempo, reconstrucción,
+historia y replay; todas pasaron con Python 3.12.10. El subconjunto de cierre de T033 pasó
+30 pruebas.
+
+### Límites conocidos
+
+Los tiempos corresponden al equipo, historia y consultas del reporte; no se generalizan a
+historias mayores ni a otras máquinas. La inversión hacia atrás no está implementada. Los
+máximos aislados pueden superar 50 ms aunque el p95 cumpla; se conservan y reportan sin
+filtrar muestras.
 >>>>>>> feature/spec-kit-copilot
