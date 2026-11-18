@@ -74,10 +74,13 @@ REGION: salas=<cantidad> | llaves_obtenidas=<cantidad>
 LLAVES_INOBTENIBLES:
   - id=<id> | ubicaciones=[sala:<id>[, enemigo:<id>]; ...] | causa=<causa>
 FRONTERA_BLOQUEADA:
-  - origen=<id-sala> | direccion=<direccion> | destino=<id-sala> | llave=<id|inexistente>
+  - origen=<id-sala> | direccion=<direccion> | destino=<id-sala> | llave=<id> | ubicaciones=[sala:<id>[, enemigo:<id>]; ...]
+  - origen=<id-sala> | direccion=<direccion> | destino=<id-sala> | llave=inexistente
 CICLOS:
   - llaves=<id> -> <id> -> ... -> <id> | puertas=[origen=<id>, direccion=<dir>; ...]
 ```
+
+Cada puerta de la frontera indica la ubicación de su llave; si la llave no aparece en la lista o la salida no tiene id de llave, la línea termina en `llave=inexistente`. Un ciclo compartido por varias llaves se imprime una sola vez.
 
 Para motivo (b), `MOTIVO` identifica que se obtuvo `llave_salida` pero no se alcanza
 ninguna puerta hacia `sala_salida` que la requiera. Las ubicaciones de cada llave se

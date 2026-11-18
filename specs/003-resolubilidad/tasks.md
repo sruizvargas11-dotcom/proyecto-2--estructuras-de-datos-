@@ -236,6 +236,13 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 - US3: T025 y T026 son secuenciales porque ambos afectan el flujo de `--forzar`; el primero cubre consola/controlador y el segundo GUI.
 - Cierre: T029 y T030 pueden avanzar en paralelo una vez terminadas sus dependencias.
 
+## Fase 8: Ajustes tras validación con criptas oficiales
+
+- [ ] T032 [US1] Mostrar la ubicación de la llave en cada puerta de la frontera y reportar una sola vez cada ciclo compartido en `vista/formato_resolubilidad.py` y `modelo/verificador_resolubilidad.py`.
+  - **Atiende**: FR-012, FR-013; RS-E06, RS-E28.
+  - **Criterio**: `python -m pytest -q tests/test_formato_resolubilidad.py tests/test_resolubilidad_e28_e29.py tests/test_resolubilidad_e01_e09.py` pasa; `python main.py --offline --verificar cripta-05` muestra `ubicaciones=[...]` en la frontera y el ciclo `itm_llave_hierro -> itm_llave_negra -> itm_llave_hierro` una sola vez; `python -m pytest -q -k resolubilidad` pasa.
+  - **Dependencias**: T018, T019; enmienda de spec del 2026-11-18.
+
 ## Ejemplos de ejecución en paralelo
 
 ```text
