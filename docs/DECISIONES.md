@@ -1237,175 +1237,6 @@ Las pruebas de reversión usan el `Historial` real (`iniciar_accion`, `confirmar
 - Falta definir cómo una trampa o un enemigo aplicaría veneno directamente. `aplicar_veneno` ya recibe esos datos, pero ninguna ficha del catálogo actual (por ejemplo, `trp_dardos`) tiene un campo de daño por veneno, así que no se inventó la regla.
 - Al usar un objeto, `Partida.usar_objeto` consume las pociones y los antídotos; la antorcha no se consume al encenderse (`modelo/partida.py:344-361`).
 
-## 4.13 Verificación de resolubilidad
-
-### Problema
-
-Antes de comenzar, hay que determinar si desde la sala inicial se puede obtener la
-llave de salida y cruzar una puerta que la requiera para entrar en la sala de salida.
-Cuando no se puede, el reporte debe explicar las llaves inobtenibles, sus dependencias,
-los ciclos y la frontera bloqueada. El mismo resultado se presenta en consola y al
-iniciar una partida, sin revelar ubicaciones en el resumen de inicio.
-
-### Alternativas consideradas
-
-| Alternativa | Ventaja | Costo o límite |
-| --- | --- | --- |
-| Recorrer toda la región de nuevo por cada llave | Implementación directa y útil como oráculo independiente | Repite trabajo hasta O(K·(S+E)) en una cadena de K llaves |
-| Recorrido incremental con puertas pendientes | Cada sala y salida se explora al ser alcanzable; una llave libera las puertas que la requieren | Requiere conservar las puertas pendientes por llave y cerrar las rondas en orden determinista |
-| Diagnóstico mediante otro recorrido global por cada llave candidata | Sencillo de explicar | Aumenta el costo cuando se diagnostican muchas llaves |
-
-### Decisión
-
-El modelo calcula el veredicto y el resultado estructurado con un recorrido
-incremental, una cola de salas y puertas pendientes asociadas a sus llaves. Las
-llaves de cada ronda se ordenan por sala numérica e id antes de liberar las puertas
-para la ronda siguiente. Los costos de las salidas no intervienen. El recorrido
-completo repetido se conserva solo como referencia de benchmark y oráculo de
-equivalencia.
-
-La frontera se obtiene de las puertas pendientes al terminar ese recorrido. Para
-diagnosticar indispensabilidad se limita el análisis a la región exterior y a las
-llaves candidatas. Para cada llave participante se informa un ciclo simple más corto;
-los empates siguen el orden lexicográfico de ids y puertas. El modelo no formatea
-texto: la presentación produce el reporte estable y el resumen sin ubicaciones.
-`--verificar` no instancia la vista; al iniciar, el controlador bloquea estados no
-resolubles o no verificables salvo `--forzar`. Los errores de datos no se fuerzan.
-La consulta de llaves respeta el presupuesto de solicitudes y su persistencia se
-valida contra la versión de la cripta.
-
-### Análisis de complejidad
-
-Con S salas, E salidas y K llaves, el recorrido incremental esperado es
-O(S + E + K log K), dado el ordenamiento determinista de llaves por ronda. El
-diagnóstico de indispensabilidad puede costar O(|U|·(S+E)), donde U es el conjunto
-de llaves candidatas; no comparte el límite lineal del recorrido principal. La
-selección del ciclo más corto es polinómica y determinista. No se usan bibliotecas
-de grafos ni diccionarios o conjuntos como índices/cachés en la lógica del modelo.
-
-### Evidencia empírica
-
-El caso `resolubilidad` compara el resultado incremental y el de referencia antes
-de cronometrar; genera cadenas deterministas con semilla 42 y duplica S/E/K en tres
-tamaños. Cinco ejecuciones preliminares a K=96/192/384 mostraron razones p95 de
-1.063–3.335× y 0.777–3.172×, por lo que se estabilizó el protocolo: una llamada de
-calentamiento fuera de la muestra, GC deshabilitado solo al cronometrar, 100
-repeticiones incrementales, 20 de referencia y tamaños K=128/256/512.
-
-Con `cProfile` en la misma entrada S/E/K=1024/1024/512, antes/después se registraron
-216 211/208 027 llamadas totales, 15 364/14 341 llamadas a `_hash` y
-5 123/4 099 a `contiene`; el tiempo perfilado fue 0.170/0.174 s, demasiado ruidoso
-para reclamar aceleración. Se decidió usar el resultado booleano de
-`TablaHash.insertar` para evitar la comprobación `contiene` duplicada en la expansión
-de región. No se modificaron FNV-1a, las estructuras propias ni el orden del reporte.
-
-En el commit limpio `b0ee832`, `--bench` midió p95 incremental 16.804, 35.474 y
-58.179 ms; las razones de duplicación fueron 2.111× y 1.640×. `--bench --salida`
-midió 25.169, 31.468 y 62.256 ms, con razones 1.250× y 1.979×. SC-001, cripta-06
-versión `f9ed9afa683d` desde caché (300 salas, 4 llaves), dio mediana 11.177 ms,
-p95 16.074 ms y máximo 30.315 ms. SC-001 y SC-004 pasan sin alterar sus umbrales.
-Entorno, medianas, máximos, muestras y el resto del protocolo:
-[quickstart de resolubilidad](../specs/003-resolubilidad/quickstart.md).
-
-### Límites conocidos
-
-- El diagnóstico de llaves indispensables puede dominar el tiempo en una cripta con
-  muchas llaves candidatas; la medición del caso de cadena no cubre todos los peores
-  casos de diagnóstico.
-
-## 4.14 Línea de tiempo
-
-*Redacta: Sebastián (spec 004) · Revisa: Centeno*
-
-### Problema
-
-El jugador puede consultar el estado de la partida en un momento anterior: por tiempo virtual (`historia t`) o por número de acción (`historia #k`). La consulta no puede alterar la partida real, no cuenta como acción y no puede guardar una copia completa del estado en cada acción.
-
-| Operación | Cuándo ocurre | Frecuencia |
-| --- | --- | --- |
-| Registrar la acción | En cada acción del jugador | La más frecuente (el bench usa 5 000) |
-| Guardar un punto de control | Cada K acciones | 1 de cada K |
-| Consulta histórica | Cuando el jugador la pide | Ocasional |
-| Truncar al usar el pergamino | Al retroceder | Rara (máximo 5 acciones, ver 4.6) |
-
-### Alternativas consideradas
-
-| Alternativa | Ventaja | Por qué se descarta |
-| --- | --- | --- |
-| Copia completa del estado en cada acción | Consulta inmediata | La memoria crece con acciones × tamaño del estado: con K = 10 los puntos ya ocupan 23,1 MB para 5 000 acciones; con K = 1 serían unos 230 MB (estimado por extrapolación, no medido). |
-| Reconstruir siempre desde el inicio (**medida**) | Sin memoria extra | Re-simula hasta n acciones: con 5 000 acciones, p95 de 390,4 ms, frente a la meta de 50 ms. |
-| Búsqueda lineal del punto de control (**medida**) | Más simple | Con K = 200, p95 de 0,013 ms frente a 0,004 ms de la binaria; crece con el número de puntos. |
-| Reconstrucción hacia atrás (invertir deltas) | Reutiliza la idea del pergamino | No implementada ni medida: obligaría a conservar los deltas de toda la partida, y el pergamino solo guarda 5 intervalos. |
-| **Puntos de control cada K + re-simulación hacia adelante** | Memoria y tiempo acotados por K | **Elegida** |
-
-### Decisión
-
-- `modelo/historia.py`: registro de acciones en un arreglo propio, numeradas desde 1 y con su tiempo virtual. `K_POR_DEFECTO = 200`, configurable con `--checkpoint-cada K` (se rechaza K ≤ 0).
-- `modelo/punto_control.py`: cada K acciones se captura el estado necesario para continuar (jugador, entidades, estado de `random.Random`, agenda de eventos y conocimiento de la niebla). **No** incluye la caché LRU (infraestructura, ver 4.4) ni el historial del pergamino (4.6).
-- `historia t`: búsqueda binaria propia sobre los tiempos de los puntos de control.
-- `historia #k`: índice directo `(k − 1) // K`, porque el estado previo a la acción k es el estado después de k − 1 acciones.
-- `modelo/reconstructor_historia.py`: restaura el punto en una partida temporal y re-simula como máximo K − 1 acciones. La partida real no se toca.
-- Usar el pergamino trunca las acciones, cambios y puntos posteriores al límite revertido.
-- `--replay partida.log --hasta t` reutiliza la misma reconstrucción y el mismo resumen (`modelo/resumen_historico.py`), sin instanciar la vista.
-- El guardado binario lleva una versión nueva con la historia y los puntos. Un archivo de la Parte I se rechaza con un mensaje claro.
-- Sin `dict` como índice, `bisect`, `heapq`, `collections` ni `sorted`.
-
-### Análisis de complejidad
-
-Notación: n = acciones registradas, P = n/K puntos, S = tamaño del estado, c = costo de re-simular una acción.
-
-| Operación | Costo |
-| --- | --- |
-| Registrar una acción | O(1) amortizado |
-| Guardar un punto de control | O(S) cada K acciones, es decir, O(S/K) amortizado por acción |
-| `historia t` | O(log P) búsqueda + O(S) restaurar + O(K·c) re-simular |
-| `historia #k` | O(1) índice + O(S) restaurar + O(K·c) re-simular |
-| Truncar al usar el pergamino | O(1) amortizado por elemento eliminado |
-| Memoria | O(n) del registro + O((n/K)·S) de los puntos |
-
-El costo dominante de una consulta es re-simular, no buscar: con K = 200 la búsqueda tarda 0,004 ms y la consulta completa unos 13 ms de mediana. K regula el equilibrio entre memoria y tiempo.
-
-### Evidencia empírica
-
-**Bench (`--bench`, caso `linea_tiempo`).** Historia de 5 000 acciones, 30 consultas mixtas (`historia t` e `historia #k`) y 30 repeticiones por consulta.
-
-| K | Mediana | p95 | Máximo | Máx. re-simuladas | Bytes de puntos | Memoria pico |
-| --- | --- | --- | --- | --- | --- | --- |
-| 10 | 4,2 ms | 5,7 ms | 9,7 ms | 9 | 23 107 548 | 28,25 MiB |
-| 50 | 6,2 ms | 9,0 ms | 225,0 ms | 49 | 4 658 384 | 6,82 MiB |
-| 100 | 8,4 ms | 12,4 ms | 64,5 ms | 99 | 2 352 236 | 4,14 MiB |
-| **200 (usado)** | **13,4 ms** | **20,4 ms** | **43,6 ms** | **199** | **1 199 157** | **2,80 MiB** |
-| Sin puntos (descartada) | 204,0 ms | 390,4 ms | 425,5 ms | hasta 5 000 | 0 | — |
-
-**Estabilidad con K = 200** (3 corridas, commit `9c6f61b`): p95 de 20,4 / 20,6 / 22,9 ms; máximo de 43,6 / 42,1 / 68,9 ms. Se eligió K = 200 por ser el mayor valor probado que cumple p95 < 50 ms en todas las corridas, y el de menor memoria.
-
-- Frente a reconstruir desde el inicio, la consulta es unas 19 veces más rápida en p95.
-- El máximo de acciones re-simuladas es siempre K − 1, como confirma la prueba unitaria.
-
-Resultados: `docs/evidencia/2026-11-16T160604_9c6f61b_bench.json`. Equipo: Microsoft Windows 11 Home (10.0.26300), Intel(R) Core(TM) Ultra 7 155H (22 núcleos lógicos), 16 GB de RAM, Python 3.12.10. Fecha: 16-11-2026.
-
-**Pruebas.**
-
-- Aceptación G18–G23: rechazo de tiempo futuro, truncado por pergamino, eventos simultáneos, no alteración de la partida, paridad con el replay y rechazo de archivos de la Parte I.
-- `tests/test_linea_tiempo_limites_modelo.py`: recorre todas las acciones y verifica que ninguna consulta re-simula más de K, incluidos los bordes justo después y justo antes de cada punto.
-- `tests/test_linea_tiempo_integraciones.py`: la niebla se conserva en cada punto y el terreno se reproduce igual.
-- Suite completa: 1379 pruebas aprobadas (17-11-2026).
-
-**Comandos para verificar** (PowerShell, desde la raíz del repositorio):
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q tests\test_linea_tiempo_limites_modelo.py tests\test_linea_tiempo_g18.py tests\test_linea_tiempo_g19.py tests\test_linea_tiempo_g20.py tests\test_linea_tiempo_g21.py tests\test_linea_tiempo_g22.py tests\test_linea_tiempo_g23.py
-.\.venv\Scripts\python.exe main.py --bench
-```
-
-### Límites conocidos
-
-- **Picos aislados:** el máximo varía entre corridas (68,9 ms con K = 200; 225 ms con K = 50) por el recolector de basura de Python y la carga del equipo. Por eso el criterio es el p95 y el máximo se documenta aparte.
-- **Criptas más grandes:** con más enemigos y efectos sube c, y K = 200 podría superar los 50 ms. En ese caso se baja K con `--checkpoint-cada` y se vuelve a medir con esa cripta.
-- **Partidas muy largas:** la memoria de los puntos crece linealmente con n/K. Si S crece mucho, convendría guardar diferencias entre puntos en vez del estado completo.
-- **Medición sintética:** las 5 000 acciones las genera el bench, no provienen de una partida real.
-
-Especificación: [spec.md](../specs/004-linea-tiempo/spec.md) · [plan.md](../specs/004-linea-tiempo/plan.md) · [research.md](../specs/004-linea-tiempo/research.md)
 ## Registro de cambio de especificación
 
 ### Terreno y cazador (2026-11-04)
@@ -1508,6 +1339,10 @@ escenarios quedaron bajo el umbral de 20 ms. Se conserva el detalle de latencias
 en el JSON versionable, que registra el checksum del fixture
 `1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`. T020 queda completada.
 
+La suite completa había pasado 1175 pruebas con Python 3.12.10 en la revisión anterior; tras
+la optimización final, las pruebas focalizadas de cazador y benchmark pasaron 15/15. No se
+ejecutaron `git add`, commit ni push.
+
 ### Contenido offline del cazador (2026-11-17)
 
 Se añadió la ficha `ent_cazador` al catálogo offline con rango 200 y estadísticas
@@ -1524,6 +1359,166 @@ La suite completa había pasado 1175 pruebas con Python 3.12.10 en la revisión 
 la optimización final, las pruebas focalizadas de cazador y benchmark pasaron 15/15. No se
 ejecutaron `git add`, commit ni push.
 
+### Extensión de benchmark con cripta de referencia (2026-11-17)
+
+Se conserva el fixture comparativo sintético `bench-terreno-cazador-grid-16x16` v1.0.0,
+sus 20 cazadores, el reparto 10/10 y los ocho escenarios de 30 repeticiones por 1000
+ciclos. Se añade una medición independiente sobre el snapshot externo de `cripta-06`,
+versión `f9ed9afa683d`, con catálogo `4b9e75a42be5`, 300 salas y 25 instancias activas de
+`ent_sabueso_oseo`. La adquisición inicial del snapshot realizó 13 solicitudes y quedó
+dentro del presupuesto publicado de 63; el benchmark no ejecuta solicitudes HTTP ni crea
+vistas/Pygame dentro de los ciclos medidos.
+
+El snapshot quedó materializado en
+`bench/datos/cripta-06-terreno-cazador-vf9ed9afa683d.json` y su SHA-256 es
+`42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5`. El reporte completo
+de esta ejecución se conserva en
+`docs/evidencia/terreno-cazador-benchmark-completo.json` sin modificar el reporte histórico
+`docs/evidencia/2026-11-04-terreno-cazador-benchmark.json`.
+
+Ejecución realizada con Python 3.12.10: las ocho combinaciones sintéticas tuvieron cero
+discrepancias frente a la referencia desde cero. Los máximos reales fueron superiores a
+20 ms en varias combinaciones; el máximo global sintético registrado fue 51.7391 ms. La
+validación de `cripta-06`, 30 repeticiones × 1000 ciclos, tuvo cero discrepancias y un
+máximo real de 29.9441 ms. Por ello `cumple_umbral=false` en el reporte y T031 permanece
+pendiente de aprobación. No se cambió el umbral ni se generaliza el resultado fuera de los
+dos datasets medidos.
+
+### Optimización de rutas y benchmark final (2026-11-17)
+
+Se implementó el acceso directo propio a registros de distancias cuando el mapa permite un
+índice compacto seguro, conservando búsqueda binaria propia para mapas con IDs dispersos.
+La caché de distancias pasó de escanear todas las salidas por consulta a observar una revisión
+monotónica de puertas registrada en `CriptaModelo`; historial, replay y carga conservan el
+estado físico restaurado. La suite completa pasó 1184 pruebas con Python 3.12.10.
+
+Se ejecutó el benchmark final en
+`docs/evidencia/terreno-cazador-benchmark-final.json`, sin modificar los reportes histórico
+ni completo anteriores. Las ocho combinaciones sintéticas y `cripta-06` tuvieron cero
+discrepancias. `cripta-06` cumplió el máximo individual con 4.7583 ms. Sin embargo, varios
+máximos de los escenarios sintéticos excedieron 20 ms: máximo global 35.9268 ms. Por ello
+`cumple_umbral=false`, T031 permanece pendiente y no se afirma el criterio contractual.
+T034–T038 quedaron verificadas por pruebas focalizadas y la suite completa; T039 permanece
+pendiente hasta completar o documentar validaciones posteriores según sus criterios.
+
+### Plan de optimización posterior al diagnóstico (2026-11-17)
+
+El perfil diagnóstico separado midió dónde consume trabajo la ejecución de referencia:
+`_buscar` acumuló 2.498 millones de llamadas y 4.345 s bajo perfilador en el recorrido
+compartido, mientras la caché reconstruía entrantes y distancias. Estas cifras no son
+evidencia contractual. El Plan prioriza reducir búsquedas repetidas con estructuras propias,
+diseñar una revisión incremental segura de jugador y puertas para historial/replay/carga,
+eliminar búsquedas auxiliares del cronómetro del benchmark y conservar independientes los
+modos individual y compartido.
+
+Se mantiene sin cambios el umbral de 20 ms, los ocho escenarios sintéticos, el reparto
+10/10, el snapshot de `cripta-06`, 30 repeticiones × 1000 ciclos y el esquema de evidencia.
+T031 no se aprueba hasta que un reporte contractual nuevo muestre cero discrepancias y ningún
+ciclo superior a 20 ms medido sin perfilador.
+
+### Segunda iteración de diagnóstico y optimización (2026-11-17)
+
+T040–T042 se ejecutaron fuera del benchmark contractual con perfiles separados. El perfil
+de rutas individuales de rango grande mostró un primer ciclo de 22.0051 ms y un promedio
+de 0.977476 ms en los ciclos siguientes; el perfil de reconstrucción compartida al cambiar
+una puerta mostró un primer ciclo de 6.5184 ms y un promedio de 5.935858 ms en los ciclos
+siguientes. El perfil del procesamiento real de turnos registró un máximo por separado de
+4.2266 ms. Estas cifras perfiladas no son evidencia contractual.
+
+T043 protegió rutas ponderadas, puertas, rangos, desempates y IDs dispersos. T044 reutilizó
+índices propios para las tablas de distancias y entrantes, conservó el índice directo
+`_indice_benchmark`, Dijkstra ponderado y los modos individual/compartido. La suite completa
+pasó 1185 pruebas, las regresiones de replay/carga pasaron 31/31 y las focalizadas pasaron
+39/39.
+
+Se ejecutó una vez el benchmark contractual de iteración 2 en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-2.json`, sin modificar el reporte
+histórico, el reporte completo anterior ni el reporte final anterior. Todas las decisiones
+coincidieron con la referencia. `cripta-06` tuvo máximo de 17.7811 ms. Los máximos sintéticos
+fueron 18.9263 ms, 14.7685 ms, 11.8523 ms, 3.7667 ms, 18.2386 ms, 16.5073 ms, 24.7046 ms
+y 13.3062 ms por escenario. Por ello `cumple_umbral=false`; el único escenario sintético
+que supera 20 ms es rango grande (1000/10000), puerta cada 100 ciclos, modalidad
+individual. T039 y T045
+quedan pendientes. T046 queda completada al conservar y documentar el resultado real.
+
+### Tercera iteración del índice inmutable (2026-11-17)
+
+T047–T050 añadieron y verificaron el índice propio por cripta: los mapas densos usan acceso
+directo compacto, los mapas dispersos usan búsqueda binaria propia sobre IDs ordenados y el
+índice no contiene registros mutables de Dijkstra. Las distancias, predecesores y colas de
+cada búsqueda individual siguen siendo independientes. Las pruebas focalizadas pasaron
+28/28, las pruebas de replay/carga pasaron 31/31 y la suite completa pasó 1190 pruebas.
+
+Se ejecutó una sola vez el benchmark contractual de iteración 3 en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`, sin modificar reportes
+anteriores. Todas las decisiones coincidieron con la referencia, pero ningún grupo cumplió
+el límite global: `cumple_umbral=false`. Los máximos sintéticos fueron 23.1868 ms,
+18.8420 ms, 24.4386 ms, 4.4553 ms, 26.8618 ms, 20.8644 ms, 23.4777 ms y 16.1485 ms.
+El máximo de `cripta-06` fue 21.3757 ms. Por tanto T031, T039 y T051 permanecen pendientes.
+T052 queda completada porque conserva y documenta el fallo real sin cambiar el umbral.
+
+### Optimización compacta del cálculo individual (2026-11-17)
+
+T040–T044 identificaron que la cola interna del Dijkstra individual seguía usando
+operaciones sobre cuatro vectores. Se añadió `ColaPrioridadPosicion`, una cola propia con
+arreglos planos y estado local por búsqueda; el modo compartido conserva su cola y semántica.
+El índice inmutable por cripta y las adyacencias estánticas permanecen separados de las
+distancias y predecesores mutables de cada decisión individual.
+
+Las pruebas focalizadas pasaron 30/30, las regresiones de replay/carga pasaron 31/31 y la
+suite completa pasó 1192 pruebas con Python 3.12.10.
+
+La medición contractual final de iteración 3 conservó cero discrepancias y produjo máximos
+sintéticos de 4.6567 ms, 23.1923 ms, 4.5128 ms, 24.8266 ms, 16.6045 ms, 31.4244 ms,
+13.3090 ms y 26.0336 ms. El máximo de `cripta-06` fue 23.6416 ms.
+
+La optimización redujo el objetivo rango grande, puerta cada 100 ciclos y modo individual
+a 13.3090 ms. Sin embargo, `cumple_umbral=false` por otros máximos sintéticos y por
+`cripta-06`. T031, T039 y T051 permanecen pendientes. T052 conserva documentado el fallo
+real sin cambiar el umbral.
+
+### Revisión local posterior a la optimización (2026-11-18)
+
+Se verificó con Python 3.12.10 que las pruebas focalizadas de rutas y benchmark pasan
+27/27 y que la suite completa pasa 1192/1192. En la primera ejecución de la suite, 29
+pruebas no pudieron escribir en la carpeta temporal restringida del entorno; al redirigir
+`TEMP` y `TMP` a una carpeta temporal dentro del repositorio, todas pasaron. La carpeta
+temporal se eliminó al terminar. Las pruebas focalizadas de replay/carga pasaron 51/51.
+
+Como diagnóstico no contractual se hicieron cinco repeticiones por cada escenario compartido
+de rango grande con cambio de puerta cada ciclo y cada 100 ciclos, y cinco de `cripta-06`.
+Se observaron los ciclos y eventos de GC sin instrumentar los reportes contractuales. Ningún
+ciclo superó 20 ms; el máximo fue 7.385 ms. Este muestreo no demuestra la causa de los
+máximos del reporte iteración 3 ni reemplaza sus 30 × 1000 ciclos por grupo. No se encontró
+un costo compartido alto y repetible que justifique modificar ese modo. El reporte
+`terreno-cazador-benchmark-iteracion-3.json` permanece intacto y con
+`cumple_umbral=false`; no se afirma cumplimiento. T031, T039 y T051 siguen pendientes.
+
+La siguiente verificación contractual planificada usará una sola vez
+`docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`, con el protocolo vigente y sin
+filtrar ciclos ni cambiar el cronómetro. Si algún ciclo vuelve a superar 20 ms, se conservará
+el fallo sin repetir la medición hasta una nueva iteración planificada.
+
+### Medición contractual de iteración 4 (2026-11-18)
+
+Con Python 3.12.10 se completaron las 30 repeticiones × 1000 ciclos de los ocho escenarios
+sintéticos y de `cripta-06`, sin perfilador. La cripta sintética conserva SHA-256
+`1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`; el snapshot de
+`cripta-06` conserva SHA-256
+`42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5` y las versiones
+fijadas de cripta `f9ed9afa683d` y catálogo `4b9e75a42be5`. El equipo registrado fue
+Windows 11, AMD64 Family 25 Model 33 Stepping 2, 16 núcleos y 34 282 184 704 bytes de
+memoria. Las decisiones coincidieron con la referencia en todos los ciclos.
+
+Los máximos sintéticos, en el orden de los ocho escenarios, fueron 2.3902 ms, 16.8371 ms,
+3.3395 ms, 15.2547 ms, 11.5151 ms, 24.8583 ms, 22.2927 ms y 21.5781 ms. El máximo de
+`cripta-06` fue 16.1787 ms. Hubo cinco ciclos sobre 20 ms: uno en rango grande compartido
+con cambio de puerta cada ciclo, tres en rango grande individual con cambio cada 100 ciclos
+y uno en rango grande compartido con cambio cada 100 ciclos. Por tanto
+`cumple_umbral=false`, aunque no hubo discrepancias. El reporte completo se conserva en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`; no se modificó ni reemplazó
+ninguna evidencia previa. T054 y T055 quedan completadas al ejecutar y documentar el
+resultado; T031, T039 y T051 siguen pendientes porque el límite contractual aún falla.
 
 ## 002: Niebla de guerra, antorcha y viaje automático
 
@@ -1553,3 +1548,88 @@ partida, con indicación de que se midieron cambios locales.
 - [Trazabilidad de los 34 casos](evidencia/2026-11-12-niebla-viaje-trazabilidad.md)
 - [Benchmark JSON](evidencia/2026-11-12-niebla-viaje-benchmark.json)
 - [Resultados de la validación](evidencia/2026-11-12-niebla-viaje-validacion.md)
+## 001: Quinta iteración de rendimiento de terreno y cazador (2026-11-18)
+
+El perfil diagnóstico de 1000 ciclos del escenario sintético de rango grande, puerta cada
+ciclo y modo compartido atribuyó bajo cProfile 6.914 s acumulados a
+`CacheDistanciasCazador.obtener`, 4.934 s a `_distancias_hacia_jugador` y 1.932 s a
+`_construir_entrantes`. Esas cifras incluyen el perfilador y solo identifican trabajo
+repetido; no se usan como evidencia de rendimiento.
+
+Se añadió una topología inversa por instancia de caché que conserva referencias a todas las
+salidas dirigidas. En cada búsqueda se consulta si la salida sigue abierta; las distancias se
+recalculan al cambiar el jugador o la revisión de puertas. No se retienen rutas o distancias
+entre revisiones. Las pruebas nuevas cubren cierres/reaperturas directos e historizados,
+IDs dispersos y equivalencia con la búsqueda individual. El cambio no incorpora estructuras
+ni bibliotecas prohibidas.
+
+Con Python 3.12.10 pasaron las 45 pruebas focalizadas y la suite completa de 1194 pruebas.
+Cinco repeticiones diagnósticas del escenario grande compartido con puerta cada ciclo dieron
+un máximo de 3.5494 ms; el escenario grande individual con puerta cada 100 ciclos llegó a
+11.6340 ms. Estas mediciones focalizadas no reemplazan el benchmark contractual.
+
+El benchmark contractual de T060 completó ocho escenarios sintéticos y la validación de
+`cripta-06`, con 30 repeticiones × 1000 ciclos por grupo, 240 000 ciclos sintéticos y 30 000
+de referencia. Hubo cero discrepancias. Todos los escenarios cumplieron el umbral de 20 ms;
+el máximo global fue 12.8721 ms y el máximo de `cripta-06`, 2.0696 ms. El reporte conserva
+el checksum sintético `1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`
+y el checksum de referencia
+`42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5`, con versiones de
+cripta `f9ed9afa683d` y catálogo `4b9e75a42be5`.
+
+La evidencia completa está en `docs/evidencia/terreno-cazador-benchmark-iteracion-5.json`;
+los reportes previos permanecen intactos. T056–T061 quedan completadas. T031, T039, T045 y
+T051 se cierran como gates históricos supersedidos por el resultado aprobado de T060. Esto
+no reclasifica los reportes de iteraciones 2–4: conservan sus resultados fallidos y no se
+presentan como aprobados. T039 queda satisfecho por el reporte vigente de iteración 5; el
+archivo `terreno-cazador-benchmark-final.json` se conserva sin sobrescribir.
+
+## 004: Línea de tiempo de partida
+
+### Problema
+
+Las consultas históricas deben reconstruir un estado anterior sin alterar la partida en
+curso. El historial crece con las acciones y el contrato mide consultas sobre 5.000 acciones,
+con al menos 30 instantes y el valor predeterminado de K.
+
+### Alternativas consideradas
+
+- Reproducir desde el inicio: referencia simple, pero su p95 medido fue 390,4 ms.
+- Invertir los cambios desde el estado actual: no se implementó ni se midió; requeriría
+  conservar lógica inversa para cada efecto y cambio del mundo.
+- Reanudar desde el punto de control anterior y repetir acciones hacia adelante: limita el
+  trabajo de cada consulta a K−1 acciones y mantiene la reconstrucción en una copia aislada.
+
+### Decisión
+
+Se conserva un registro ordenado de acciones y metadatos de puntos de control cada K acciones.
+La búsqueda binaria propia localiza el último punto válido; `ReconstructorHistoria` restaura
+una copia temporal y aplica las acciones posteriores necesarias. `K_POR_DEFECTO` es 200, el
+mayor valor medido que cumple SC-001. Las consultas por instante y por número de acción usan
+el mismo mecanismo; una consulta no modifica la partida real, el reloj ni el pergamino.
+
+### Complejidad
+
+Con N acciones vigentes, C puntos de control y K como intervalo, la localización del punto
+cuesta O(log C) y la re-simulación cuesta O(K), con un máximo de K−1 acciones bajo el
+protocolo de consultas. El registro de acciones ocupa O(N); los snapshots adicionales
+crecen con la cantidad de puntos de control y el tamaño del estado capturado.
+
+### Evidencia empírica
+
+En tres corridas de 5.000 acciones, K=200 dio p95 de 20,4 ms, 20,6 ms y 22,9 ms frente al
+límite p95 < 50 ms. Los máximos respectivos fueron 43,6 ms, 42,1 ms y 68,9 ms; la memoria
+pico fue 2,80 MiB. El máximo se registra por separado y no cambia el criterio, que se evalúa
+por p95. La búsqueda binaria obtuvo p95 de 0,004 ms frente a 0,013 ms para la lineal. La
+evidencia está en `docs/evidencia/2026-11-16T160604_9c6f61b_bench.json`.
+
+La validación posterior ejecutó 85 pruebas focalizadas de línea de tiempo, reconstrucción,
+historia y replay; todas pasaron con Python 3.12.10. El subconjunto de cierre de T033 pasó
+30 pruebas.
+
+### Límites conocidos
+
+Los tiempos corresponden al equipo, historia y consultas del reporte; no se generalizan a
+historias mayores ni a otras máquinas. La inversión hacia atrás no está implementada. Los
+máximos aislados pueden superar 50 ms aunque el p95 cumpla; se conservan y reportan sin
+filtrar muestras.

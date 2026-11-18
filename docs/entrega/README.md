@@ -9,3 +9,7 @@
 - [Registro del comando de auditoría en Antigravity](CRIPTA-II-registro-antigravity-cierre.md)
 
 - [Carga offline de los seis mapas](CRIPTAS-OFFLINE.json)
+
+- [Regresión de integración con main 7655ecb](REGRESION-MAIN-INTEGRADO.json)
+
+- [Revisión vigente de funcionalidades y main](REVISION-MAIN-ACTUAL.md)

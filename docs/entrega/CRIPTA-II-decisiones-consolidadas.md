@@ -1,5 +1,17 @@
 # CRIPTA II · Decisiones de diseño para revisión
 
+## Revisión integrada del 18 de noviembre de 2026
+
+Resultado final del código integrado: **1.401 pruebas aprobadas**, cero fallos y cero errores. Ver [revisión actual](REVISION-MAIN-ACTUAL.md).
+
+Se incorporó main `7655ecb` a cierre-entrega. Se conservaron las optimizaciones actuales de terreno/cazador y sus estructuras, y las correcciones de historial, interfaz y catálogo offline. Se combinaron las pruebas de caché de capacidad uno y dos. Se retiraron marcas de conflicto del documento de decisiones conservando ambos apartados.
+
+La evidencia vigente de terreno/cazador es [iteración 5](../evidencia/terreno-cazador-benchmark-iteracion-5.json). Se comprobaron sus 270.000 muestras, cero discrepancias y máximos bajo 20 ms. El máximo global es 12,8721 ms y el de cripta-06 es 2,0696 ms. El código del buscador, índice de salas, salidas, heap y benchmark coincide con esa actualización de main. Estos resultados pertenecen al equipo y condiciones registrados en ese JSON.
+
+La [regresión sobre seis mapas](REGRESION-MAIN-INTEGRADO.json) comprobó movimiento, MAPA, HISTORIA 0, guardado y carga, incluyendo las 300 salas de cripta-06. Cripta sellada conserva su veredicto NO RESOLUBLE y requiere forzar para esta prueba.
+
+Las secciones siguientes conservan las mediciones y revisiones anteriores con su base de código. Los resultados previos de 43,1008 y 57,204 ms corresponden a la versión anterior de terreno/cazador.
+
 Propuesta de cierre basada en `main` `87e166d` y las correcciones locales del 17 de noviembre. Este documento complementa el [Documento de Decisiones existente](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/docs/DECISIONES.md). Cada responsable puede comprobar su sección antes de integrarla.
 
 ## §5.1 · Rutas de terreno y cazador (001)

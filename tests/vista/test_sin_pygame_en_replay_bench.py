@@ -69,6 +69,11 @@ def test_bench_reporte_contrato_sin_vista(tmp_path, monkeypatch):
         "_correr_escenario",
         lambda *args: ([1] * 1000, []),
     )
+    monkeypatch.setattr(
+        terreno_cazador,
+        "_correr_referencia",
+        lambda *args: ([1] * 1000, []),
+    )
     ruta = tmp_path / "benchmark.json"
     reporte = terreno_cazador.crear_reporte(ruta)
     assert len(reporte["escenarios"]) == 8
@@ -80,6 +85,12 @@ def test_bench_reporte_contrato_sin_vista(tmp_path, monkeypatch):
         for r in s["repeticiones"]
     )
     assert reporte["fixture"]["identidad"] == "bench-terreno-cazador-grid-16x16"
+    referencia = reporte["validacion_referencia"]
+    assert len(referencia["repeticiones"]) == 30
+    assert all(
+        len(r["duraciones_ciclo_ns"]) == 1000 and not r["discrepancias"]
+        for r in referencia["repeticiones"]
+    )
 
 
 def test_replay_no_carga_pygame(tmp_path):

@@ -159,6 +159,24 @@ def test_replay_no_consulta_llaves(tmp_path):
     assert fuente.llaves_consultadas == consultas_antes
 
 
+def test_replay_reconstruye_cache_y_reacciona_a_revision_de_puerta(tmp_path):
+    ruta, _, _ = _jugar(tmp_path, ["W"])
+    resultado = reproducir(ruta, OfflineResistente(), _cache(tmp_path))
+    cache = resultado.partida.cache_rutas_cazador
+    primera = cache.obtener(resultado.partida.jugador)
+
+    salida = None
+    for sala in resultado.partida.cripta.recorrer_salas():
+        for candidata in sala.salidas:
+            salida = candidata
+            break
+        if salida is not None:
+            break
+    assert salida is not None
+    salida.cerrada = not salida.cerrada
+    segunda = cache.obtener(resultado.partida.jugador)
+    assert segunda is not primera
+
 def test_dos_replays_del_mismo_log_coinciden(tmp_path):
     ruta, _, _ = _jugar(tmp_path, RUTA_VICTORIA[:12])
     a = reproducir(ruta, OfflineResistente(), _cache(tmp_path))

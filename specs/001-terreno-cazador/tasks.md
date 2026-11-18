@@ -100,6 +100,19 @@ Python/pytest ya existen, así que no hay inicialización pendiente que justifiq
 - [X] T026 Actualizar `docs/DECISIONES.md` con las decisiones de implementación que difieran o concreten el Plan y con la evidencia de `--bench`; no registrar afirmaciones de rendimiento sin resultados reproducibles (FR-001–FR-013; AB-01–AB-29).
 - [X] T027 Ejecutar los comandos de regresión de `specs/001-terreno-cazador/quickstart.md` y revisar `tests/` para confirmar trazabilidad de todos los AB-01–AB-29 a pruebas con sus FR; verificar que `--replay` y `--bench` no instancien vistas, que no se añadieron bibliotecas/índices/cachés prohibidos y que no se afectó el presupuesto de solicitudes (FR-001–FR-013; AB-01–AB-29).
 
+## Validación adicional en la cripta de referencia
+
+La siguiente extensión conserva el benchmark sintético completado en T016–T020 y cubre el
+requisito oficial de rendimiento sobre `cripta-06`. El snapshot es un fixture de benchmark,
+no un dato de producción; ningún ciclo medido realiza solicitudes HTTP.
+
+- [X] T028 [P] Añadir `tests/test_bench_terreno_cazador_referencia.py` para comprobar el contrato del snapshot y del reporte de referencia: versiones fijadas, 300 salas, 25 instancias activas en las salas declaradas, 30 repeticiones de 1000 ciclos, metadata y SHA-256, discrepancias vacías cuando las decisiones son correctas, y ausencia de red/vistas en el intervalo medido (FR-014; AB-30; SC-004).
+- [X] T029 Materializar en `bench/datos/cripta-06-terreno-cazador-vf9ed9afa683d.json` el snapshot del esqueleto, los costos/puertas, los datos de catálogo necesarios y las 25 instancias `ent_sabueso_oseo` de la API. Registrar versión de cripta `f9ed9afa683d`, versión de catálogo `4b9e75a42be5`, ubicaciones, dimensiones y SHA-256 en `bench/datos/manifest.json`. La descarga inicial debe mantenerse dentro del presupuesto publicado de 63 solicitudes. No incluir solicitudes HTTP en el benchmark ni trasladar esos datos a la lógica de producción (FR-014; AB-30).
+- [X] T030 Extender `bench/terreno_cazador.py`, `bench/runner.py` y `main.py` para que `--bench` conserve los ocho escenarios sintéticos y agregue la validación sobre el snapshot de referencia: 25 cazadores activos, estado reproducible, semilla 42, acción `W`, 30 repeticiones de 1000 ciclos y comparación con el recálculo desde cero fuera del cronómetro. Agregar `validacion_referencia` al reporte sin eliminar ni reinterpretar el campo `escenarios` ya existente; no hacer solicitudes HTTP ni crear vistas/Pygame (FR-014; AB-30; SC-004).
+- [X] T031 Registrar y clasificar la medición contractual de iteración 3 en `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`. El reporte histórico conserva `cumple_umbral=false`; no se presenta como aprobado. Se cierra este gate como histórico supersedido por T060, que repitió el mismo protocolo completo y cumplió el umbral sin discrepancias (FR-014; AB-30; SC-004).
+- [X] T032 Actualizar `docs/DECISIONES.md` con la razón para mantener los ocho escenarios controlados y añadir la validación de referencia, las versiones observadas y los resultados reales de T031; declarar límites sin generalizar más allá de los datasets medidos (FR-014; AB-30; SC-004).
+- [X] T033 Ejecutar las pruebas focalizadas del cazador y benchmark, las regresiones indicadas en `quickstart.md` y la suite completa. Registrar resultados reales; no marcar el cierre si quedan fallos atribuibles a esta extensión (FR-001–FR-014; AB-01–AB-30; SC-001–SC-004).
+
 ## Dependencias y orden de ejecución
 
 ### Dependencias entre fases
@@ -109,6 +122,7 @@ Python/pytest ya existen, así que no hay inicialización pendiente que justifiq
 - US2: comienza después de US1 para reutilizar el costo validado. T008 y T009 preparan las pruebas; T010, T011 y T016 son componentes independientes; T012 depende de T011; T013 depende de T010 y T012; T014 depende de T013; T017 depende de T016; T018 depende de T014 y T017; T019 depende de T017 y puede prepararse en paralelo con T018 una vez satisfechas las dependencias de T018 (T014 y T017); T015 depende de T010–T014; T020 depende de T015, T018 y T019.
 - US3: depende de US1 (costo en el modelo) y US2 (comportamiento cazador). T021 prepara pruebas; T022 y T023 pueden avanzar en paralelo; T024 depende de T023; T025 depende de T022–T024.
 - Pulido: T026 y T027 dependen de las historias que validan; ejecutar T027 después de integrar todas las tareas anteriores.
+- Validación de referencia: T028 y T029 pueden prepararse en paralelo al tener fijado este contrato; T030 depende de ambas; T031 depende de T030; T032 registra el resultado de T031; T033 cierra tras T032.
 
 ### Dependencias entre historias
 
@@ -124,6 +138,7 @@ Python/pytest ya existen, así que no hay inicialización pendiente que justifiq
 - T010, T011 y T016: catálogo, cola de prioridad y materialización del fixture en archivos distintos.
 - T016 puede implementarse en paralelo con T010/T011; T019 puede escribirse en paralelo con T018 una vez completadas las dependencias de T018 (T014 y T017), pues el esquema JSON está fijado por el contrato.
 - T022 y T023: consola y contrato/snapshot Pygame en archivos distintos.
+- T028 y T029: prueba del contrato y materialización del fixture de `cripta-06` en archivos distintos; ambos deben respetar las versiones fijadas.
 
 No ejecutar tareas paralelas que modifiquen el mismo archivo; coordinar los cambios de tests compartidos antes de integrarlos.
 
@@ -145,6 +160,99 @@ No ejecutar tareas paralelas que modifiquen el mismo archivo; coordinar los camb
 ## Revisión de coherencia
 
 - La secuencia de ocho escenarios, 20 cazadores, reparto de rangos, 30 repeticiones, semilla, fixture, puertas y ciclo cronometrado sigue el Plan y el contrato.
+- La validación adicional usa las 25 instancias publicadas de `cripta-06` para cubrir el límite oficial en la cripta de referencia; no altera los ocho escenarios ni sus 20 cazadores.
 - El fixture versionado y su checksum se mantienen fuera de la lógica de producción; el
   reporte JSON reproducible se conserva como evidencia versionada en `docs/evidencia/`.
 - Los atributos de todos los actores del fixture están fijados en el contrato; T016 debe copiarlos literalmente al archivo de datos y no convertirlos en valores de producción.
+
+## Optimización posterior al diagnóstico
+
+La siguiente fase empieza después de T033 y no debe modificar ni sobrescribir el reporte
+contractual anterior. El perfil reciente es diagnóstico, no evidencia de cumplimiento:
+T031 seguirá pendiente hasta que el reporte final completo medido sin perfilador tenga cero
+discrepancias y ningún máximo superior a 20 ms.
+
+- [X] T034 Añadir pruebas de regresión para tablas directas de distancias y extracción de vecinos en `tests/test_terreno_cazador.py` y `tests/test_bench_terreno_cazador.py`: comparación con recálculo desde cero en mapas ponderados, puertas abiertas/cerradas, conexiones unidireccionales, límite de rango exacto, rango excedido y sala sin ruta; preservar menor costo y menor ID en empates. Incluir mapas con IDs de sala dispersos o no contiguos y verificar que el resultado no depende de que los IDs formen una secuencia compacta (FR-006–FR-008, FR-011, FR-014; AB-07–AB-10, AB-30).
+- [X] T035 Después de T034, optimizar `_construir_entrantes`, `_distancias_hacia_jugador`, `_decidir_cazador_individual` y `decidir_cazador` en `modelo/buscador_rutas.py` usando `Vector`, listas propias/arrays autorizados y acceso directo por ID de sala cuando exista un mapeo propio seguro y completo; en ese caso, eliminar `_buscar` de los recorridos masivos. Para mapas con IDs dispersos, usar una alternativa propia correcta definida por el Plan: búsqueda binaria sobre registros ordenados o índice compacto auxiliar, sin `dict`, `set` ni bibliotecas prohibidas. En ambos casos, conservar Dijkstra ponderado, aristas dirigidas, rango y desempate por menor ID (FR-006–FR-008, FR-011; AB-07–AB-10, AB-13).
+- [X] T036 Después de T034, añadir pruebas obligatorias de invalidación de caché en `tests/test_terreno_cazador.py` para cambios de sala del jugador, apertura/cierre directo y restauración por historial. Añadir también pruebas obligatorias de las rutas existentes de replay y carga en `tests/`; verificar que toda restauración reproduce el estado físico de las puertas, que abrir/cerrar/restaurar invalida solo cuando cambia el estado y que, si una puerta cambia cada ciclo, la caché reconstruye distancias (FR-008, FR-011, FR-014; AB-09, AB-10, AB-13, AB-30).
+- [X] T037 Después de T036, integrar en `modelo/buscador_rutas.py`, `modelo/partida.py`, `modelo/reloj.py` y las rutas de deshacer/carga existentes un mecanismo obligatorio y verificable de revisión incremental de jugador y puertas; almacenar revisiones observadas sin escanear todas las salidas por cada consulta y cubrir cambios directos, operaciones de historial, replay y carga; conservar la reconstrucción necesaria cuando una puerta cambie cada ciclo (FR-008, FR-011, FR-014; AB-09, AB-10, AB-13, AB-30).
+- [X] T038 Precalcular fuera del cronómetro en `bench/terreno_cazador.py` la asociación instancia/actor/índice y los índices de referencia de _correr_escenario y _correr_referencia; eliminar `enemigos.index(...)` y búsquedas posteriores por identificador del intervalo medido; conservar dentro del ciclo turno del jugador, eventos de enemigos, decisiones, movimiento/ataque/espera y reprogramación real; mantener la referencia independiente fuera del cronómetro (FR-011, FR-014; AB-13, AB-29, AB-30).
+- [X] T039 Cerrar la validación contractual final con el reporte de T060 en `docs/evidencia/terreno-cazador-benchmark-iteracion-5.json`: ocho escenarios y `cripta-06`, 30 repeticiones × 1000 ciclos, cero discrepancias y máximo ≤20 ms. Se conserva intacto `terreno-cazador-benchmark-final.json` como evidencia histórica fallida; T060 es la evidencia aprobatoria vigente (FR-006–FR-008, FR-011, FR-014; AB-07–AB-10, AB-13, AB-29, AB-30).
+
+### Dependencias de optimización
+
+- T034 no depende de cambios de implementación y puede comenzar primero.
+- T035 depende de T034.
+- T036 depende de T034 y puede avanzar en paralelo con T035 si no comparten archivos: T036 trabaja pruebas de caché en `tests/test_terreno_cazador.py`, mientras T035 trabaja la implementación en `modelo/buscador_rutas.py`.
+- T037 depende de T036 y debe invalidar mediante mecanismos compatibles con historial, replay y carga.
+- T038 puede ejecutarse en paralelo con T035 y T037 si no comparte archivos editados por esas tareas, pero debe mantener el flujo real de `Reloj` y `Partida`.
+- T039 depende de T035, T037 y T038 y no debe marcarse aprobada sin el reporte contractual final.
+
+## Segunda iteración de diagnóstico y optimización
+
+Esta iteración conserva el alcance y la evidencia anterior de T034–T039; no altera su
+definición ni sobrescribe sus reportes. T046 puede actualizar el estado de T039 según el
+nuevo resultado contractual. Los cinco escenarios sintéticos fallidos tienen prioridad; no
+cambian sus rangos, mapas, puertas, repeticiones, modalidades ni umbral.
+
+- [X] T040 Ejecutar fuera de `--bench` un perfil diagnóstico de las rutas individuales del perfil de rango grande mediante un comando o archivo temporal local separado. Separar el primer ciclo de los siguientes y registrar llamadas, tiempo propio/acumulado y costo de `_decidir_cazador_individual`, sin usar los máximos perfilados como evidencia contractual (FR-011; AB-13).
+- [X] T041 Ejecutar fuera de `--bench` un perfil diagnóstico de `CacheDistanciasCazador.obtener`, `_construir_entrantes` y `_distancias_hacia_jugador` al cambiar una puerta mediante un comando o archivo temporal local separado. Separar inicialización y ciclos posteriores, registrar reconstrucción/reutilización y no registrarlo como validación contractual (FR-008, FR-011; AB-09, AB-13).
+- [X] T042 Ejecutar fuera de `--bench` un perfil diagnóstico del procesamiento real de turnos mediante `Reloj`, `Partida` y `_correr_escenario` mediante un comando o archivo temporal local separado. Medir por separado reloj, extracción/ejecución de eventos, decisiones, movimiento, reprogramación y observaciones auxiliares; distinguir el primer ciclo de los siguientes y conservar `_indice_benchmark` sin buscar actores por ID dentro del cronómetro (FR-011; AB-13).
+- [X] T043 Después de T040–T042, añadir pruebas de regresión en `tests/test_terreno_cazador.py` y `tests/test_bench_terreno_cazador.py` para rutas individuales ponderadas, reconstrucción por cambio de puerta, recorridos dirigidos, rangos exactos y excedidos, puertas abiertas/cerradas, rutas inexistentes, empates por menor ID y equivalencia individual/compartida con una referencia independiente (FR-006–FR-008, FR-011, FR-014; AB-07–AB-10, AB-13, AB-30).
+- [X] T044 Implementar en `modelo/buscador_rutas.py`, `modelo/partida.py`, `modelo/reloj.py` y `bench/terreno_cazador.py` únicamente las optimizaciones respaldadas por T040–T043: conservar Dijkstra ponderado y modos individuales/compartidos, conservar `_indice_benchmark`, evitar búsquedas auxiliares dentro del cronómetro y no introducir estructuras o bibliotecas prohibidas (FR-006–FR-008, FR-011, FR-014; AB-07–AB-10, AB-13, AB-29, AB-30).
+- [X] T045 Registrar y clasificar la ejecución posterior a T044 en `docs/evidencia/terreno-cazador-benchmark-iteracion-2.json`, conservando el resultado histórico aunque no cumpliera el umbral. El gate que dejó pendiente queda supersedido por la validación completa y aprobatoria de T060; el reporte de iteración 2 no se altera ni se declara aprobado (FR-006–FR-008, FR-011, FR-014; AB-07–AB-10, AB-13, AB-29, AB-30).
+- [X] T046 Actualizar `docs/DECISIONES.md` con el resultado previo de `terreno-cazador-benchmark-final.json`, los hallazgos de T040–T042, los cambios validados de T044 y el resultado real de T045. Si el reporte iteración-2 cumple el cierre con cero discrepancias y máximos ≤20 ms, marcar T039, T045 y T046 como completadas y documentar la aprobación. Si el reporte vuelve a fallar por discrepancias o máximos >20 ms, T039 y T045 quedan pendientes, pero T046 puede completarse al conservar y documentar el fallo real, mantener `cumple_umbral=false` y no cambiar los criterios (FR-011, FR-014; AB-13, AB-29, AB-30).
+
+### Dependencias de la segunda iteración
+
+- T040–T042 pueden ejecutarse en paralelo porque son perfiles separados y no modifican el código. Cada tarea usa su propio comando temporal o archivo temporal separado, por ejemplo con nombres propios bajo la sesión temporal o `bench/salidas/`, sin escribir el mismo archivo ni compartir resultados incompletos; no crean ni sobrescriben reportes contractuales.
+- T043 depende de T040–T042 y prepara las pruebas de regresión.
+- T044 depende de T043 y no debe aplicar optimizaciones no respaldadas por mediciones o pruebas.
+- T045 depende de T044 y genera exclusivamente `docs/evidencia/terreno-cazador-benchmark-iteracion-2.json`.
+- T046 depende de T045 y registra el resultado previo y el nuevo; no cambia T039 ni el umbral.
+
+## Tercera iteración: índice inmutable por cripta para rutas individuales
+
+- [X] T047 Añadir pruebas en `tests/test_terreno_cazador.py` y `tests/test_buscador_rutas.py` para índices de sala densos, dispersos y de IDs muy grandes; comprobar criptas distintas y ausencia de asignación proporcional al ID máximo. Para mapas densos debe probar acceso directo propio; para IDs dispersos/grandes debe probar búsqueda binaria propia o índice compacto auxiliar sin `dict`, `set` ni bibliotecas prohibidas (FR-006–FR-008; AB-07–AB-08).
+- [X] T048 Añadir pruebas de equivalencia individual en `tests/test_terreno_cazador.py` y `tests/test_bench_terreno_cazador.py`: mapas ponderados, conexiones dirigidas, puertas abiertas/cerradas, rango exacto/excedido, empate por menor ID y sala sin ruta. Verificar que dos búsquedas individuales no compartan distancias, predecesores ni cola y que coincidan con el recálculo independiente (FR-005–FR-009, FR-011; AB-05–AB-10, AB-13).
+- [X] T049 Implementar en `modelo/mundo/cripta_modelo.py` un índice propio e inmutable por cripta que relacione ID de sala con posición en el vector ordenado. Construirlo una vez al finalizar la carga; usar acceso directo compacto solo si es seguro y una alternativa propia binaria/compacta para IDs dispersos o grandes, sin asignar memoria proporcional al máximo (FR-006–FR-008; AB-07–AB-08).
+- [X] T050 Reutilizar en `modelo/buscador_rutas.py` el índice inmutable de la cripta dentro de `_crear_indice_registros` y las búsquedas individuales. Mantener distancias, predecesores y cola locales por búsqueda; no apuntar el índice a registros mutables de Dijkstra, no reutilizar rutas y no alterar el modo compartido (FR-005–FR-009, FR-011; AB-05–AB-10, AB-13).
+- [X] T051 Registrar y clasificar la ejecución contractual de iteración 3 en su reporte histórico, que no cumplió el umbral y permanece intacto. El gate queda supersedido por T060, que repitió los dos grupos completos y cumplió el contrato con cero discrepancias; el reporte de iteración 3 no se declara aprobado (FR-005–FR-009, FR-011, FR-014; AB-05–AB-10, AB-13, AB-29, AB-30).
+- [X] T052 Actualizar `docs/DECISIONES.md` con las pruebas, el índice implementado y los resultados reales de T051. Si `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json` cumple el protocolo completo, cero discrepancias y máximos ≤20 ms y además pasan todas las pruebas requeridas, marcar T031, T039, T051 y T052 como completadas. Si falla el umbral o hay discrepancias, T031, T039 y T051 permanecen pendientes, fijar `cumple_umbral=false` y documentar el resultado real; T052 puede completarse al documentar el fallo sin cambiar el umbral (FR-011, FR-014; AB-13, AB-29, AB-30).
+
+### Dependencias de la tercera iteración
+
+- T047 prepara las pruebas del índice y puede comenzar primero.
+- T048 depende de T047 y define equivalencia de decisiones y aislamiento mutable.
+- T049 depende de T047 y construye el índice inmutable por cripta.
+- T050 depende de T048 y T049 y debe mantener independiente toda búsqueda individual.
+- T051 depende de T050 y ejecuta primero todas las pruebas antes del único benchmark contractual.
+- T052 depende de T051 y documenta aprobación o fallo según el reporte real.
+
+## Revisión final de rendimiento
+
+- [X] T053 Revisar los máximos del reporte de iteración 3 y ejecutar un diagnóstico no contractual de cinco repeticiones por escenario compartido de rango grande y `cripta-06`; observar eventos GC sin modificar el cronómetro contractual. Registrar que el máximo diagnóstico fue 7.385 ms, que no se reprodujeron ciclos >20 ms, que el resultado no prueba la causa de los picos anteriores y que la suite completa pasó 1192 pruebas. No modificar el modo compartido ni atribuir cumplimiento a este diagnóstico (FR-011, FR-014; AB-13, AB-29, AB-30).
+- [X] T054 Después de confirmar las pruebas focalizadas, replay/carga y suite completa con Python 3.12, ejecutar una sola medición contractual completa con el código actual y guardar `docs/evidencia/terreno-cazador-benchmark-iteracion-4.json`. Conservar los ocho escenarios sintéticos y `cripta-06`, 30 repeticiones × 1000 ciclos en cada grupo, cero discrepancias y máximo ≤20 ms. No usar perfilador, filtrar ciclos, cambiar el cronómetro ni modificar reportes anteriores. Si cumple, puede cerrar T031, T039, T051 y T054; si falla, mantener `cumple_umbral=false`, dejar T031/T039/T051 pendientes y conservar el reporte completo de fallo. T054 puede marcarse completada al ejecutar y clasificar íntegramente el resultado, aunque no cumpla el umbral (FR-011, FR-014; AB-13, AB-29, AB-30).
+- [X] T055 Actualizar `docs/DECISIONES.md` con el resultado real de T054, las versiones y checksum, las pruebas previas y el estado de T031/T039/T051. No declarar cumplimiento si cualquier ciclo supera 20 ms ni cambiar el criterio (FR-011, FR-014; AB-13, AB-29, AB-30).
+
+### Dependencias de la revisión final
+
+- T053 registra el diagnóstico ya realizado y puede cerrarse junto con la actualización documental.
+- T054 depende de las pruebas focalizadas, replay/carga y suite completa; solo se ejecuta una vez y conserva el reporte aunque falle.
+- T055 depende de T054 y registra aprobación o fallo sin alterar los criterios de aceptación.
+
+## Quinta iteración: reutilizar topología inversa del cazador compartido
+
+- [X] T056 Perfilar un escenario sintético de rango grande, cambios de puerta cada ciclo y modalidad compartida con Python 3.12.10, sin usar el resultado perfilado como evidencia de rendimiento. En 1000 ciclos se observaron 6.914 s acumulados en `CacheDistanciasCazador.obtener`, 4.934 s en `_distancias_hacia_jugador` y 1.932 s en `_construir_entrantes`; estos tiempos incluyen el costo del perfilador y solo sirven para localizar trabajo repetido (FR-008, FR-011, FR-014; AB-09, AB-13, AB-30).
+- [X] T057 Añadir pruebas para una topología inversa persistente por instancia de caché: cambios de puerta abierta/cerrada, cambios directos e historizados, movimiento del jugador, conexiones dirigidas, mapas con IDs dispersos y equivalencia de decisiones frente a la referencia individual. Comprobar que las salidas se consultan en su estado actual y que la caché no conserva distancias entre revisiones (FR-006–FR-011; AB-07–AB-13, AB-18–AB-21). Dos regresiones nuevas fallaron antes del cambio porque se reconstruía el vector y pasaron después; cubren cierres/reaperturas, IDs dispersos y reversión de puerta.
+- [X] T058 Implementar en `modelo/buscador_rutas.py` la construcción única de aristas entrantes por instancia de `CacheDistanciasCazador`; almacenar referencias a las salidas y revisar su estado abierto/cerrado durante la búsqueda. Mantener el recálculo ponderado de distancias al cambiar el jugador o la revisión de puertas, sin reutilizar rutas ni introducir estructuras/bibliotecas prohibidas (FR-006–FR-011; AB-07–AB-13, AB-18–AB-21).
+- [X] T059 Ejecutar las pruebas nuevas y focalizadas de terreno/cazador, replay/carga y la suite completa con Python 3.12. Registrar resultados reales y corregir cualquier discrepancia funcional antes del benchmark contractual; no modificar reportes anteriores (FR-006–FR-011, FR-014; AB-07–AB-13, AB-18–AB-21, AB-30). Resultado: 45 pruebas focalizadas y 1194 de la suite completa pasaron con Python 3.12.10.
+- [X] T060 Tras T057–T059, ejecutar una sola medición contractual y guardar `docs/evidencia/terreno-cazador-benchmark-iteracion-5.json`. Conservar ocho escenarios y `cripta-06`, 30 repeticiones × 1000 ciclos en cada grupo, decisiones coincidentes con la referencia y máximo ≤20 ms. Si falla cualquier condición, conservar el reporte, `cumple_umbral=false` y las tareas de aceptación pendientes; no filtrar ciclos ni cambiar el cronómetro o el umbral (FR-011, FR-014; AB-13, AB-29, AB-30). Resultado: 240 000 ciclos sintéticos y 30 000 de `cripta-06`; cero discrepancias; máximo global 12.8721 ms; `cumple_umbral=true` y `decisiones_correctas=true`.
+- [X] T061 Actualizar `docs/DECISIONES.md` con el diseño aplicado, pruebas, metadatos y resultado real de T060; aclarar que los tiempos perfilados de T056 son diagnóstico y no evidencia contractual. Mantener intactos los reportes de iteraciones anteriores y anotar el estado de las tareas de aceptación históricas (FR-011, FR-014; AB-13, AB-29, AB-30).
+
+### Dependencias de la quinta iteración
+
+- T056 es diagnóstico completado y respalda esta propuesta; no acredita el límite de rendimiento.
+- T057 prepara las regresiones y debe preceder a cualquier cambio de código.
+- T058 depende de T057; la planificación quedó confirmada en el commit separado `5de5cb4` antes de modificar el código.
+- T059 depende de T058; T060 depende de que las pruebas de T059 pasen; T061 depende de T060.

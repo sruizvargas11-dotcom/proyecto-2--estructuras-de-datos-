@@ -33,6 +33,12 @@ El proyecto dispone de `--bench` para mediciones de estructuras y persistencia:
 
 Los casos de esta capacidad están incorporados al runner de benchmarks (`bench/casos/linea_tiempo.py`, T024/T025) para aceptar `K = 10, 50, 100` y otros valores, ejecutar las mismas consultas en todas las variantes y reportar mediana, p95, máximo y memoria. No se fija aquí una sintaxis adicional para seleccionar casos que el CLI actual no documenta.
 
+### Resultado medido
+
+La evidencia reproducible de T025 está en `docs/evidencia/2026-11-16T160604_9c6f61b_bench.json`. Sobre 5.000 acciones, el valor predeterminado `K = 200` obtuvo p95 de 20,4 ms, 20,6 ms y 22,9 ms en tres corridas; todas cumplen el límite p95 < 50 ms. Los máximos fueron 43,6 ms, 42,1 ms y 68,9 ms, y la memoria pico medida fue 2,80 MiB. El máximo se informa por separado; el criterio de aceptación se evalúa sobre p95.
+
+La reconstrucción desde el inicio obtuvo p95 de 390,4 ms. Con `K = 200`, la búsqueda binaria propia localizó puntos de control con p95 de 0,004 ms, frente a 0,013 ms para la búsqueda lineal. La implementación reanuda desde el punto de control más cercano y vuelve a aplicar como máximo `K - 1` acciones. Los detalles de variantes, límites y exclusiones están en `specs/004-linea-tiempo/research.md`.
+
 ## Prueba manual de la interfaz de consola
 
 Una vez implementada la opción, iniciar una partida local:

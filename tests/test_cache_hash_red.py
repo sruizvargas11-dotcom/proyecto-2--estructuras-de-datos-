@@ -82,6 +82,19 @@ def test_sala_con_cazador_requiere_espacio_para_su_ficha(offline, tmp_path):
     red._fichas._verificar_invariantes()
 
 
+def test_sala_con_cazador_se_incorpora_con_espacio_para_dos_fichas(offline, tmp_path):
+    fuente, cripta = offline
+    red = ControladorRed(fuente, cripta, tmp_path, cache_size=2)
+    red.resolver_catalogo(['itm_llave_bronce'])
+    red._fichas.marcar_en_uso('itm_llave_bronce')
+
+    red.garantizar_contenido(5)
+
+    assert red.contenido_cargado(5)
+    assert len(red._fichas) == 2
+    red._fichas._verificar_invariantes()
+
+
 def test_enemigo_sin_espacio_para_protegerse_da_error_claro(offline, tmp_path):
     fuente, cripta = offline
     red = _red_llena_de_protegidas(fuente, cripta, tmp_path)
