@@ -19,8 +19,24 @@ class Salida:
         # Se enlaza con la instancia de Sala al finalizar la carga.
         self.sala_destino = None
 
-        self.cerrada = cerrada
+        self._cerrada = cerrada
+        self.cripta = None
         self.llave = llave
         self.cierre_automatico = cierre_automatico
         self.evento_cierre = None
         self.costo = costo
+
+    @property
+    def cerrada(self):
+        return self._cerrada
+
+    @cerrada.setter
+    def cerrada(self, valor):
+        if type(valor) is not bool:
+            raise ValueError("El estado cerrado debe ser booleano.")
+        if getattr(self, "_cerrada", None) == valor:
+            return
+        self._cerrada = valor
+        cripta = getattr(self, "cripta", None)
+        if cripta is not None:
+            cripta.registrar_cambio_puerta()

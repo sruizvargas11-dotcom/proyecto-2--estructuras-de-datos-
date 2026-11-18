@@ -4,6 +4,11 @@
 **Base**: `spec.md`, la Constitución, README y código/documentación presentes en el
 repositorio. El PDF del curso no está disponible y no se consultó.
 
+> **Actualización (2026-11-17)**: desde la investigación inicial se revisaron el PDF oficial
+> y la API del curso. Los datos actuales de la API y la nueva validación de referencia se
+> registran al final de este documento; reemplazan las conclusiones de escala que indicaban
+> que solo estaba disponible una cripta offline de seis salas.
+
 ## Hallazgos del repositorio
 
 - El juego usa Python 3.12; `pytest` valida el modelo y la integración, y Pygame es opcional.
@@ -24,13 +29,15 @@ repositorio. El PDF del curso no está disponible y no se consultó.
   crear la fuente de datos de juego. Pruebas existentes verifican que no se cargue Pygame.
   Herramientas de ciclo existentes usan medición local y semilla explícita, pero no cubren
   este algoritmo ni los ocho escenarios de la especificación.
-- El conjunto offline examinado no incluye un costo de salida ni una ficha cazador. Las
-  versiones de cripta y catálogo se administran por separado en persistencia; no se debe
-  inferir que sus identificadores de versión tienen que ser iguales entre sí.
-- La única cripta offline versionada disponible es `cripta-01`, versión `fd58f7743b9e`,
-  con 6 salas; no cumple el requisito de benchmark de usar un mapa mayor. `bench/ciclo.py`
-  genera un escenario sintético de 200 salas, pero no define un dataset de caminos fijo,
-  versionado y con cambios de puertas para este feature.
+- **Hallazgo histórico de la revisión del 2026-11-04**: los datos offline examinados entonces
+  no incluían un costo de salida ni una ficha cazador; `cripta-01` era versión
+  `fd58f7743b9e` y tenía 6 salas. El 2026-11-17 se añadió un cazador al catálogo offline y
+  la cripta conservó su tamaño de 6 salas. La API y la cripta offline administran sus
+  versiones por separado; sus identificadores no tienen que ser iguales.
+- `bench/ciclo.py` genera un escenario sintético de 200 salas, pero no define un dataset de
+  caminos fijo, versionado y con cambios de puertas para este feature. El fixture comparativo
+  de 256 salas y el snapshot de referencia de 300 salas quedan separados y descritos en el
+  contrato.
 
 ## Decisiones de diseño
 
@@ -124,6 +131,26 @@ y comparar cada elección con una búsqueda individual de referencia sin reutili
 una función aislada. El proyecto ya cuenta con un runner de benchmarks y utilidades de
 medición que pueden extenderse.
 
+### Actualización de dataset de rendimiento y cripta de referencia (2026-11-17)
+
+La API del curso publica cinco criptas; `cripta-06`, llamada «Cripta de referencia», tiene
+300 salas y versión `f9ed9afa683d`. El catálogo tiene versión `4b9e75a42be5`; el contenido
+de `cripta-06` incluye 25 instancias de `ent_sabueso_oseo`, cuya ficha declara
+`comportamiento: cazador` y `rango: 600`. Se verificó también la consulta de llaves: devuelve
+cuatro ubicaciones para esa versión de cripta. La API anuncia un presupuesto de 63 solicitudes.
+
+La revisión del enunciado confirma que el límite de 20 ms se refiere a la cripta de referencia
+con decenas de cazadores activos. Por eso, el fixture sintético de 16×16 se conserva para los
+ocho escenarios comparativos ya acordados (20 cazadores, reparto 10/10 y variaciones
+controladas de rango, puertas y modalidad); se añade una validación contractual aparte con
+un snapshot de `cripta-06` que active las 25 instancias publicadas. El snapshot y el checksum
+se guardan en `bench/datos/`; los ciclos medidos no hacen solicitudes HTTP. El detalle del
+protocolo y su reporte están definidos en el contrato del benchmark.
+
+Esta actualización se basa en respuestas observadas de la API el 2026-11-17. Si cambian las
+versiones publicadas, no se reemplaza silenciosamente el snapshot: se crea una nueva versión
+de fixture y evidencia.
+
 **Alternativas consideradas**:
 - Renderizar mientras se cronometra: descartado porque SC-002 excluye renderizado.
 - Incluir HTTP/latencia de la fuente: descartado porque la métrica excluye red y el modelo
@@ -135,15 +162,18 @@ medición que pueden extenderse.
 
 - **Salida inversa ausente**: resuelto en la especificación. Se acepta como salida
    unidireccional; solo se comparan costos efectivos si existen ambas direcciones.
-- **Dataset de rendimiento**: no hay en el repositorio un mapa fijo/versionado que satisfaga
-   la escala; la cripta offline tiene solo 6 salas. Se elige el fixture sintético
+- **Dataset de comparación**: se conserva el fixture sintético
    `bench-terreno-cazador-grid-16x16`, versión `1.0.0`, con 256 salas en grilla ortogonal.
    Su topología, costos y estados iniciales/secuencia de puertas quedan definidos en el
    contrato. Es externo a los datos y la lógica de producción, determinista y no representa
    una cripta real.
-- **Disponibilidad del catálogo**: el catálogo presente no incluye `rango` ni el nuevo
-   comportamiento. La fuente de datos debe publicar una ficha y una versión compatibles;
-   la implementación no debe ocultar la falta de datos ni fabricar una ficha en producción.
+- **Cripta de referencia**: la actualización del 2026-11-17 confirma que la API publica
+   `cripta-06` con 300 salas y 25 instancias de cazador; se añade un snapshot de esos datos
+   como validación separada del fixture comparativo.
+- **Disponibilidad del catálogo**: al revisar la API, esta sí publica la ficha
+   `ent_sabueso_oseo` con `comportamiento: cazador` y rango 600. La ficha offline
+   `ent_cazador` no sustituye ni se confunde con la ficha online; cada fuente conserva sus
+   propios datos y versión. La lógica de producción no debe inventar fichas.
 
 ## Referencias internas
 

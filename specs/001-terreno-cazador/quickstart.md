@@ -8,10 +8,9 @@ repositorio con el entorno ya instalado. No requiere acceso al PDF.
 - Python 3.12 y dependencias de `requirements.txt`.
 - `pytest`.
 - Una fuente/dataset versionado con esqueleto y catálogo compatibles. La cripta offline
-  presente actualmente no incluye el costo ni el cazador; no usarla como demostración de
-  esos campos sin preparar datos compatibles. El benchmark usa el fixture sintético
-  `bench-terreno-cazador-grid-16x16` v1.0.0, definido en el contrato; no representa una
-  cripta oficial.
+  `cripta-01` contiene un cazador para probar la carga local. El benchmark combina el fixture
+  sintético `bench-terreno-cazador-grid-16x16` v1.0.0 con un snapshot de la cripta de
+  referencia `cripta-06`; ambos están definidos en el contrato.
 
 ## Pruebas focalizadas
 
@@ -49,10 +48,10 @@ faltante/no entero/<1 y versiones incompatibles → rechazo antes de comenzar.
 ## Benchmark
 
 ```powershell
-python main.py --bench --salida docs/evidencia/2026-11-04-terreno-cazador-benchmark.json
+python main.py --bench --salida docs/evidencia/terreno-cazador-benchmark-completo.json
 ```
 
-La prueba del benchmark cubre AB-13 y AB-29: antes de medir, validar identidad
+El benchmark incluye dos grupos. El primero cubre AB-13 y AB-29: antes de medir, validar identidad
 `bench-terreno-cazador-grid-16x16`, versión `1.0.0`, dimensiones 16×16 (256 salas), 480
 conexiones y secuencia de puertas; luego ejecutar los ocho escenarios con 30 repeticiones
 de 1000 ciclos cada una. Registrar rangos, frecuencia de cambios, modalidad, equipo y
@@ -64,6 +63,14 @@ versiones, incluso si documenta un resultado fallido. El máximo de cada ciclo e
 decisiones del jugador debe ser ≤20 ms; un fallo de corrección invalida el resultado aunque
 la latencia cumpla. No emitir una afirmación de rendimiento hasta revisar y conservar el
 reporte reproducible y sus metadatos.
+
+El segundo grupo cubre AB-30 y FR-014: medir 30 repeticiones de 1000 ciclos sobre el snapshot
+de `cripta-06` versión `f9ed9afa683d`, con catálogo `4b9e75a42be5`, 300 salas y sus 25
+cazadores activos. La semilla es 42 y el jugador ejecuta `W`; cada repetición parte del mismo
+estado. El reporte agrega identidad, versiones, SHA-256 y ubicación de las 25 instancias. La
+carga de datos se realiza antes de cronometrar; las duraciones incluyen el ciclo real de
+eventos, sin red ni renderizado. El máximo también debe ser ≤20 ms y cada decisión debe
+coincidir con el recálculo desde cero.
 
 La prueba de carga anterior cubre AB-28 (FR-001); la validación del fixture y sus metadatos
 en este paso cubre AB-29 (FR-011).

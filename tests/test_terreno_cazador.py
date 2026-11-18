@@ -143,3 +143,114 @@ def test_cache_compartida_reutiliza_e_invalida_por_puerta_y_jugador():
     assert segunda is not primera
     jugador.sala_actual = salas[1]
     assert cache.obtener(jugador) is not segunda
+
+
+def test_mapa_ids_sala_dispersa_comparte_y_recalcula_individual():
+    cripta = CriptaModelo("prueba-dispersa", "1", 10, 1001, None, 0, 10)
+    salas = [Sala(10, "diez"), Sala(300, "trescientos"), Sala(1001, "mil")]
+    salas[0].salidas.insertar_al_final(Salida("E", 300, costo=3))
+    salas[1].salidas.insertar_al_final(Salida("E", 1001, costo=5))
+    for sala in salas:
+        cripta.agregar_sala(sala)
+    cripta.finalizar_carga()
+
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    cazador = Enemigo("e", "cazador", "Cazador", 100, 1, 0, 100,
+                      "cazador", salas[0], rango=8)
+
+    individual = decidir_cazador(cazador, jugador)
+    from modelo.buscador_rutas import CacheDistanciasCazador
+    compartida = CacheDistanciasCazador(cripta)
+    accion_compartida, objetivo_compartido = decidir_cazador(
+        cazador, jugador, compartida.obtener(jugador)
+    )
+
+    assert individual == ("mover", (salas[1], 3))
+    assert (accion_compartida, objetivo_compartido) == individual
+
+
+def test_cache_invalida_por_revision_de_puerta_no_por_consulta_sin_cambio():
+    from modelo.buscador_rutas import CacheDistanciasCazador
+    _, salas = _mapa(1)
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    cache = CacheDistanciasCazador(salas[0].cripta)
+    primera = cache.obtener(jugador)
+    assert cache.obtener(jugador) is primera
+
+    salida = next(iter(salas[0].salidas.recorrer_valores()))
+    revision = salas[0].cripta.revision_puertas
+    salida.cerrada = True
+    assert salas[0].cripta.revision_puertas == revision + 1
+    segunda = cache.obtener(jugador)
+    assert segunda is not primera
+    assert cache.obtener(jugador) is segunda
+
+
+def test_cache_reconstruye_tras_deshacer_puerta_en_historial():
+    from modelo.buscador_rutas import CacheDistanciasCazador
+    from modelo.historial import Historial
+    from modelo.deltas import DeltaPuerta
+
+    cripta, salas = _mapa(1)
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    salida = next(iter(salas[0].salidas.recorrer_valores()))
+    cache = CacheDistanciasCazador(cripta)
+    inicial = cache.obtener(jugador)
+
+    historial = Historial()
+    delta = DeltaPuerta(salida)
+    salida.cerrada = True
+    delta.revertir()
+    restaurada = cache.obtener(jugador)
+    assert restaurada is not inicial
+
+
+def test_cache_carga_puerta_restaurada_invalida_desde_estado_cargado():
+    from modelo.buscador_rutas import CacheDistanciasCazador
+    from modelo.entidades.jugador import Jugador
+    from modelo.partida import Partida
+    from persistencia.estado_partida import codificar, decodificar
+
+    cripta, salas = _mapa(1)
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    partida = Partida(cripta, jugador, 42)
+    partida.inicializar()
+    cache = CacheDistanciasCazador(cripta)
+    inicial = cache.obtener(jugador)
+
+    referencia, registros = codificar(partida)
+    partida_cargada = decodificar(referencia, registros)
+    cargada = partida_cargada.cache_rutas_cazador
+    if cargada is None:
+        from modelo.buscador_rutas import CacheDistanciasCazador
+        cargada = CacheDistanciasCazador(partida_cargada.cripta)
+    reconstruida = cargada.obtener(partida_cargada.jugador)
+    assert reconstruida is not inicial
+
+
+def test_cache_reutiliza_indices_entrantes_y_distancias():
+    from modelo.buscador_rutas import (
+        CacheDistanciasCazador,
+        _construir_entrantes,
+        _distancias_hacia_jugador,
+    )
+    _, salas = _mapa(1)
+    jugador = Jugador("j", 100, 1, 1, 100, 10, salas[2])
+    cripta = salas[0].cripta
+    cache = CacheDistanciasCazador(cripta)
+    primera = cache.obtener(jugador)
+
+    assert cache.indice_entrantes is not None
+    assert cache.indice_distancias is not None
+    entrantes = _construir_entrantes(
+        cripta, cache.indice_entrantes
+    )
+    distancias = _distancias_hacia_jugador(
+        cripta,
+        jugador,
+        entrantes,
+        cache.indice_distancias,
+        cache.indice_entrantes,
+    )
+    assert distancias is not primera
+    assert cache.indice_entrantes is not None

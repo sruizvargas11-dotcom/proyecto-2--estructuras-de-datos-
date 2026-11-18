@@ -48,13 +48,37 @@ def _registro_indice(registros, indice, sala):
     return _buscar(registros, sala)
 
 
-def _construir_entrantes(cripta):
+def _crear_indice_valores(registros):
+    maximo = 0
+    for registro in registros:
+        if registro[0].id > maximo:
+            maximo = registro[0].id
+    if maximo > len(registros) * 4:
+        return None
+    indice = Vector()
+    for _ in range(maximo + 1):
+        indice.agregarValor(None)
+    datos_indice = indice.almacenamiento()
+    for registro in registros:
+        datos_indice[registro[0].id] = registro
+    return indice
+
+
+def _construir_entrantes(cripta, indice=None):
     entrantes = Vector()
     for sala in cripta.recorrer_salas():
         entrantes.agregarValor([sala, Vector()])
+    if indice is None:
+        indice = _crear_indice_valores(entrantes)
+    else:
+        datos_indice = indice.almacenamiento()
+        for registro in entrantes:
+            datos_indice[registro[0].id] = registro
     for origen in cripta.recorrer_salas():
         for salida in origen.salidas_abiertas():
-            registro = _buscar(entrantes, salida.sala_destino)
+            registro = (indice.almacenamiento()[salida.sala_destino.id]
+                        if indice is not None
+                        else _buscar(entrantes, salida.sala_destino))
             registro[1].agregarValor((origen, salida.costo))
     return entrantes
 
@@ -64,25 +88,44 @@ def construir_entrantes(cripta):
     return _construir_entrantes(cripta)
 
 
-def _distancias_hacia_jugador(cripta, jugador, entrantes=None):
+def _distancias_hacia_jugador(cripta, jugador, entrantes=None,
+                              indice_distancias=None, indice_entrantes=None):
     distancias = Vector()
     for sala in cripta.recorrer_salas():
         distancias.agregarValor([sala, None])
+    if indice_distancias is None:
+        indice_distancias = _crear_indice_valores(distancias)
+    else:
+        datos_indice = indice_distancias.almacenamiento()
+        for i, registro in enumerate(distancias):
+            datos_indice[registro[0].id] = registro
+    indice_entrantes = indice_entrantes
     if entrantes is None:
-        entrantes = _construir_entrantes(cripta)
-    objetivo = _buscar(distancias, jugador.sala_actual)
+        entrantes = _construir_entrantes(cripta, indice_entrantes)
+        if indice_entrantes is None:
+            indice_entrantes = _crear_indice_valores(entrantes)
+    objetivo = (indice_distancias.almacenamiento()[jugador.sala_actual.id]
+                if indice_distancias is not None
+                else _buscar(distancias, jugador.sala_actual))
     objetivo[1] = 0
     frontera = ColaPrioridadRuta()
     frontera.insertar(_registro(jugador.sala_actual, 0))
     while len(frontera):
         registro = frontera.extraer_minimo()
         sala, costo = registro[0], registro[1]
-        registro = _buscar(distancias, sala)
+        registro = (indice_distancias.almacenamiento()[sala.id]
+                    if indice_distancias is not None
+                    else _buscar(distancias, sala))
         if registro[1] != costo:
             continue
-        entrantes_sala = _buscar(entrantes, sala)[1]
+        registro_entrantes = (indice_entrantes.almacenamiento()[sala.id]
+                              if indice_entrantes is not None
+                              else _buscar(entrantes, sala))
+        entrantes_sala = registro_entrantes[1]
         for origen, costo_salida in entrantes_sala:
-            anterior = _buscar(distancias, origen)
+            anterior = (indice_distancias.almacenamiento()[origen.id]
+                        if indice_distancias is not None
+                        else _buscar(distancias, origen))
             nuevo = costo + costo_salida
             if anterior[1] is None or nuevo < anterior[1]:
                 anterior[1] = nuevo
@@ -96,31 +139,32 @@ class CacheDistanciasCazador:
     def __init__(self, cripta):
         self.cripta = cripta
         self._sala_jugador = None
-        self._puertas = Vector()
+        self._revision_puertas = None
         self._distancias = None
         self._entrantes = None
+        self.indice_entrantes = _crear_indice_valores([
+            [sala, None] for sala in cripta.recorrer_salas()
+        ])
+        self.indice_distancias = _crear_indice_valores([
+            [sala, None] for sala in cripta.recorrer_salas()
+        ])
 
     def obtener(self, jugador):
-        puertas = Vector()
-        for sala in self.cripta.recorrer_salas():
-            for salida in sala.salidas:
-                puertas.agregarValor((sala.id, salida.direccion, salida.cerrada))
         invalida = self._sala_jugador is not jugador.sala_actual
-        if not invalida and self._puertas is not None:
-            if len(puertas) != len(self._puertas):
-                invalida = True
-            else:
-                for i in range(len(puertas)):
-                    if puertas.obtenerValor(i) != self._puertas.obtenerValor(i):
-                        invalida = True
-                        break
+        revision = getattr(self.cripta, "revision_puertas", 0)
+        if revision != self._revision_puertas:
+            invalida = True
         if invalida or self._distancias is None:
-            self._entrantes = _construir_entrantes(self.cripta)
-            self._distancias = _distancias_hacia_jugador(
-                self.cripta, jugador, self._entrantes
+            self._entrantes = _construir_entrantes(
+                self.cripta, self.indice_entrantes
             )
+            self._distancias = _distancias_hacia_jugador(
+                self.cripta, jugador, self._entrantes,
+                self.indice_distancias, self.indice_entrantes
+            )
+            self._distancias._indice_cazador = self.indice_distancias
             self._sala_jugador = jugador.sala_actual
-            self._puertas = puertas
+            self._revision_puertas = revision
         return self._distancias
 
 
@@ -184,7 +228,10 @@ def decidir_cazador(cazador, jugador, distancias=None, entrantes=None):
     """Devuelve ``(acción, destino)`` o ``(acción, (destino, costo))``."""
     if distancias is None:
         return _decidir_cazador_individual(cazador, jugador)
-    final = _buscar(distancias, cazador.sala_actual)
+    indice = getattr(distancias, "_indice_cazador", None)
+    final = (indice.almacenamiento()[cazador.sala_actual.id]
+             if indice is not None
+             else _buscar(distancias, cazador.sala_actual))
     if final is None or final[1] is None or final[1] > cazador.rango:
         return ("esperar", None)
 
@@ -193,7 +240,9 @@ def decidir_cazador(cazador, jugador, distancias=None, entrantes=None):
 
     mejor_salida = None
     for salida in cazador.sala_actual.salidas_abiertas():
-        distancia = _buscar(distancias, salida.sala_destino)
+        distancia = (indice.almacenamiento()[salida.sala_destino.id]
+                     if indice is not None
+                     else _buscar(distancias, salida.sala_destino))
         if distancia is not None and distancia[1] is not None and (
                 salida.costo + distancia[1] == final[1]
                 and (mejor_salida is None

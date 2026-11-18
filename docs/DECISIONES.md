@@ -1339,3 +1339,84 @@ en el JSON versionable, que registra el checksum del fixture
 La suite completa había pasado 1175 pruebas con Python 3.12.10 en la revisión anterior; tras
 la optimización final, las pruebas focalizadas de cazador y benchmark pasaron 15/15. No se
 ejecutaron `git add`, commit ni push.
+
+### Extensión de benchmark con cripta de referencia (2026-11-17)
+
+Se conserva el fixture comparativo sintético `bench-terreno-cazador-grid-16x16` v1.0.0,
+sus 20 cazadores, el reparto 10/10 y los ocho escenarios de 30 repeticiones por 1000
+ciclos. Se añade una medición independiente sobre el snapshot externo de `cripta-06`,
+versión `f9ed9afa683d`, con catálogo `4b9e75a42be5`, 300 salas y 25 instancias activas de
+`ent_sabueso_oseo`. La adquisición inicial del snapshot realizó 13 solicitudes y quedó
+dentro del presupuesto publicado de 63; el benchmark no ejecuta solicitudes HTTP ni crea
+vistas/Pygame dentro de los ciclos medidos.
+
+El snapshot quedó materializado en
+`bench/datos/cripta-06-terreno-cazador-vf9ed9afa683d.json` y su SHA-256 es
+`42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5`. El reporte completo
+de esta ejecución se conserva en
+`docs/evidencia/terreno-cazador-benchmark-completo.json` sin modificar el reporte histórico
+`docs/evidencia/2026-11-04-terreno-cazador-benchmark.json`.
+
+Ejecución realizada con Python 3.12.10: las ocho combinaciones sintéticas tuvieron cero
+discrepancias frente a la referencia desde cero. Los máximos reales fueron superiores a
+20 ms en varias combinaciones; el máximo global sintético registrado fue 51.7391 ms. La
+validación de `cripta-06`, 30 repeticiones × 1000 ciclos, tuvo cero discrepancias y un
+máximo real de 29.9441 ms. Por ello `cumple_umbral=false` en el reporte y T031 permanece
+pendiente de aprobación. No se cambió el umbral ni se generaliza el resultado fuera de los
+dos datasets medidos.
+
+### Optimización de rutas y benchmark final (2026-11-17)
+
+Se implementó el acceso directo propio a registros de distancias cuando el mapa permite un
+índice compacto seguro, conservando búsqueda binaria propia para mapas con IDs dispersos.
+La caché de distancias pasó de escanear todas las salidas por consulta a observar una revisión
+monotónica de puertas registrada en `CriptaModelo`; historial, replay y carga conservan el
+estado físico restaurado. La suite completa pasó 1184 pruebas con Python 3.12.10.
+
+Se ejecutó el benchmark final en
+`docs/evidencia/terreno-cazador-benchmark-final.json`, sin modificar los reportes histórico
+ni completo anteriores. Las ocho combinaciones sintéticas y `cripta-06` tuvieron cero
+discrepancias. `cripta-06` cumplió el máximo individual con 4.7583 ms. Sin embargo, varios
+máximos de los escenarios sintéticos excedieron 20 ms: máximo global 35.9268 ms. Por ello
+`cumple_umbral=false`, T031 permanece pendiente y no se afirma el criterio contractual.
+T034–T038 quedaron verificadas por pruebas focalizadas y la suite completa; T039 permanece
+pendiente hasta completar o documentar validaciones posteriores según sus criterios.
+
+### Plan de optimización posterior al diagnóstico (2026-11-17)
+
+El perfil diagnóstico separado midió dónde consume trabajo la ejecución de referencia:
+`_buscar` acumuló 2.498 millones de llamadas y 4.345 s bajo perfilador en el recorrido
+compartido, mientras la caché reconstruía entrantes y distancias. Estas cifras no son
+evidencia contractual. El Plan prioriza reducir búsquedas repetidas con estructuras propias,
+diseñar una revisión incremental segura de jugador y puertas para historial/replay/carga,
+eliminar búsquedas auxiliares del cronómetro del benchmark y conservar independientes los
+modos individual y compartido.
+
+Se mantiene sin cambios el umbral de 20 ms, los ocho escenarios sintéticos, el reparto
+10/10, el snapshot de `cripta-06`, 30 repeticiones × 1000 ciclos y el esquema de evidencia.
+T031 no se aprueba hasta que un reporte contractual nuevo muestre cero discrepancias y ningún
+ciclo superior a 20 ms medido sin perfilador.
+
+### Segunda iteración de diagnóstico y optimización (2026-11-17)
+
+T040–T042 se ejecutaron fuera del benchmark contractual con perfiles separados. El perfil
+de rutas individuales de rango grande mostró un primer ciclo de 22.0051 ms y un promedio
+de 0.977476 ms en los ciclos siguientes; el perfil de reconstrucción compartida al cambiar
+una puerta mostró un primer ciclo de 6.5184 ms y un promedio de 5.935858 ms en los ciclos
+siguientes. El perfil del procesamiento real de turnos registró un máximo por separado de
+4.2266 ms. Estas cifras perfiladas no son evidencia contractual.
+
+T043 protegió rutas ponderadas, puertas, rangos, desempates y IDs dispersos. T044 reutilizó
+índices propios para las tablas de distancias y entrantes, conservó el índice directo
+`_indice_benchmark`, Dijkstra ponderado y los modos individual/compartido. La suite completa
+pasó 1185 pruebas, las regresiones de replay/carga pasaron 31/31 y las focalizadas pasaron
+39/39.
+
+Se ejecutó una vez el benchmark contractual de iteración 2 en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-2.json`, sin modificar el reporte
+histórico, el reporte completo anterior ni el reporte final anterior. Todas las decisiones
+coincidieron con la referencia. `cripta-06` tuvo máximo de 17.7811 ms. Los máximos sintéticos
+fueron 18.9263 ms, 14.7685 ms, 11.8523 ms, 3.7667 ms, 18.2386 ms, 16.5073 ms, 24.7046 ms
+y 13.3062 ms por escenario. Por ello `cumple_umbral=false`; el único escenario sintético
+que supera 20 ms es rango grande, puerta cada ciclo, modalidad individual. T039 y T045
+quedan pendientes. T046 queda completada al conservar y documentar el resultado real.

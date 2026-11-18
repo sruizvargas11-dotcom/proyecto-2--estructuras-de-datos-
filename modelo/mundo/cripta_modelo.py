@@ -30,6 +30,7 @@ class CriptaModelo:
         self.ultimo_algoritmo = None
         self._salas = Vector()
         self._ordenadas = False
+        self.revision_puertas = 0
 
     def __len__(self):
         return len(self._salas)
@@ -62,9 +63,13 @@ class CriptaModelo:
         for sala in self.recorrer_salas():
             sala.cripta = self
             for salida in sala.salidas:
+                salida.cripta = self
                 salida.sala_destino = self.sala_por_id(
                     salida.sala_destino_id
                 )
+
+    def registrar_cambio_puerta(self):
+        self.revision_puertas += 1
 
     def sala_por_id(self, sala_id):
         """Busca en O(log n); devuelve None si el ID no existe."""

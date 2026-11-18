@@ -21,11 +21,17 @@ from modelo.reloj import Reloj
 
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = ROOT / "bench" / "datos" / "bench-terreno-cazador-grid-16x16-v1.0.0.json"
+REFERENCIA = ROOT / "bench" / "datos" / "cripta-06-terreno-cazador-vf9ed9afa683d.json"
 INF = 10 ** 30
 
 
 def _fixture():
     contenido = FIXTURE.read_bytes()
+    return json.loads(contenido.decode("utf-8")), hashlib.sha256(contenido).hexdigest()
+
+
+def _fixture_referencia():
+    contenido = REFERENCIA.read_bytes()
     return json.loads(contenido.decode("utf-8")), hashlib.sha256(contenido).hexdigest()
 
 
@@ -219,6 +225,12 @@ def _registrar_observacion(enemigo, accion, posiciones, indice):
     return enemigo.instancia_id, observacion
 
 
+def _asignar_indices_benchmark(enemigos):
+    """Asocia cada actor con su posición sin búsquedas durante la medición."""
+    for indice, enemigo in enumerate(enemigos):
+        enemigo._indice_benchmark = indice
+
+
 def _crear_partida(datos, rangos):
     salas = []
     for dato in datos["salas"]:
@@ -266,8 +278,151 @@ def _alternar_puerta_produccion(partida, datos, nombre):
         salida.cerrada = not salida.cerrada
 
 
+def _grafo_referencia(datos):
+    vecinos = [[] for _ in range(301)]
+    cerradas = []
+    for pagina in datos["paginas"]:
+        for dato_sala in pagina["salas"]:
+            origen = dato_sala["id"]
+            indice = 0
+            for direccion, salida in dato_sala["salidas"].items():
+                costo = salida["costo"] if "costo" in salida else 100
+                vecinos[origen].append(
+                    (salida["sala"], costo, direccion)
+                )
+                if salida.get("cerrada", False):
+                    cerradas.append((origen, indice))
+                indice += 1
+    return vecinos, cerradas
+
+
+def _crear_partida_referencia(datos):
+    general = datos["general"]
+    cripta = CriptaModelo(
+        datos["cripta"], datos["version_cripta"],
+        datos["sala_inicial"], general["sala_salida"],
+        general["llave_salida"], general["presupuesto_solicitudes"],
+        general["inventario_max"],
+    )
+    salas = {}
+    for pagina in datos["paginas"]:
+        for dato_sala in pagina["salas"]:
+            sala = Sala(dato_sala["id"], dato_sala["nombre"])
+            salas[dato_sala["id"]] = sala
+            cripta.agregar_sala(sala)
+    for pagina in datos["paginas"]:
+        for dato_sala in pagina["salas"]:
+            sala = salas[dato_sala["id"]]
+            for direccion, dato_salida in dato_sala["salidas"].items():
+                costo = dato_salida["costo"] if "costo" in dato_salida else 100
+                sala.salidas.insertar_al_final(Salida(
+                    direccion,
+                    dato_salida["sala"],
+                    cerrada=dato_salida.get("cerrada", False),
+                    costo=costo,
+                ))
+    cripta.finalizar_carga()
+    atributos = datos["jugador"]
+    jugador = Jugador(
+        "jugador-bench-referencia",
+        1_000_000_000,
+        atributos["ataque"],
+        atributos["defensa"],
+        atributos["velocidad"],
+        general["inventario_max"],
+        cripta.sala_por_id(datos["sala_inicial"]),
+        vida=1_000_000_000,
+    )
+    partida = Partida(
+        cripta, jugador, 42, version_catalogo=datos["version_catalogo"]
+    )
+    partida.inicializar()
+    enemigos = []
+    for dato in datos["cazadores"]:
+        enemigo = Enemigo(
+            dato["instancia"],
+            dato["tipo"],
+            "Sabueso Oseo",
+            dato["vida_max"],
+            dato["ataque"],
+            dato["defensa"],
+            dato["velocidad"],
+            dato["comportamiento"],
+            cripta.sala_por_id(dato["sala"]),
+            vida=dato["vida_max"],
+            rango=dato["rango"],
+        )
+        enemigo.sala_actual.enemigos_activos.insertar_al_final(enemigo)
+        partida.reloj.vincular_actor(enemigo)
+        partida.reloj.programar(
+            enemigo, 100, partida.ejecutor_enemigo(enemigo)
+        )
+        enemigos.append(enemigo)
+    return partida, enemigos
+
+
+def _correr_referencia(datos):
+    vecinos, cerradas = _grafo_referencia(datos)
+    duraciones = []
+    discrepancias = []
+    posiciones = [cazador["sala"] for cazador in datos["cazadores"]]
+    rangos = [cazador["rango"] for cazador in datos["cazadores"]]
+    partida, enemigos = _crear_partida_referencia(datos)
+    _asignar_indices_benchmark(enemigos)
+    jugador = datos["sala_inicial"]
+    for ciclo in range(1, 1001):
+        referencia_posiciones = list(posiciones)
+        inicio = time.perf_counter_ns()
+        observadas = []
+        distancias = partida.cache_rutas_cazador.obtener(partida.jugador)
+        entrada_jugador = partida.reloj.proximo()
+        if entrada_jugador is not partida.jugador.evento_actual:
+            raise RuntimeError("El ciclo no comenzó en la decisión del jugador.")
+        partida.reloj.tiempo_actual = entrada_jugador.tiempo
+        partida.reloj.tomar_turno(partida.jugador)
+        partida.contar_accion_jugador()
+        partida.refrescar_rastro()
+        partida.programar_siguiente_jugador(100)
+        while partida.reloj.proximo() is not partida.jugador.evento_actual:
+            entrada = partida.reloj.extraer_siguiente()
+            enemigo = entrada.dato.dueno
+            indice = enemigo._indice_benchmark
+            accion = partida.ejecutar_accion_enemigo(
+                enemigo,
+                usar_cache=True,
+                distancias=distancias,
+            )
+            observacion = _registrar_observacion(
+                enemigo, accion, posiciones, indice
+            )
+            observadas.append((indice, observacion[0], observacion[1]))
+            partida.programar_siguiente_enemigo(
+                enemigo, enemigo.costo_ultima_accion
+            )
+        duraciones.append(time.perf_counter_ns() - inicio)
+        for indice, instancia_id, observada in observadas:
+            esperada = _decision_individual(
+                vecinos,
+                referencia_posiciones[indice],
+                jugador,
+                rangos[indice],
+                cerradas,
+            )
+            if observada != esperada:
+                discrepancias.append({
+                    "ciclo": ciclo,
+                    "cazador": instancia_id,
+                    "esperada": esperada,
+                    "observada": observada,
+                })
+            if observada[0] == "mover":
+                referencia_posiciones[indice] = observada[1][0]
+    return duraciones, discrepancias
+
+
 def _correr_escenario(datos, vecinos, puertas, rangos, frecuencia, modalidad):
     partida, enemigos = _crear_partida(datos, rangos)
+    _asignar_indices_benchmark(enemigos)
     posiciones = list(datos["estado_inicial"]["cazadores"]["salas"])
     jugador = datos["estado_inicial"]["jugador"]["sala"]
     cerradas = []
@@ -299,24 +454,21 @@ def _correr_escenario(datos, vecinos, puertas, rangos, frecuencia, modalidad):
         while partida.reloj.proximo() is not partida.jugador.evento_actual:
             entrada = partida.reloj.extraer_siguiente()
             enemigo = entrada.dato.dueno
-            indice = enemigos.index(enemigo)
+            indice = enemigo._indice_benchmark
             accion = partida.ejecutar_accion_enemigo(
                 enemigo, usar_cache=modalidad == "compartida",
                 distancias=distancias
             )
-            observadas.append(_registrar_observacion(
+            observacion = _registrar_observacion(
                 enemigo, accion, posiciones, indice
-            ))
+            )
+            observadas.append((indice, observacion[0], observacion[1]))
             partida.programar_siguiente_enemigo(
                 enemigo, enemigo.costo_ultima_accion
             )
         duraciones.append(time.perf_counter_ns() - inicio)
         referencia = []
-        for instancia_id, observada in observadas:
-            indice = next(
-                i for i, enemigo in enumerate(enemigos)
-                if enemigo.instancia_id == instancia_id
-            )
+        for indice, instancia_id, observada in observadas:
             esperada = _decision_individual(
                 vecinos, referencia_posiciones[indice], jugador,
                 (rangos[0] if indice < 10 else rangos[1]), cerradas
@@ -365,6 +517,20 @@ def crear_reporte(ruta):
                     "modalidad": modalidad,
                     "repeticiones": repeticiones,
                 })
+    referencia_datos, referencia_checksum = _fixture_referencia()
+    referencia_repeticiones = []
+    for numero in range(1, 31):
+        duraciones, discrepancias = _correr_referencia(referencia_datos)
+        referencia_repeticiones.append({
+            "numero": numero,
+            "duraciones_ciclo_ns": duraciones,
+            "maximo_ciclo_ns": max(duraciones),
+            "discrepancias": discrepancias,
+        })
+        print(
+            "Benchmark cripta-06: repeticion %s/30" % numero,
+            flush=True,
+        )
     equipo = {
         "sistema_operativo": platform.platform(),
         "procesador": platform.processor() or platform.machine(),
@@ -373,6 +539,33 @@ def crear_reporte(ruta):
         "entorno_ejecucion": "python",
         "version_entorno": sys.version,
         "perfil_energia": "no disponible",
+    }
+    validacion_referencia = {
+        "cripta": referencia_datos["cripta"],
+        "version_cripta": referencia_datos["version_cripta"],
+        "version_catalogo": referencia_datos["version_catalogo"],
+        "sha256_snapshot": referencia_checksum,
+        "archivo": REFERENCIA.name,
+        "salas": referencia_datos["dimensiones"]["salas"],
+        "salidas_dirigidas": referencia_datos["dimensiones"]["salidas_dirigidas"],
+        "costos_explicitos": referencia_datos["dimensiones"]["costos_explicitos"],
+        "sala_inicial": referencia_datos["sala_inicial"],
+        "semilla": 42,
+        "accion_jugador": "W",
+        "cazadores": 25,
+        "ubicaciones": [
+            cazador["sala"] for cazador in referencia_datos["cazadores"]
+        ],
+        "rango": 600,
+        "repeticiones": referencia_repeticiones,
+        "cumple_umbral": all(
+            repeticion["maximo_ciclo_ns"] <= 20_000_000
+            for repeticion in referencia_repeticiones
+        ),
+        "decisiones_correctas": all(
+            not repeticion["discrepancias"]
+            for repeticion in referencia_repeticiones
+        ),
     }
     reporte = {
         "benchmark": "terreno-y-cazador",
@@ -390,16 +583,17 @@ def crear_reporte(ruta):
         "semilla": datos["semilla"],
         "estado_inicial": datos["estado_inicial"],
         "escenarios": escenarios,
+        "validacion_referencia": validacion_referencia,
         "cumple_umbral": all(
             repeticion["maximo_ciclo_ns"] <= 20_000_000
             for escenario in escenarios
             for repeticion in escenario["repeticiones"]
-        ),
+        ) and validacion_referencia["cumple_umbral"],
         "decisiones_correctas": all(
             not repeticion["discrepancias"]
             for escenario in escenarios
             for repeticion in escenario["repeticiones"]
-        ),
+        ) and validacion_referencia["decisiones_correctas"],
     }
     destino = Path(ruta)
     destino.parent.mkdir(parents=True, exist_ok=True)

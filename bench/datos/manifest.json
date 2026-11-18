@@ -6,5 +6,17 @@
   "salas": 256,
   "conexiones": 480,
   "sha256": "1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4",
-  "archivo": "bench-terreno-cazador-grid-16x16-v1.0.0.json"
+  "archivo": "bench-terreno-cazador-grid-16x16-v1.0.0.json",
+  "referencia_cripta_06": {
+    "archivo": "cripta-06-terreno-cazador-vf9ed9afa683d.json",
+    "cripta": "cripta-06",
+    "version_cripta": "f9ed9afa683d",
+    "version_catalogo": "4b9e75a42be5",
+    "salas": 300,
+    "salidas_dirigidas": 760,
+    "costos_explicitos": 356,
+    "cazadores": 25,
+    "ubicaciones": [8, 11, 17, 19, 34, 41, 60, 98, 108, 134, 148, 151, 152, 163, 176, 190, 216, 230, 241, 251, 256, 268, 283, 289, 295],
+    "sha256": "42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5"
+  }
 }
