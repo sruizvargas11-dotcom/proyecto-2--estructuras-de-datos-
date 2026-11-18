@@ -69,11 +69,17 @@ def main(argumentos=None):
                         help='Con --replay: no listar cada acción, solo el resultado')
     parser.add_argument('--reportes', metavar='ARCHIVO',
                         help='Historial de reportes de red (por defecto partidas/reportes_red.txt)')
-    parser.add_argument('--bench', action='store_true', help='Ejecutar benchmarks')
+    parser.add_argument(
+        '--bench', action='store_true',
+        help='Ejecutar la suite completa de benchmarks (incluye terreno y cazador)',
+    )
     parser.add_argument('--bench-caso', choices=('niebla-viaje',),
-                        help='Ejecutar un caso puntual de benchmark (requiere --bench)')
+                        help='Ejecutar solo niebla y viaje (requiere --bench)')
     parser.add_argument('--salida', metavar='RUTA',
-                        help='Guardar el reporte JSON del benchmark en RUTA')
+                        help=(
+                            'En la suite completa, guardar el reporte de terreno y cazador '
+                            'en RUTA; con --bench-caso, guardar allí el reporte de ese caso'
+                        ))
     parser.add_argument('--offline-dir', help='Datos locales alternativos; requiere --offline')
     parser.add_argument('--partidas-dir', default='partidas',
                         help='Guardados, bitácoras y tabla de puntajes')

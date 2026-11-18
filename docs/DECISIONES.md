@@ -1517,36 +1517,6 @@ y uno en rango grande compartido con cambio cada 100 ciclos. Por tanto
 ninguna evidencia previa. T054 y T055 quedan completadas al ejecutar y documentar el
 resultado; T031, T039 y T051 siguen pendientes porque el límite contractual aún falla.
 
-<<<<<<< HEAD
-## 002: Niebla de guerra, antorcha y viaje automático
-
-Se separa el conocimiento del jugador de la topología real. Cada sala tiene un registro
-ordenado por ID que distingue si es desconocida, avistada o explorada. Las salidas
-mantienen su último estado observado, con un tercer valor para las puertas que el
-jugador todavía no observó. La antorcha explora las salas alcanzadas por su efecto
-usando el esqueleto cargado y deja la observación de puertas remotas para cuando el
-jugador esté en uno de sus extremos. Consola y Pygame reciben solo lo que el jugador
-puede ver. El minimapa se recalcula al cambiar la topología conocida.
-
-El viaje calcula cada paso con Dijkstra inverso sobre las salidas conocidas y abiertas.
-Reutiliza la cola de prioridad de la 001 y desempata por el ID de la primera vecina.
-Cada paso usa la ejecución normal de movimiento. La orden se guarda como comentario
-en la bitácora, mientras que cada movimiento se registra como acción reproducible.
-Los cambios de conocimiento se registran con deltas, se guardan con la partida y se
-pueden reconstruir en una copia aislada. La consulta histórica de interfaz se integra
-con la capacidad 004.
-
-En cripta-01, con semilla 42 y 100 muestras por operación, el máximo medido para
-calcular el siguiente paso fue 0,0444 ms frente al límite de 5 ms. El resultado
-corresponde a seis salas completamente exploradas. La preparación del mapa queda
-fuera del cronómetro. El JSON conserva el entorno, las muestras y la revisión de
-partida, con indicación de que se midieron cambios locales.
-
-- [Especificación](../specs/002-niebla-viaje/spec.md)
-- [Trazabilidad de los 34 casos](evidencia/2026-11-12-niebla-viaje-trazabilidad.md)
-- [Benchmark JSON](evidencia/2026-11-12-niebla-viaje-benchmark.json)
-- [Resultados de la validación](evidencia/2026-11-12-niebla-viaje-validacion.md)
-=======
 ## 001: Quinta iteración de rendimiento de terreno y cazador (2026-11-18)
 
 El perfil diagnóstico de 1000 ciclos del escenario sintético de rango grande, puerta cada
@@ -1582,6 +1552,105 @@ T051 se cierran como gates históricos supersedidos por el resultado aprobado de
 no reclasifica los reportes de iteraciones 2–4: conservan sus resultados fallidos y no se
 presentan como aprobados. T039 queda satisfecho por el reporte vigente de iteración 5; el
 archivo `terreno-cazador-benchmark-final.json` se conserva sin sobrescribir.
+
+### Revisión local de escalado y ejecución integral (2026-11-18)
+
+Al repetir las mediciones de ciclo se encontró que iniciar el juego y crear el punto de
+control desbordaba la recursión en mapas grandes. La copia genérica seguía primero las
+salidas entre salas y llegaba al enlace de la cripta demasiado tarde; el conocimiento del
+jugador también contiene registros y recuerdos de puertas enlazados entre sí. Se reservan
+las copias de las salas y de esos registros antes de recorrer sus enlaces. Una prueba con
+1.500 salas valida que mapas, salidas, adyacencias y recuerdos queden enlazados a sus copias.
+Las tres pruebas de `tests/test_punto_control.py` pasaron con Python 3.12.10.
+
+La medición exploratoria del ciclo completo usó 100 ciclos por escala, con 200 salas/300
+enemigos en x1, 2.000/3.000 en x10 y 10.000/15.000 en x50. Las medianas fueron 9,910 ms,
+148,817 ms y 795,959 ms; los máximos, 25,272 ms, 467,599 ms y 2.519,470 ms. Los tres máximos
+superaron 20 ms. Esta muestra de 100 ciclos por escala sirve para mostrar el comportamiento
+de escalado, pero no sustituye mediciones de mayor duración ni cambia el protocolo contractual.
+Se conserva en `docs/evidencia/2026-11-18-ciclo-20ms.json`.
+
+`python main.py --bench` terminó con código de salida 0 en dos corridas. Cada una produjo
+158 filas de casos generales y un reporte de niebla/viaje; el terreno/cazador ejecutó ocho
+escenarios sintéticos de 30 repeticiones × 1.000 ciclos (240.000 ciclos) y `cripta-06` con
+30 × 1.000 (30.000 ciclos). En ambas todas las decisiones coincidieron con la referencia y
+no hubo discrepancias. La primera corrida llegó a un máximo sintético de 36,2262 ms. Después
+del ajuste final a la copia del conocimiento, la segunda midió un máximo de 32,8214 ms en
+rango grande, modalidad compartida y cambio de puerta cada 100 ciclos; por eso mantiene
+`cumple_umbral=false`. En `cripta-06`, el máximo de la segunda corrida fue 3,7177 ms y sí
+cumplió el límite. Los dos reportes se conservaron; el último no reemplaza ni reclasifica el
+resultado aprobado de iteración 5 ni las evidencias anteriores.
+
+Los reportes finales están en `docs/evidencia/2026-11-18-benchmark-general-revision.json`,
+`docs/evidencia/2026-11-18-benchmark-niebla-viaje-revision.json` y
+`docs/evidencia/2026-11-18-terreno-cazador-benchmark-integral-revision.json`. La primera
+corrida se conserva en los archivos `2026-11-18-benchmark-general.json`,
+`2026-11-18-benchmark-niebla-viaje.json` y
+`2026-11-18-terreno-cazador-benchmark-integral.json`. Se ejecutaron en Windows 11 con Python
+3.12.10. El máximo observado no permite afirmar que el requisito global de 20 ms esté
+cumplido en esta corrida.
+
+## 002: Niebla de guerra, antorcha y viaje automático
+
+Se separa el conocimiento del jugador de la topología real. Cada sala tiene un registro
+ordenado por ID que distingue si es desconocida, avistada o explorada. Las salidas
+mantienen su último estado observado, con un tercer valor para las puertas que el
+jugador todavía no observó. La antorcha explora las salas alcanzadas por su efecto
+usando el esqueleto cargado y deja la observación de puertas remotas para cuando el
+jugador esté en uno de sus extremos. Consola y Pygame reciben solo lo que el jugador
+puede ver. El minimapa se recalcula al cambiar la topología conocida.
+
+El viaje calcula cada paso con Dijkstra inverso sobre las salidas conocidas y abiertas.
+Reutiliza la cola de prioridad de la 001 y desempata por el ID de la primera vecina.
+Cada paso usa la ejecución normal de movimiento. La orden se guarda como comentario
+en la bitácora, mientras que cada movimiento se registra como acción reproducible.
+Los cambios de conocimiento se registran con deltas, se guardan con la partida y se
+pueden reconstruir en una copia aislada. La consulta histórica de interfaz se integra
+con la capacidad 004.
+
+En cripta-01, con semilla 42 y 100 muestras por operación, el máximo medido para
+calcular el siguiente paso fue 0,0444 ms frente al límite de 5 ms. El resultado
+corresponde a seis salas completamente exploradas. La preparación del mapa queda
+fuera del cronómetro. El JSON conserva el entorno, las muestras y la revisión de
+partida, con indicación de que se midieron cambios locales.
+
+- [Especificación](../specs/002-niebla-viaje/spec.md)
+- [Trazabilidad de los 34 casos](evidencia/2026-11-12-niebla-viaje-trazabilidad.md)
+- [Benchmark JSON](evidencia/2026-11-12-niebla-viaje-benchmark.json)
+- [Resultados de la validación](evidencia/2026-11-12-niebla-viaje-validacion.md)
+
+## 003: Reducción del costo de la referencia de resolubilidad (2026-11-18)
+
+### Diagnóstico y cambio
+
+El caso de resolubilidad de `--bench` también ejecuta una referencia deliberadamente
+repetitiva para comparar el verificador incremental. El perfil mostró que esa referencia
+reconstruía la misma topología transitable y consultaba repetidamente las estructuras de
+salas en cada BFS. Se mantuvieron los recorridos completos por cada llave candidata y por
+cada ronda, junto con la semilla, los tamaños y el número de repeticiones; se reutiliza la
+adyacencia dirigida mientras el conjunto de llaves no cambie y las marcas del BFS usan un
+`Vector` propio indexado por posición de sala. Al adquirir llaves, la adyacencia se vuelve
+a construir antes del siguiente recorrido.
+
+La optimización afecta al oráculo del benchmark, no al verificador de producción ni a las
+reglas de resolubilidad. Su propósito es que la comparación de `--bench` siga incluyendo
+una referencia lenta, sin pagar varias veces por reconstruir datos idénticos. La verificación
+de equivalencia continúa ejecutándose antes de medir.
+
+### Medición diagnóstica
+
+Se invocó directamente `bench.casos.resolubilidad.correr()` con Python 3.12.10 en el entorno
+local. Se conservaron 100 repeticiones incrementales y 20 de referencia por tamaño, con
+semilla 42. La referencia reportó 384, 768 y 1.536 recorridos completos respectivamente.
+Sus medianas fueron 143,790 ms, 600,358 ms y 2.379,490 ms; sus p95, 149,788 ms, 609,251 ms y
+2.408,260 ms. Para la variante incremental, los p95 fueron 7,774 ms, 14,794 ms y 32,107 ms.
+Las pruebas de equivalencia y los recorridos declarados no cambiaron.
+
+En una medición diagnóstica previa de la función completa, el caso tardó 278,64 s; tras las
+optimizaciones sucesivas, la última ejecución directa tardó aproximadamente 70 s. Es una
+comparación local de diagnóstico, no una nueva corrida completa de `python main.py --bench`
+ni evidencia para reemplazar los reportes contractuales conservados. No se declara un nuevo
+resultado de aceptación con estos tiempos.
 
 ## 004: Línea de tiempo de partida
 
@@ -1626,10 +1695,82 @@ La validación posterior ejecutó 85 pruebas focalizadas de línea de tiempo, re
 historia y replay; todas pasaron con Python 3.12.10. El subconjunto de cierre de T033 pasó
 30 pruebas.
 
+### Ajuste del tiempo de ejecución del benchmark (2026-11-18)
+
+El benchmark reconstruía dos veces la misma historia de 5.000 acciones con `K=10`: una para
+medir consultas con puntos de control y otra para medir la referencia sin ellos. Ahora ambas
+variantes usan la historia que ya se preparó en la primera medición. Se conservan las cuatro
+configuraciones de K, las 30 consultas por tipo, las 30 repeticiones por consulta y las tres
+repeticiones de la referencia; no se cambió la reconstrucción ni el conjunto de mediciones.
+
+La corrida directa de `bench.casos.linea_tiempo.correr()` terminó en 37,822 s en Windows 11
+con Python 3.12.10. Los p95 conjuntos fueron 2,505 ms (K=10), 2,973 ms (K=50), 4,349 ms
+(K=100) y 6,769 ms (K=200); el benchmark volvió a proponer K=200. El p95 de la variante sin
+puntos fue 131,196 ms. Esta duración es del caso de línea del tiempo aislado, no del comando
+completo `--bench`. El benchmark verificó equivalencia antes de medir; no se cambió el
+resultado contractual previo ni se afirma que esta corrida aislada sustituya la evidencia
+archivada.
+
 ### Límites conocidos
 
 Los tiempos corresponden al equipo, historia y consultas del reporte; no se generalizan a
 historias mayores ni a otras máquinas. La inversión hacia atrás no está implementada. Los
 máximos aislados pueden superar 50 ms aunque el p95 cumpla; se conservan y reportan sin
 filtrar muestras.
->>>>>>> feature/spec-kit-copilot
+
+## Seguimiento integral de `--bench` (2026-11-18)
+
+Se ejecutó `bench.runner.main_bench`, el runner de la suite completa que invoca `--bench`, en
+Windows 11 con Python 3.12.10. Se midió el tiempo de cada bloque sin cambiar las funciones ni
+sus repeticiones. La suite terminó en 556,215 s y produjo un reporte combinado de 158 filas,
+además de los reportes especializados.
+
+| Bloque | Tiempo |
+|---|---:|
+| Mensajes | 0,104 s |
+| Agenda/heap | 134,910 s |
+| LRU | 2,728 s |
+| Recuperación | 0,099 s |
+| Inventario | 0,003 s |
+| Historial | 0,036 s |
+| Ordenamiento | 9,435 s |
+| Guardado JSON | 1,259 s |
+| Resolubilidad | 81,182 s |
+| Línea del tiempo | 42,566 s |
+| Niebla y viaje | 0,165 s |
+| Terreno y cazador | 283,136 s |
+
+El tiempo dominante fue terreno y cazador, seguido por la agenda/heap y resolubilidad. Dentro
+de agenda/heap, `copiar_y_ordenar` con 5.000 entradas tuvo mediana de 14.500,438 ms por muestra
+y p95 de 14.711,302 ms; la lista lineal de agenda con 5.000 entradas tuvo mediana de
+3.102,188 ms. Son referencias deliberadamente costosas que se repiten para comparar
+alternativas. La medición identifica esos contrastes como los mayores contribuyentes del
+tiempo total.
+
+La línea del tiempo mantuvo el p95 de consultas con K=200 en 7,322 ms; la referencia sin
+puntos de control tuvo p95 de 131,250 ms. Resolubilidad conservó 100 repeticiones incrementales
+y 20 de referencia por tamaño. El reporte de terreno ejecutó ocho escenarios sintéticos y
+`cripta-06`, con 30 repeticiones de 1.000 ciclos cada uno. No registró discrepancias y todas
+las decisiones coincidieron con la referencia. `cripta-06` tuvo máximo de 5,769 ms. El máximo
+sintético fue 24,879 ms en rango pequeño, puertas cada 100 ciclos, modalidad compartida
+(repetición 5, ciclo 1); por eso el reporte conserva `cumple_umbral=false`.
+
+Los archivos de esta corrida son `bench/resultados/2026-11-18T161024_7655ecb +sin commit_bench.json`,
+`bench/resultados/2026-11-18T160541_7655ecb +sin commit_niebla-viaje.json` y
+`docs/evidencia/2026-11-18-terreno-cazador-benchmark-tracking-02.json`. Son reportes nuevos y
+no reemplazan las mediciones anteriores.
+
+### Diagnóstico del pico aislado de terreno y cazador
+
+El máximo sintético de 24,879 ms ocurrió en el ciclo 1 de la repetición 5 del escenario de
+rango pequeño, puerta cada 100 ciclos y modalidad compartida. Se repitió esa combinación 30
+veces con el mismo fixture: no hubo discrepancias y el máximo fue 3,958 ms. En una segunda
+repetición diagnóstica con tiempos separados para la caché, su consulta más lenta fue 3,172 ms;
+el p95 de todos los ciclos fue 0,354 ms. Se observaron algunas colecciones automáticas de GC
+generación 0, pero la instrumentación no encontró una colección que explicara un ciclo cercano
+a 20 ms.
+
+El pico original no se reprodujo y la evidencia disponible no demuestra una ruta lenta de
+forma repetible. Apunta a una pausa transitoria del proceso o del sistema, pero no permite
+afirmar cuál fue su causa. No se cambia el algoritmo ni se descarta la muestra: el reporte de
+seguimiento conserva `cumple_umbral=false`, y el resultado aprobado anterior permanece intacto.

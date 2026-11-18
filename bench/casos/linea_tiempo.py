@@ -311,11 +311,18 @@ def correr():
     filas = []
     resumenes_k = []
     filas_k = []
+    historia_base = None
+    tiempo_base = None
     repeticiones = REPETICIONES_BENCH
     for posicion_k, k in enumerate(K_EVALUADOS):
         historia, tiempo_actual, memoria_pico = _construir_historia(
             k, ACCIONES_BENCH
         )
+        if posicion_k == 0:
+            # La referencia sin puntos usa la misma historia de 5.000 acciones
+            # que la primera variante; no hace falta volver a simularla.
+            historia_base = historia
+            tiempo_base = tiempo_actual
         consultas = _puntos_consulta(historia, tiempo_actual)
         conteos = tuple(
             _acciones_reconstruidas(historia, tipo, valor)
@@ -415,9 +422,6 @@ def correr():
             ),
         ))
 
-    historia_base, tiempo_base, _ = _construir_historia(
-        K_EVALUADOS[0], ACCIONES_BENCH
-    )
     consultas_base = _puntos_consulta(historia_base, tiempo_base)
     muestras_sin_puntos = []
     for tipo, valor in consultas_base:

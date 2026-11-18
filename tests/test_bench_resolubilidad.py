@@ -1,4 +1,4 @@
-"""Integración del caso de resolubilidad en --bench (SC-002, RS-E12, RS-E33)."""
+"""Integración de resolubilidad y casos especializados en --bench."""
 
 from types import SimpleNamespace
 
@@ -71,51 +71,46 @@ def test_discrepancia_de_equivalencia_falla_antes_de_cronometrar(monkeypatch):
         resolubilidad.validar_equivalencia(sintetica)
 
 
-def test_runner_sin_salida_incluye_el_caso(monkeypatch, tmp_path):
-    from bench import runner
+@pytest.mark.parametrize("con_salida", [False, True])
+def test_runner_integra_casos_niebla_y_terreno(monkeypatch, tmp_path, con_salida):
+    from bench import niebla_viaje, runner, terreno_cazador
 
-    filas = [Fila("resolubilidad", "incremental", 2, 0.1)]
+    fila_base = Fila("resolubilidad", "incremental", 2, 0.1)
+    fila_niebla = Fila("niebla-viaje", "siguiente_paso", 6, 0.2)
     llamadas = []
+    reportes = []
+    ruta_niebla = tmp_path / "niebla.json"
+    ruta_terreno = tmp_path / "terreno.json"
+    salida = tmp_path / "solicitado.json" if con_salida else None
 
     def caso():
-        llamadas.append(True)
-        return filas
+        llamadas.append("caso")
+        return [fila_base]
+
+    def benchmark_niebla(ruta):
+        llamadas.append("niebla")
+        assert ruta == ruta_niebla
+        return {}, [fila_niebla]
 
     monkeypatch.setattr(runner, "CASOS", [caso])
     monkeypatch.setattr(runner, "_encabezado", lambda: ("commit", "python", "os", "cpu"))
+    monkeypatch.setattr(runner, "_guardar_evidencia", lambda *args: tmp_path / "bench.json")
     monkeypatch.setattr(
         runner,
-        "_guardar_evidencia",
-        lambda *args: tmp_path / "bench.json",
+        "_ruta_reporte_especializado",
+        lambda tipo, commit: ruta_niebla if tipo == "niebla-viaje" else ruta_terreno,
     )
-    monkeypatch.setattr(runner, "imprimir_tabla", lambda filas: None)
-
-    assert runner.main_bench() == filas
-    assert llamadas == [True]
-
-
-def test_runner_con_salida_conserva_reporte_y_ejecuta_caso(monkeypatch, tmp_path):
-    from bench import runner, terreno_cazador
-
-    filas = [Fila("resolubilidad", "incremental", 2, 0.1)]
-    reportes = []
-    casos = []
+    monkeypatch.setattr(niebla_viaje, "ejecutar_benchmark", benchmark_niebla)
     monkeypatch.setattr(
         terreno_cazador,
         "crear_reporte",
         lambda ruta: reportes.append(ruta),
     )
-    monkeypatch.setattr(
-        resolubilidad,
-        "correr",
-        lambda: casos.append(True) or filas,
-    )
     monkeypatch.setattr(runner, "imprimir_tabla", lambda filas: None)
-    ruta = tmp_path / "terreno.json"
 
-    assert runner.main_bench(ruta) == filas
-    assert reportes == [ruta]
-    assert casos == [True]
+    assert runner.main_bench(salida) == [fila_base, fila_niebla]
+    assert llamadas == ["caso", "niebla"]
+    assert reportes == [salida or ruta_terreno]
 
 
 def test_bench_cli_pasa_la_ruta_solicitada(monkeypatch, tmp_path):

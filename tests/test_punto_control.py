@@ -1,5 +1,11 @@
 """Pruebas de captura y restauracion de puntos de control."""
 
+from copy import deepcopy
+
+from modelo.mundo.cripta_modelo import CriptaModelo
+from modelo.mundo.sala import Sala
+from modelo.mundo.salida import Salida
+from modelo.conocimiento import ConocimientoJugador
 from modelo.punto_control import PuntoControl
 from tests.fixtures.linea_tiempo import crear_partida_determinista
 
@@ -62,3 +68,40 @@ def test_restauraciones_son_independientes_entre_si(tmp_path):
 
     assert partida.jugador.vida == vida_inicial
     assert segunda.jugador.vida == vida_inicial
+
+
+def test_copiar_cripta_extensa_conserva_enlaces_sin_recursion():
+    """Un mapa extenso debe poder copiarse para los checkpoints de partida."""
+    cantidad = 1500
+    cripta = CriptaModelo("larga", "v1", 0, cantidad - 1, None, 0, 10)
+    salas = [Sala(indice, f"Sala {indice}") for indice in range(cantidad)]
+    for indice, sala in enumerate(salas):
+        cripta.agregar_sala(sala)
+        if indice + 1 < cantidad:
+            sala.salidas.insertar_al_final(
+                Salida("este", indice + 1, costo=1)
+            )
+    cripta.finalizar_carga()
+
+    copia = deepcopy(cripta)
+    conocimiento = ConocimientoJugador(cripta)
+    conocimiento_copiado = deepcopy(conocimiento)
+
+    assert copia is not cripta
+    assert len(copia) == cantidad
+    assert copia.sala_por_id(0) is not salas[0]
+    assert conocimiento_copiado is not conocimiento
+    assert len(conocimiento_copiado.registros) == cantidad
+    for indice, sala_copiada in enumerate(copia.recorrer_salas()):
+        assert sala_copiada.cripta is copia
+        registro = conocimiento_copiado.registro(indice)
+        assert registro.sala is not salas[indice]
+        assert registro.sala.cripta is conocimiento_copiado.registro(0).sala.cripta
+        if indice + 1 < cantidad:
+            salida = next(sala_copiada.salidas.recorrer_valores())
+            assert salida.cripta is copia
+            assert salida.sala_destino is copia.sala_por_id(indice + 1)
+            vecinos = copia.adjacencia_individual().obtenerValor(indice)
+            assert vecinos.obtenerValor(0)[1] is salida
+            recuerdo = registro.recuerdos.obtenerValor(0)
+            assert recuerdo.destino is conocimiento_copiado.registro(indice + 1)

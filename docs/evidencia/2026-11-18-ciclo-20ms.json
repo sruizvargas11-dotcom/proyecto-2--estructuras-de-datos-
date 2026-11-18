@@ -1,0 +1,47 @@
+{
+  "meta_ms": 20.0,
+  "filas": [
+    {
+      "ciclos": 100,
+      "min_ms": 0.4628,
+      "mediana_ms": 9.9099,
+      "p95_ms": 13.4158,
+      "max_ms": 25.2718,
+      "salas": 200,
+      "enemigos": 300,
+      "preparacion_s": 0.57,
+      "eventos_en_agenda": 347,
+      "turnos_enemigo": 31291,
+      "efectos": 3448,
+      "escala": 1
+    },
+    {
+      "ciclos": 100,
+      "min_ms": 24.6836,
+      "mediana_ms": 148.8171,
+      "p95_ms": 443.5006,
+      "max_ms": 467.599,
+      "salas": 2000,
+      "enemigos": 3000,
+      "preparacion_s": 7.39,
+      "eventos_en_agenda": 3718,
+      "turnos_enemigo": 317905,
+      "efectos": 34384,
+      "escala": 10
+    },
+    {
+      "ciclos": 100,
+      "min_ms": 7.578,
+      "mediana_ms": 795.9592,
+      "p95_ms": 2392.3322,
+      "max_ms": 2519.4701,
+      "salas": 10000,
+      "enemigos": 15000,
+      "preparacion_s": 60.88,
+      "eventos_en_agenda": 18722,
+      "turnos_enemigo": 1648471,
+      "efectos": 176223,
+      "escala": 50
+    }
+  ]
+}

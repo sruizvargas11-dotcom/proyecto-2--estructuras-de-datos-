@@ -1,5 +1,7 @@
 """Mapa de la cripta con consultas por identificador de sala."""
 
+from copy import deepcopy
+
 from estructuras.vector_dinamico import Vector
 from estructuras.ordenamientos import ordenar
 
@@ -35,6 +37,28 @@ class CriptaModelo:
         self._indice_salas_ids = None
         self._indice_salas_posiciones = None
         self._adjacencia_individual = None
+
+    def __deepcopy__(self, memo):
+        """Copia el mapa sin recorrer recursivamente sus enlaces entre salas."""
+        copia_existente = memo.get(id(self))
+        if copia_existente is not None:
+            return copia_existente
+
+        copia = type(self).__new__(type(self))
+        memo[id(self)] = copia
+
+        # Las salidas enlazan salas vecinas y cada sala vuelve a enlazar la
+        # cripta. Reservar primero todas las salas rompe esos ciclos antes de
+        # copiar sus atributos y conserva una sola copia de cada objeto.
+        for sala in self._salas:
+            memo.setdefault(id(sala), type(sala).__new__(type(sala)))
+
+        for sala in self._salas:
+            sala_copiada = memo[id(sala)]
+            sala_copiada.__dict__ = deepcopy(sala.__dict__, memo)
+
+        copia.__dict__ = deepcopy(self.__dict__, memo)
+        return copia
 
     def __len__(self):
         return len(self._salas)

@@ -5,6 +5,8 @@ Separado del mapa real: guarda qué salas exploró o avistó el jugador y el
 solo se usan para leer nombre, salidas y, al observar, el estado real.
 Toda mutación pasa por el historial compartido (deltas) para el pergamino.
 """
+from copy import deepcopy
+
 from estructuras.vector_dinamico import Vector
 from estructuras.heap_prioridad_ruta import ColaPrioridadRuta
 from modelo.deltas import DeltaAtributos, DeltaLongitud
@@ -66,6 +68,42 @@ class ConocimientoJugador:
                 recuerdo.destino = destino
                 if destino is not None:
                     destino.entrantes.agregarValor(recuerdo)
+
+    def __deepcopy__(self, memo):
+        """Copia los registros enlazados sin seguir largas cadenas de salas."""
+        copia_existente = memo.get(id(self))
+        if copia_existente is not None:
+            return copia_existente
+
+        copia = type(self).__new__(type(self))
+        memo[id(self)] = copia
+
+        registros = list(self.registros)
+        if registros:
+            cripta = registros[0].sala.cripta
+            if cripta is not None:
+                deepcopy(cripta, memo)
+
+        recuerdos = []
+        for registro in registros:
+            memo.setdefault(
+                id(registro), type(registro).__new__(type(registro))
+            )
+            recuerdos.extend(registro.recuerdos)
+        for recuerdo in recuerdos:
+            memo.setdefault(
+                id(recuerdo), type(recuerdo).__new__(type(recuerdo))
+            )
+
+        for registro in registros:
+            registro_copiado = memo[id(registro)]
+            registro_copiado.__dict__ = deepcopy(registro.__dict__, memo)
+        for recuerdo in recuerdos:
+            recuerdo_copiado = memo[id(recuerdo)]
+            recuerdo_copiado.__dict__ = deepcopy(recuerdo.__dict__, memo)
+
+        copia.__dict__ = deepcopy(self.__dict__, memo)
+        return copia
 
     # ------------------------------------------------------------ consultas
     def registro(self, sala_id):

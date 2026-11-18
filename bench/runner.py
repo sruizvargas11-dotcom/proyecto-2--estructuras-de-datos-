@@ -70,21 +70,43 @@ def _guardar_evidencia(filas, commit, py, so, cpu, semilla=42):
     return ruta
 
 
+def _ruta_reporte_especializado(tipo, commit):
+    directorio = Path(__file__).parent / 'resultados'
+    directorio.mkdir(parents=True, exist_ok=True)
+    marca = datetime.now().strftime('%Y-%m-%dT%H%M%S')
+    return directorio / f"{marca}_{commit}_{tipo}.json"
+
+
 def main_bench(salida=None):
-    if salida is not None:
-        from bench.casos import resolubilidad
-        filas = resolubilidad.correr()
-        imprimir_tabla(filas)
-        from bench.terreno_cazador import crear_reporte
-        crear_reporte(salida)
-        print(f"evidencia: {salida}")
-        return filas
     commit, py, so, cpu = _encabezado()
     filas = []
+    print("Ejecutando casos generales de estructuras y persistencia...", flush=True)
     for caso in CASOS:
         filas.extend(caso())
+
+    # Los reportes específicos conservan sus propios formatos. La salida
+    # solicitada por CLI sigue correspondiendo al reporte contractual del
+    # cazador; el reporte de niebla se guarda junto a las demás evidencias.
+    from bench.niebla_viaje import ejecutar_benchmark
+    ruta_niebla = _ruta_reporte_especializado('niebla-viaje', commit)
+    print("Midiendo niebla de guerra y viaje...", flush=True)
+    _, filas_niebla = ejecutar_benchmark(ruta_niebla)
+    filas.extend(filas_niebla)
+
+    from bench.terreno_cazador import crear_reporte
+    ruta_terreno = Path(salida) if salida is not None else _ruta_reporte_especializado(
+        'terreno-cazador', commit
+    )
+    print(
+        "Midiendo terreno y cazador (ocho escenarios sintéticos y cripta de referencia; "
+        "puede tardar varios minutos)...",
+        flush=True,
+    )
+    crear_reporte(ruta_terreno)
+
     imprimir_tabla(filas)
-    if salida is None:
-        ruta = _guardar_evidencia(filas, commit, py, so, cpu)
-    print(f"\nevidencia: {ruta}")
+    ruta = _guardar_evidencia(filas, commit, py, so, cpu)
+    print(f"\nevidencia general: {ruta}")
+    print(f"evidencia niebla-viaje: {ruta_niebla}")
+    print(f"evidencia terreno-cazador: {ruta_terreno}")
     return filas

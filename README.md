@@ -21,7 +21,7 @@ El proyecto utiliza estructuras de datos propias para resolver problemas del jue
 
 ## Instalación
 
-El entorno de referencia es **Python 3.12**. La última validación local se realizó con Python 3.12.14 en Windows 11. Las dependencias están en [requirements.txt](requirements.txt): `requests` para el acceso HTTP, `pytest` para las pruebas y `pygame` para la vista gráfica (`--gui`). No hace falta configurar una base de datos.
+El entorno de referencia es **Python 3.12**. La última ejecución local de benchmarks se realizó con Python 3.12.10 en Windows 11. Las dependencias están en [requirements.txt](requirements.txt): `requests` para el acceso HTTP, `pytest` para las pruebas y `pygame` para la vista gráfica (`--gui`). No hace falta configurar una base de datos.
 
 Clona el repositorio y entra en su carpeta:
 
@@ -236,10 +236,12 @@ python main.py --help
 | `--checkpoint-cada K` | Guardar un punto de control cada K acciones para las consultas `HISTORIA` (por defecto 200; K debe ser positivo). |
 | `--silencioso` | Omitir el detalle de acciones durante el replay. |
 | `--reportes ARCHIVO` | Cambiar el archivo del historial de reportes de red. |
-| `--bench` | Ejecutar las mediciones de estructuras y persistencia. |
+| `--bench` | Ejecutar la suite completa de mediciones: estructuras, persistencia, resolubilidad, niebla y viaje, y terreno y cazador. La parte de terreno es extensa. |
+| `--bench-caso niebla-viaje` | Ejecutar solo las mediciones de niebla y viaje; requiere `--bench`. |
+| `--salida RUTA` | En la suite completa, guardar en esa ruta el reporte detallado de terreno y cazador. Con `--bench-caso niebla-viaje`, guardar el reporte JSON de ese caso. |
 | `--gui` | Jugar con la vista Pygame en vez de la consola. No se combina con `--replay`, `--bench` ni `--solo-mapa`. |
 
-`--bench` y `--replay` son modos excluyentes. El benchmark utiliza sus propios datos y tamaños; las opciones de partida, como `--cache-size`, no configuran sus casos. La opción `--hilos` de `main.py` se aplica a partidas nuevas; los ensayos de replay con latencias se ejecutan mediante la herramienta de determinismo.
+`--bench` y `--replay` son modos excluyentes. La suite completa ejecuta los casos registrados en `bench/casos`, añade las mediciones de niebla/viaje y el benchmark contractual de terreno/cazador. Guarda un JSON general y los reportes detallados de niebla y terreno en `bench/resultados/`; `--salida` fija la ruta del reporte detallado de terreno. El caso puntual de niebla conserva su reporte en la ruta indicada por `--salida`. La suite completa puede tardar varios minutos por las repeticiones del benchmark de terreno. Los benchmarks utilizan sus propios datos y tamaños; las opciones de partida, como `--cache-size`, no configuran sus casos. La opción `--hilos` de `main.py` se aplica a partidas nuevas; los ensayos de replay con latencias se ejecutan mediante la herramienta de determinismo.
 
 Ejemplos:
 
@@ -456,7 +458,7 @@ python main.py --bench
 python main.py --bench --salida docs/evidencia/terreno.json
 ```
 
-Se comparan la agenda con heap y búsqueda lineal, la LRU y una lista plana, la recuperación de fichas desde memoria y disco, las operaciones de inventario, el retroceso con deltas y copias, los ordenamientos, el guardado binario frente a JSON y la verificación incremental de resolubilidad contra una referencia de recorridos repetidos. Ambos modos ejecutan el caso de resolubilidad; `--salida` conserva además su reporte especializado de terreno.
+Se comparan la agenda con heap y búsqueda lineal, la LRU y una lista plana, la recuperación de fichas desde memoria y disco, las operaciones de inventario, el retroceso con deltas y copias, los ordenamientos, el guardado binario frente a JSON, la verificación incremental de resolubilidad, niebla/viaje y terreno/cazador. Cada ejecución completa incluye esos casos y guarda sus reportes especializados, tanto con `--salida` como sin ella.
 
 Las alternativas pueden tener condiciones distintas: por ejemplo, la lista plana del ensayo de caché conserva todas las claves, mientras que la LRU tiene capacidad limitada. Hay que leer los resultados junto con la configuración del caso, especialmente antes de comparar aciertos o concluir que una estructura es más rápida.
 
@@ -541,12 +543,13 @@ La versión actual permite jugar por consola, guardar y cargar una sesión, repr
 Quedan aspectos del cierre del plan que deben validarse o integrarse con el equipo:
 
 - Probar una partida completa y los casos borde con una cripta desconocida del servicio. La validación local no equivale a esa prueba.
-- Completar la medición integral del ciclo y del escalado x1, x10 y x50. Los benchmarks actuales no demuestran por sí solos que el máximo de cada ciclo sea menor de 20 ms.
+- La medición exploratoria de 100 ciclos por escala (x1, x10 y x50) registró máximos de 25.272, 467.599 y 2519.470 ms, respectivamente. El ciclo de 20 ms no se cumple en esas condiciones; el detalle está en [el reporte de escalado](docs/evidencia/2026-11-18-ciclo-20ms.json).
+- `python main.py --bench` completó sus casos generales, niebla/viaje y terreno/cazador. En la repetición final hubo cero discrepancias, pero el máximo sintético fue 32.8214 ms; por ello no se declara cumplido el umbral de 20 ms. La medición de `cripta-06` llegó a 3.7177 ms. El reporte final está en [docs/evidencia](docs/evidencia/2026-11-18-terreno-cazador-benchmark-integral-revision.json).
 - El reporte de red ya está integrado en `--bench`; repetir las mediciones en los equipos del grupo.
 - Completar la pantalla gráfica de puntajes. La consola ya muestra la tabla al finalizar; Pygame recibe sus filas con `tabla_puntajes()`. Ambos usan el mismo archivo y agrupan por cripta y versión.
 - Revisar y consolidar entre los roles las secciones del Documento de Decisiones.
 
-La calibración de ordenamiento llega hasta 500 elementos y no cubre comparadores costosos. Los tiempos publicados corresponden al equipo de la medición. El entorno probado es Windows 11 con Python 3.12.14; las instrucciones para otros sistemas no representan una validación adicional de la suite en ellos.
+La calibración de ordenamiento llega hasta 500 elementos y no cubre comparadores costosos. Los tiempos publicados corresponden al equipo de la medición. Los resultados recientes corresponden a Windows 11 con Python 3.12.10; las instrucciones para otros sistemas no representan una validación adicional de la suite en ellos.
 
 ## Trabajo en el repositorio
 

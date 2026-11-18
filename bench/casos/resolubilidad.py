@@ -172,24 +172,72 @@ def generar_cripta_sintetica(
 
 
 def _alcanzables(cripta, llaves):
-    """Recorre desde el inicio usando las llaves actuales, sin inferir arcos inversos."""
-    visitadas = TablaHash(capacidad_inicial=len(cripta))
-    cola = Cola()
-    inicial = cripta.sala_por_id(cripta.sala_inicial_id)
-    if inicial is None:
-        return visitadas
-    visitadas.insertar(inicial.id, True)
-    cola.encolar(inicial)
-    while not cola.esta_vacia():
-        sala = cola.desencolar()
+    """Recalcula una región desde cero con las puertas abiertas actuales."""
+    adyacencia = _adyacencia_con_llaves(cripta, llaves)
+    return _recorrer_adyacencia(cripta, adyacencia)
+
+
+class _RegionReferencia:
+    """Marcas por posición de sala para los recorridos independientes del oráculo."""
+
+    def __init__(self, cripta):
+        self._cripta = cripta
+        self._marcas = Vector()
+        for _ in range(len(cripta)):
+            self._marcas.agregarValor(False)
+        self._datos = self._marcas.almacenamiento()
+
+    def marcar(self, posicion):
+        if self._datos[posicion]:
+            return False
+        self._datos[posicion] = True
+        return True
+
+    def contiene(self, sala_id):
+        posicion = self._cripta.posicion_sala_por_id(sala_id)
+        return posicion is not None and self._datos[posicion]
+
+    def contiene_posicion(self, posicion):
+        return self._datos[posicion]
+
+
+def _adyacencia_con_llaves(cripta, llaves):
+    """Materializa las salidas transitables para un estado fijo de llaves."""
+    adyacencia = Vector()
+    for sala in cripta.recorrer_salas():
+        vecinos = Vector()
         for salida in sala.salidas:
             if salida.cerrada and (
                 salida.llave is None or not llaves.contiene(salida.llave)
             ):
                 continue
             destino = salida.sala_destino
-            if destino is not None and not visitadas.contiene(destino.id):
-                visitadas.insertar(destino.id, True)
+            if destino is None:
+                continue
+            posicion = cripta.posicion_sala_por_id(destino.id)
+            if posicion is not None:
+                vecinos.agregarValor(posicion)
+        adyacencia.agregarValor(vecinos)
+    return adyacencia
+
+
+def _recorrer_adyacencia(cripta, adyacencia):
+    """Hace un BFS completo con marcas compactas y aristas dirigidas."""
+    visitadas = _RegionReferencia(cripta)
+    datos_adyacencia = adyacencia.almacenamiento()
+    cola = Cola()
+    posicion_inicial = cripta.posicion_sala_por_id(cripta.sala_inicial_id)
+    if posicion_inicial is None:
+        return visitadas
+    visitadas.marcar(posicion_inicial)
+    cola.encolar(posicion_inicial)
+    while not cola.esta_vacia():
+        posicion = cola.desencolar()
+        vecinos = datos_adyacencia[posicion]
+        datos_vecinos = vecinos.almacenamiento()
+        for indice in range(len(vecinos)):
+            destino = datos_vecinos[indice]
+            if visitadas.marcar(destino):
                 cola.encolar(destino)
     return visitadas
 
@@ -213,8 +261,10 @@ def _ubicacion_alcanzable(ubicaciones, llave_id, region):
     return elegida
 
 
-def _nuevas_llaves(cripta, ubicaciones, llaves_adquiridas):
-    region = _alcanzables(cripta, llaves_adquiridas)
+def _nuevas_llaves(cripta, ubicaciones, llaves_adquiridas, adyacencia=None):
+    if adyacencia is None:
+        adyacencia = _adyacencia_con_llaves(cripta, llaves_adquiridas)
+    region = _recorrer_adyacencia(cripta, adyacencia)
     candidatas = TablaHash(capacidad_inicial=len(ubicaciones))
     ids_candidatos = Vector()
     for ubicacion in ubicaciones:
@@ -231,17 +281,22 @@ def _nuevas_llaves(cripta, ubicaciones, llaves_adquiridas):
     for indice in range(len(ids_candidatos)):
         llave_id = ids_candidatos.obtenerValor(indice)
         recorridos += 1
-        region_repetida = _alcanzables(cripta, llaves_adquiridas)
+        # La topología transitable no cambia durante esta ronda: se vuelve a
+        # recorrer el grafo completo para cada candidata sin rehacer la tabla
+        # de puertas ni recalcular hashes por cada arista.
+        region_repetida = _recorrer_adyacencia(cripta, adyacencia)
         ubicacion = _ubicacion_alcanzable(ubicaciones, llave_id, region_repetida)
         if ubicacion is not None:
             nuevas.agregarValor(ubicacion)
-    return _ordenar(nuevas, _comparar_ubicaciones), recorridos
+    return _ordenar(nuevas, _comparar_ubicaciones), recorridos, adyacencia
 
 
 def _puerta_final(cripta, llaves, region):
     candidatas = Vector()
+    posicion = 0
     for sala in cripta.recorrer_salas():
-        if not region.contiene(sala.id):
+        if not region.contiene_posicion(posicion):
+            posicion += 1
             continue
         for salida in sala.salidas:
             if (
@@ -256,6 +311,7 @@ def _puerta_final(cripta, llaves, region):
                     salida.sala_destino_id,
                     salida.llave,
                 ))
+        posicion += 1
     if len(candidatas) == 0:
         return None
     return _ordenar(candidatas, _comparar_puertas)[0]
@@ -263,8 +319,10 @@ def _puerta_final(cripta, llaves, region):
 
 def _frontera(cripta, llaves, region):
     puertas = Vector()
+    posicion = 0
     for sala in cripta.recorrer_salas():
-        if not region.contiene(sala.id):
+        if not region.contiene_posicion(posicion):
+            posicion += 1
             continue
         for salida in sala.salidas:
             if (
@@ -282,6 +340,7 @@ def _frontera(cripta, llaves, region):
                     salida.sala_destino_id,
                     salida.llave,
                 ))
+        posicion += 1
     return _ordenar(puertas, _comparar_puertas)
 
 
@@ -290,17 +349,20 @@ def recorrido_completo_repetido(cripta, ubicaciones):
     llaves_adquiridas = TablaHash(capacidad_inicial=len(ubicaciones))
     rondas = []
     recorridos = 0
+    adyacencia = None
 
     while True:
-        nuevas, cantidad_recorridos = _nuevas_llaves(
-            cripta, ubicaciones, llaves_adquiridas
+        nuevas, cantidad_recorridos, adyacencia = _nuevas_llaves(
+            cripta, ubicaciones, llaves_adquiridas, adyacencia
         )
         recorridos += cantidad_recorridos
         rondas.append(nuevas)
         for ubicacion in nuevas:
             llaves_adquiridas.insertar(ubicacion.id, True)
 
-        region = _alcanzables(cripta, llaves_adquiridas)
+        if len(nuevas):
+            adyacencia = _adyacencia_con_llaves(cripta, llaves_adquiridas)
+        region = _recorrer_adyacencia(cripta, adyacencia)
         recorridos += 1
         puerta_final = _puerta_final(cripta, llaves_adquiridas, region)
         if puerta_final is not None:
