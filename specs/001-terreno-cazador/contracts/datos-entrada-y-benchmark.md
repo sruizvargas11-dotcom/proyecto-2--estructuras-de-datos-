@@ -193,3 +193,21 @@ jugador; excluir espera humana, red y renderizado. Registrar duración máxima d
 escenario, repetición y discrepancias. La modalidad individual recalculada sin caché sirve
 como referencia para comparar cada decisión de la modalidad compartida. El resultado solo
 respalda afirmaciones sobre la escala y topología del mapa registrado.
+
+### Comparación diagnóstica de uno y veinte cazadores
+
+La medición de escalabilidad se agrega como un grupo independiente y no cambia los ocho
+escenarios de aceptación ni la validación de `cripta-06`. Usa el mismo fixture sintético,
+jugador en sala 136, semilla 42, acción `W`, rango 10000, modalidad compartida y alternancia
+de una puerta en cada ciclo. El grupo de un cazador contiene `cazador-01` en su posición
+original; el grupo de veinte contiene las veinte posiciones originales y asigna rango 10000
+a todos, para aislar el efecto de la cantidad de actores. Cada grupo reinicia el estado y
+ejecuta 30 repeticiones de 1000 ciclos. La referencia desde cero se calcula fuera del
+cronómetro.
+
+El reporte añade `comparacion_escala` con metadatos del fixture, configuración común y dos
+grupos (`1` y `20` cazadores). Cada repetición registra 1000 duraciones en nanosegundos, el
+máximo y las discrepancias. Esta comparación es diagnóstica: sus resultados y sus ciclos no
+se agregan a `cumple_umbral`, que sigue determinado exclusivamente por los ocho escenarios
+de FR-011 y la validación de `cripta-06` de FR-014. Se mantiene cada resultado, incluso si
+hay una discrepancia o un valor atípico.

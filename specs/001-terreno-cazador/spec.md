@@ -60,6 +60,17 @@
 
 - Q: La API del curso publica `cripta-06` como cripta de referencia, con 300 salas y 25 instancias de `ent_sabueso_oseo`. ¿Cómo se incorpora al protocolo de rendimiento ya definido? → A: Se conservan los ocho escenarios controlados del fixture sintético, con sus 20 cazadores y reparto 10/10, y se añade una validación independiente sobre un snapshot versionado de `cripta-06` que mantenga activas las 25 instancias. La medición no consulta la red.
 
+### Session 2026-11-18
+
+- Q: ¿Cómo se cubre la comparación de escalabilidad entre un cazador y muchos sin cambiar
+  los ocho escenarios ni la validación oficial de `cripta-06`? → A: Añadir una medición
+  diagnóstica independiente, emparejada en el mismo fixture sintético, con uno y veinte
+  cazadores; usar rango 10000, modalidad compartida, cambio de puerta cada ciclo, semilla,
+  estado del jugador, posiciones iniciales aplicables, secuencia de acciones y equipo fijos.
+  Ejecutar 30 repeticiones de 1000 ciclos por cantidad, validar decisiones con el recálculo
+  desde cero y reportar tiempos sin convertir esta comparación en un nuevo umbral de
+  aceptación ni sustituir los ocho escenarios o `cripta-06`.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Atravesar salidas con costos distintos (Priority: P1)
@@ -230,7 +241,10 @@ enemigos, y verificar la información que se muestra.
   de rango, la identidad, versión y dimensiones del mapa, semilla, modelo y núcleos del procesador,
   memoria instalada, sistema operativo y versión, entorno de ejecución y su versión, y el
   perfil de energía del equipo. Cada decisión se compara con un recálculo desde cero para
-  verificar que sigue siendo correcta.
+  verificar que sigue siendo correcta. Si una ejecución completa posterior del mismo
+  protocolo y código registra algún ciclo superior a 20 ms, el estado de aceptación queda
+  pendiente aunque exista una ejecución anterior aprobada; no se descartan muestras ni se
+  reemplazan reportes históricos.
 - **FR-012**: El costo procede del esqueleto de la cripta y el rango de la ficha de catálogo.
   Una salida puede omitir el costo; en ese caso se aplica el valor predeterminado de FR-001.
 - **FR-013**: Antes de iniciar la cripta, se rechazan con un error que identifica el problema:
@@ -255,6 +269,16 @@ enemigos, y verificar la información que se muestra.
   o lectura del snapshot ocurre antes de iniciar el cronómetro; no se permiten solicitudes
   HTTP ni renderizado dentro de los ciclos medidos. Se registra el checksum SHA-256 del
   snapshot y el mismo conjunto de metadatos de equipo que en FR-011.
+- **FR-015**: El benchmark incluye, además de FR-011 y FR-014, una comparación diagnóstica
+  emparejada de uno y veinte cazadores sobre el mismo fixture sintético. Ambos grupos usan
+  rango 10000, modalidad compartida, cambio de puerta en cada ciclo, semilla 42, el mismo
+  jugador y la misma secuencia `W`; el grupo de veinte usa las primeras veinte posiciones
+  fijadas del fixture y el grupo de uno conserva solo el primer cazador en su posición
+  original. Cada grupo ejecuta 30 repeticiones de 1000 ciclos, reiniciadas desde el mismo
+  estado; las decisiones se contrastan con el cálculo desde cero fuera del cronómetro. El
+  reporte registra duraciones, máximos y discrepancias por grupo. Esta comparación mide el
+  efecto de cantidad de actores, pero no altera `cumple_umbral` ni sustituye los escenarios
+  contractuales FR-011 y FR-014.
 
 ### Key Entities
 
@@ -269,7 +293,7 @@ enemigos, y verificar la información que se muestra.
 
 ### Measurable Outcomes
 
-- **SC-001**: Todos los escenarios AB-01 a AB-30 de este documento se satisfacen en sus
+- **SC-001**: Todos los escenarios AB-01 a AB-31 de este documento se satisfacen en sus
   respectivas pruebas de aceptación.
 - **SC-002**: Se evalúan ocho escenarios, cada uno con 30 repeticiones, exactamente 20
   cazadores, el mismo mapa de benchmark fijo y versionado de mayor tamaño que la cripta
@@ -289,6 +313,10 @@ enemigos, y verificar la información que se muestra.
 - **SC-004**: En las 30 repeticiones de 1000 ciclos sobre el snapshot de `cripta-06` con sus
   25 cazadores activos, ningún ciclo supera 20 ms, no hay discrepancias con la referencia y
   el reporte permite verificar las versiones y el checksum de los datos medidos.
+- **SC-005**: El reporte contiene la comparación diagnóstica de uno y veinte cazadores de
+  FR-015, con 30 repeticiones de 1000 ciclos por grupo, condiciones emparejadas y cero
+  discrepancias; registra los tiempos sin incorporarlos al resultado de umbral de FR-011 y
+  FR-014.
 
 ## Assumptions
 
@@ -350,3 +378,4 @@ correspondiente cite explícitamente los requisitos funcionales cubiertos.
 | AB-28 | Dada una salida de una sala a otra sin una salida inversa correspondiente, al validar los datos, se acepta como conexión unidireccional. | FR-001 |
 | AB-29 | Dado el protocolo de medición del objetivo de 20 ms, se usa en los ocho escenarios el mismo mapa de benchmark fijo y versionado de mayor tamaño que la cripta offline disponible, y se registran su identidad, versión y dimensiones. | FR-011 |
 | AB-30 | Dada la cripta de referencia `cripta-06` versión `f9ed9afa683d` y su catálogo versión `4b9e75a42be5`, con 300 salas y 25 instancias activas de `ent_sabueso_oseo`, al ejecutar 30 repeticiones de 1000 ciclos con semilla 42, acción `W`, sin red ni renderizado, cada ciclo tarda como máximo 20 ms y todas las decisiones coinciden con el recálculo desde cero. | FR-014 |
+| AB-31 | Dado el fixture sintético fijo, al ejecutar la comparación emparejada con uno y veinte cazadores (rango 10000, modalidad compartida, puerta cada ciclo, 30 repeticiones × 1000 ciclos por grupo), el reporte conserva tiempos y máximos por grupo, las decisiones coinciden con el recálculo desde cero y la comparación no cambia el resultado contractual de FR-011/FR-014. | FR-015 |

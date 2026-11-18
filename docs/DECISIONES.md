@@ -1550,8 +1550,10 @@ La evidencia completa está en `docs/evidencia/terreno-cazador-benchmark-iteraci
 los reportes previos permanecen intactos. T056–T061 quedan completadas. T031, T039, T045 y
 T051 se cierran como gates históricos supersedidos por el resultado aprobado de T060. Esto
 no reclasifica los reportes de iteraciones 2–4: conservan sus resultados fallidos y no se
-presentan como aprobados. T039 queda satisfecho por el reporte vigente de iteración 5; el
-archivo `terreno-cazador-benchmark-final.json` se conserva sin sobrescribir.
+presentan como aprobados. En esa fecha, el resultado de iteración 5 era el aprobatorio más
+reciente; el seguimiento integral posterior del 2026-11-18 se registra abajo y deja abierto
+el estado actual del gate. El archivo `terreno-cazador-benchmark-final.json` se conserva sin
+sobrescribir.
 
 ### Revisión local de escalado y ejecución integral (2026-11-18)
 
@@ -1774,3 +1776,23 @@ El pico original no se reprodujo y la evidencia disponible no demuestra una ruta
 forma repetible. Apunta a una pausa transitoria del proceso o del sistema, pero no permite
 afirmar cuál fue su causa. No se cambia el algoritmo ni se descarta la muestra: el reporte de
 seguimiento conserva `cumple_umbral=false`, y el resultado aprobado anterior permanece intacto.
+
+### Corrección del estado de aceptación y cobertura de escalabilidad
+
+La lectura conjunta de la evidencia mostró que no se debía describir la iteración 5 como
+resultado vigente sin mencionar la corrida integral posterior. `tracking-02` conserva cero
+discrepancias, pero su máximo sintético de 24.8793 ms supera el límite y su campo
+`cumple_umbral` es falso. El pico se repitió diagnósticamente 30 veces sin reproducirse; esa
+observación no invalida ni elimina la muestra original. El gate de 20 ms queda abierto hasta
+una nueva ejecución contractual completa que cumpla en todos los ciclos. Los reportes de
+iteración 5 y de seguimiento permanecen sin cambios.
+
+También se añadió FR-015/AB-31 para la comparación que faltaba entre un cazador y veinte. La
+medición será emparejada sobre el mismo fixture, rango 10000, modalidad compartida, cambio de
+puerta cada ciclo, semilla 42 y acción `W`; ejecutará 30 repeticiones de 1000 ciclos para
+cada cantidad y validará decisiones contra el cálculo desde cero. Se reportará por separado
+y no alterará el umbral contractual ni sustituirá los ocho escenarios o `cripta-06`.
+
+La implementación y nueva medición quedan pendientes de T063–T069. Según el principio VII,
+primero debe confirmarse en un commit separado esta corrección documental; después se podrán
+modificar el arnés y sus pruebas.

@@ -39,6 +39,11 @@ repeticiones de 1000 ciclos con las 25 instancias de cazador de `cripta-06` en u
 fijo de 300 salas. En ambas mediciones cada ciclo debe ser ≤20 ms y las decisiones deben
 coincidir con un recálculo desde cero.
 
+Una ejecución integral posterior que falle el límite mantiene abierto el gate de aceptación,
+aunque exista una medición anterior aprobada. No se descartan ciclos ni se reescriben
+reportes. La causa del pico debe investigarse y cualquier optimización debe medirse con el
+protocolo contractual completo.
+
 **Restricciones**:
 - Solo estructuras propias para índices, colas de prioridad y cachés de rutas. No usar
   `dict`/`set` como índice o caché ni `heapq`, `bisect`, `collections`, `networkx` o
@@ -409,4 +414,43 @@ discrepancias y máximo global de 12.8721 ms; `cumple_umbral=true`.
 
 T056–T061 quedan completadas. T031, T039, T045 y T051 se cierran como gates históricos
 supersedidos por T060. Sus reportes anteriores permanecen intactos y sus resultados fallidos
-no se reclasifican como aprobados; la evidencia de iteración 5 es la medición vigente.
+no se reclasifican como aprobados. En ese momento la iteración 5 era la evidencia aprobatoria
+más reciente; el seguimiento integral posterior registrado en la sexta iteración deja abierto
+el estado actual del gate.
+
+## Sexta iteración: cerrar el gate integral y medir escalabilidad 1 vs. 20
+
+La revisión local del 2026-11-18 encontró una ejecución integral posterior al reporte
+aprobado de iteración 5. El reporte `docs/evidencia/2026-11-18-terreno-cazador-benchmark-tracking-02.json`
+conserva cero discrepancias, pero registra un máximo de 24.8793 ms y
+`cumple_umbral=false`; el ciclo lento aislado no se reprodujo en 30 repeticiones diagnósticas.
+La aprobación anterior se conserva como evidencia histórica, pero no cierra el estado actual
+del gate. El siguiente reporte contractual debe usar una nueva ruta y reflejar todo el
+resultado, incluidos ciclos sobre 20 ms.
+
+La especificación añade FR-015/AB-31 para cubrir la comparación de un cazador contra veinte,
+solicitada por el problema de escalabilidad del enunciado. Esta prueba es diagnóstica,
+emparejada y separada de los ocho escenarios contractuales y de `cripta-06`; no puede cambiar
+el umbral ni hacer que un reporte contractual fallido aparezca como aprobado.
+
+La iteración debe seguir este orden, y su documentación debe confirmarse en Git antes de
+cambiar código, según el principio VII de la Constitución:
+
+1. Añadir pruebas que verifiquen el esquema y la equivalencia de decisiones del grupo
+   diagnóstico, y que comprueben que sus muestras no se mezclan con `cumple_umbral`.
+2. Implementar la comparación emparejada sobre el fixture sintético: un cazador frente a
+   veinte, rango 10000, modalidad compartida y una puerta alternada cada ciclo; 30
+   repeticiones × 1000 ciclos por grupo, condiciones restantes idénticas y referencia fuera
+   del cronómetro.
+3. Diagnosticar el ciclo sobre 20 ms con trazas fuera del cronómetro y optimizar solo si se
+   identifica trabajo real del proyecto que pueda reducirse sin alterar reglas. No filtrar,
+   descartar ni recortar muestras; si no se reproduce, conservar el fallo y su explicación
+   como no determinado.
+4. Correr pruebas focalizadas, regresiones de replay/carga y suite completa con Python 3.12.
+5. Ejecutar una nueva medición contractual completa y guardar
+   `docs/evidencia/terreno-cazador-benchmark-iteracion-6.json`, conservando los ocho
+   escenarios y `cripta-06` junto con el nuevo grupo diagnóstico. El gate solo se cierra si
+   todas las decisiones son correctas y cada ciclo contractual de los ocho escenarios y
+   `cripta-06` cumple ≤20 ms. La comparación 1 vs. 20 se reporta por separado.
+6. Documentar cifras, causa confirmada o no reproducida, cambios, pruebas y estado final;
+   mantener intactos los reportes previos.

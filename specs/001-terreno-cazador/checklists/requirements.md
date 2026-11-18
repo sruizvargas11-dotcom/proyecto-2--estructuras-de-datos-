@@ -17,7 +17,7 @@
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
-- [x] All acceptance scenarios are defined
+- [x] All acceptance scenarios are defined (AB-01–AB-31)
 - [x] Edge cases are identified
 - [x] Scope is clearly bounded
 - [x] Dependencies and assumptions identified
@@ -31,8 +31,10 @@
 
 ## Notes
 
-- Cada caso del Apéndice B tiene un ID de prueba y cita los requisitos funcionales que
+- Cada caso AB-01–AB-31 del Apéndice B tiene un ID de prueba y cita los requisitos funcionales que
   verifica. La referencia P1 §2.3 se conserva como regla previa indicada por el usuario.
 - Los casos de rendimiento usan 20 cazadores activos como umbral verificable de «decenas».
+- AB-31 define una medición diagnóstica 1 vs. 20; sus ciclos no alteran el umbral contractual
+  ni reemplazan los ocho escenarios y la referencia de `cripta-06`.
 - Los elementos están listos para revisión y planificación; las pruebas se implementarán en
   la fase correspondiente.

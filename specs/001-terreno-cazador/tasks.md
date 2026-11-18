@@ -256,3 +256,21 @@ cambian sus rangos, mapas, puertas, repeticiones, modalidades ni umbral.
 - T057 prepara las regresiones y debe preceder a cualquier cambio de código.
 - T058 depende de T057; la planificación quedó confirmada en el commit separado `5de5cb4` antes de modificar el código.
 - T059 depende de T058; T060 depende de que las pruebas de T059 pasen; T061 depende de T060.
+
+## Sexta iteración: gate integral y comparación de escala
+
+- [X] T062 Actualizar FR-011 para que una ejecución completa posterior con cualquier ciclo superior a 20 ms deje abierto el estado actual del gate; añadir FR-015/AB-31 para una comparación diagnóstica emparejada de 1 vs. 20 cazadores sin reemplazar los ocho escenarios ni `cripta-06`; registrar el reporte integral fallido más reciente y corregir las conclusiones que lo presentaban como aprobado vigente (FR-011, FR-015; AB-13, AB-31).
+- [ ] T063 Añadir pruebas del contrato de `comparacion_escala`: dos grupos de 1 y 20 cazadores, mismo fixture/rango/semilla/acción/puertas/modo, 30 × 1000 ciclos, decisiones correctas y ausencia de sus ciclos en el cálculo de `cumple_umbral` (FR-015; AB-31).
+- [ ] T064 Implementar en `bench/terreno_cazador.py` la comparación diagnóstica 1 vs. 20 descrita en el contrato, con referencia fuera del cronómetro y reporte independiente; mantener intactos los ocho escenarios y la validación de `cripta-06` (FR-015; AB-31).
+- [ ] T065 Investigar el ciclo de 24.8793 ms de `tracking-02` con trazas diagnósticas fuera del cronómetro; identificar la fase y evaluar si existe trabajo real reducible. Si no se reproduce, documentarlo como causa no determinada. No filtrar ni descartar datos y no afirmar cumplimiento a partir del diagnóstico (FR-011; AB-13).
+- [ ] T066 Si T065 identifica trabajo del proyecto reducible, optimizarlo sin cambiar reglas, decisiones, cronómetro ni umbral; añadir regresión para el caso que lo causaba. Si el pico no se reproduce o no hay causa atribuible al proyecto, registrar esa conclusión y pasar a la validación contractual sin una optimización especulativa (FR-005–FR-011, FR-015; AB-05–AB-13, AB-31).
+- [ ] T067 Ejecutar pruebas focalizadas, replay/carga y suite completa con Python 3.12; corregir fallos antes de la medición contractual. Registrar comandos y resultados reales (FR-001–FR-015; AB-01–AB-31).
+- [ ] T068 Tras T063–T067, ejecutar el benchmark contractual completo una vez y guardar `docs/evidencia/terreno-cazador-benchmark-iteracion-6.json`, con ocho escenarios, `cripta-06` y el grupo diagnóstico 1 vs. 20; conservar 30 × 1000 ciclos y contrastes de referencia. No cambiar el umbral ni reescribir evidencia anterior. Si un ciclo contractual excede 20 ms o hay discrepancias, conservar `cumple_umbral=false` y dejar el gate abierto (FR-011, FR-014, FR-015; AB-13, AB-30, AB-31).
+- [ ] T069 Actualizar `docs/DECISIONES.md` y README con evidencia, diagnóstico, benchmark 1 vs. 20, pruebas y estado del gate; declarar cumplimiento solo si T068 aprueba todos los ciclos contractuales (FR-011, FR-014, FR-015; AB-13, AB-30, AB-31).
+
+### Dependencias de la sexta iteración
+
+- T062 es la corrección documental y debe quedar confirmada por separado antes de cualquier cambio de código.
+- T063 puede iniciarse tras ese commit; T064 depende de T063.
+- T065 puede perfilarse después del commit documental y ejecutarse en paralelo con T063, sin modificar el cronómetro ni los reportes contractuales.
+- T066 depende de T065; T067 depende de T064 y T066; T068 depende de T067; T069 depende de T068.
