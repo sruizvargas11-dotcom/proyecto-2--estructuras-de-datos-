@@ -1421,3 +1421,39 @@ y 13.3062 ms por escenario. Por ello `cumple_umbral=false`; el único escenario 
 que supera 20 ms es rango grande (1000/10000), puerta cada 100 ciclos, modalidad
 individual. T039 y T045
 quedan pendientes. T046 queda completada al conservar y documentar el resultado real.
+
+### Tercera iteración del índice inmutable (2026-11-17)
+
+T047–T050 añadieron y verificaron el índice propio por cripta: los mapas densos usan acceso
+directo compacto, los mapas dispersos usan búsqueda binaria propia sobre IDs ordenados y el
+índice no contiene registros mutables de Dijkstra. Las distancias, predecesores y colas de
+cada búsqueda individual siguen siendo independientes. Las pruebas focalizadas pasaron
+28/28, las pruebas de replay/carga pasaron 31/31 y la suite completa pasó 1190 pruebas.
+
+Se ejecutó una sola vez el benchmark contractual de iteración 3 en
+`docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`, sin modificar reportes
+anteriores. Todas las decisiones coincidieron con la referencia, pero ningún grupo cumplió
+el límite global: `cumple_umbral=false`. Los máximos sintéticos fueron 23.1868 ms,
+18.8420 ms, 24.4386 ms, 4.4553 ms, 26.8618 ms, 20.8644 ms, 23.4777 ms y 16.1485 ms.
+El máximo de `cripta-06` fue 21.3757 ms. Por tanto T031, T039 y T051 permanecen pendientes.
+T052 queda completada porque conserva y documenta el fallo real sin cambiar el umbral.
+
+### Optimización compacta del cálculo individual (2026-11-17)
+
+T040–T044 identificaron que la cola interna del Dijkstra individual seguía usando
+operaciones sobre cuatro vectores. Se añadió `ColaPrioridadPosicion`, una cola propia con
+arreglos planos y estado local por búsqueda; el modo compartido conserva su cola y semántica.
+El índice inmutable por cripta y las adyacencias estánticas permanecen separados de las
+distancias y predecesores mutables de cada decisión individual.
+
+Las pruebas focalizadas pasaron 30/30, las regresiones de replay/carga pasaron 31/31 y la
+suite completa pasó 1192 pruebas con Python 3.12.10.
+
+La medición contractual final de iteración 3 conservó cero discrepancias y produjo máximos
+sintéticos de 4.6567 ms, 23.1923 ms, 4.5128 ms, 24.8266 ms, 16.6045 ms, 31.4244 ms,
+13.3090 ms y 26.0336 ms. El máximo de `cripta-06` fue 23.6416 ms.
+
+La optimización redujo el objetivo rango grande, puerta cada 100 ciclos y modo individual
+a 13.3090 ms. Sin embargo, `cumple_umbral=false` por otros máximos sintéticos y por
+`cripta-06`. T031, T039 y T051 permanecen pendientes. T052 conserva documentado el fallo
+real sin cambiar el umbral.

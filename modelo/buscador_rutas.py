@@ -1,7 +1,10 @@
 """Búsqueda determinista de rutas para el comportamiento cazador."""
 
 from estructuras.vector_dinamico import Vector
-from estructuras.heap_prioridad_ruta import ColaPrioridadRuta
+from estructuras.heap_prioridad_ruta import (
+    ColaPrioridadPosicion,
+    ColaPrioridadRuta,
+)
 
 
 def _registro(sala, costo, anterior=None):
@@ -25,21 +28,13 @@ def _buscar(registros, sala):
 
 
 def _crear_indice_registros(cripta):
-    distancias = Vector()
-    maximo = 0
-    for sala in cripta.recorrer_salas():
-        if sala.id > maximo:
-            maximo = sala.id
-        distancias.agregarValor([sala, None, None, None])
-    indice = None
-    if maximo <= len(distancias) * 4:
-        indice = Vector()
-        for _ in range(maximo + 1):
-            indice.agregarValor(None)
-        datos_indice = indice.almacenamiento()
-        for registro in distancias:
-            datos_indice[registro[0].id] = registro
-    return distancias, indice
+    cantidad = len(cripta)
+    return (
+        [None] * cantidad,
+        [None] * cantidad,
+        [None] * cantidad,
+        cripta,
+    )
 
 
 def _registro_indice(registros, indice, sala):
@@ -170,63 +165,73 @@ class CacheDistanciasCazador:
 
 def _decidir_cazador_individual(cazador, jugador):
     inicio = cazador.sala_actual
-    distancias, indice = _crear_indice_registros(inicio.cripta)
-    registros_por_id = (indice.almacenamiento()
-                        if indice is not None else None)
-    frontera = ColaPrioridadRuta()
-    origen = (registros_por_id[inicio.id] if registros_por_id is not None
-              else _buscar(distancias, inicio))
-    origen[1] = 0
-    frontera.insertar([inicio, 0, None, None])
+    distancias, primeras, primeros_costos, indice = _crear_indice_registros(
+        inicio.cripta
+    )
+    distancias_datos = distancias
+    primeras_datos = primeras
+    costos_datos = primeros_costos
+    frontera = ColaPrioridadPosicion()
+    posicion_origen = indice.posicion_sala_por_id(inicio.id)
+    posicion_jugador = indice.posicion_sala_por_id(jugador.sala_actual.id)
+    distancias_datos[posicion_origen] = 0
+    frontera.insertar(posicion_origen, 0, None, None)
     while len(frontera):
         registro = frontera.extraer_minimo()
-        sala, costo = registro[0], registro[1]
-        actual = (registros_por_id[sala.id] if registros_por_id is not None
-                  else _buscar(distancias, sala))
-        if actual[1] != costo:
+        posicion_actual, costo, _, _ = registro
+        if distancias_datos[posicion_actual] != costo:
             continue
         # Los costos de salida son positivos. Cuando el mínimo pendiente ya
         # supera el rango, ninguna ruta restante puede habilitar persecución.
         if costo > cazador.rango:
             break
-        if sala is jugador.sala_actual:
+        if posicion_actual == posicion_jugador:
             break
-        for salida in sala.salidas:
+        vecinos = inicio.cripta.adjacencia_individual()
+        vecinos_posicion = vecinos.obtenerValor(posicion_actual)
+        vecinos_datos = vecinos_posicion.almacenamiento()
+        for i in range(len(vecinos_posicion)):
+            destino_posicion, salida = vecinos_datos[i]
             if salida.cerrada:
                 continue
-            destino_sala = salida.sala_destino
-            destino = (registros_por_id[destino_sala.id]
-                       if registros_por_id is not None
-                       else _buscar(distancias, destino_sala))
             nuevo = costo + salida.costo
             if nuevo > cazador.rango:
                 continue
-            primer_id = (destino_sala.id if sala is inicio
+            primer_id = (salida.sala_destino_id if posicion_actual == posicion_origen
                          else registro[2])
-            primer_costo = (salida.costo if sala is inicio
+            primer_costo = (salida.costo if posicion_actual == posicion_origen
                             else registro[3])
-            if (destino[1] is None or nuevo < destino[1]
-                    or (nuevo == destino[1] and primer_id < destino[2])):
-                destino[1] = nuevo
-                destino[2] = primer_id
-                destino[3] = primer_costo
-                frontera.insertar([
-                    destino_sala, nuevo, primer_id, primer_costo
-                ])
-    final = (registros_por_id[jugador.sala_actual.id]
-             if registros_por_id is not None
-             else _buscar(distancias, jugador.sala_actual))
-    if final[1] is None or final[1] > cazador.rango:
+            destino_distancia = distancias_datos[destino_posicion]
+            destino_primero = primeras_datos[destino_posicion]
+            if (destino_distancia is None or nuevo < destino_distancia
+                    or (nuevo == destino_distancia
+                        and primer_id < destino_primero)):
+                distancias_datos[destino_posicion] = nuevo
+                primeras_datos[destino_posicion] = primer_id
+                costos_datos[destino_posicion] = primer_costo
+                frontera.insertar(
+                    destino_posicion,
+                    nuevo,
+                    primer_id,
+                    primer_costo,
+                )
+    distancia_final = distancias_datos[posicion_jugador]
+    if distancia_final is None or distancia_final > cazador.rango:
         return ("esperar", None)
+    primer_final = primeras_datos[posicion_jugador]
+    if primer_final is None:
+        return ("atacar", jugador)
     return ("mover", (
-        registros_por_id[final[2]][0] if registros_por_id is not None
-        else inicio.cripta.sala_por_id(final[2]), final[3]
+        inicio.cripta.sala_por_id(primer_final),
+        costos_datos[posicion_jugador]
     ))
 
 
 def decidir_cazador(cazador, jugador, distancias=None, entrantes=None):
     """Devuelve ``(acción, destino)`` o ``(acción, (destino, costo))``."""
     if distancias is None:
+        if cazador.sala_actual is jugador.sala_actual:
+            return ("atacar", jugador)
         return _decidir_cazador_individual(cazador, jugador)
     indice = getattr(distancias, "_indice_cazador", None)
     final = (indice.almacenamiento()[cazador.sala_actual.id]

@@ -31,6 +31,10 @@ class CriptaModelo:
         self._salas = Vector()
         self._ordenadas = False
         self.revision_puertas = 0
+        self._indice_salas_directo = None
+        self._indice_salas_ids = None
+        self._indice_salas_posiciones = None
+        self._adjacencia_individual = None
 
     def __len__(self):
         return len(self._salas)
@@ -58,6 +62,7 @@ class CriptaModelo:
                 )
 
         self._ordenadas = True
+        self._construir_indice_salas()
 
         # Todas las salas ya están disponibles y ordenadas.
         for sala in self.recorrer_salas():
@@ -67,9 +72,81 @@ class CriptaModelo:
                 salida.sala_destino = self.sala_por_id(
                     salida.sala_destino_id
                 )
+        self._construir_adjacencia_individual()
 
     def registrar_cambio_puerta(self):
         self.revision_puertas += 1
+
+    def _construir_indice_salas(self):
+        maximo = 0
+        for sala in self._salas:
+            if sala.id > maximo:
+                maximo = sala.id
+        if maximo <= len(self._salas) * 4:
+            directo = Vector()
+            for _ in range(maximo + 1):
+                directo.agregarValor(-1)
+            datos = directo.almacenamiento()
+            for posicion in range(len(self._salas)):
+                datos[self._salas.obtenerValor(posicion).id] = posicion
+            self._indice_salas_directo = directo
+            self._indice_salas_ids = None
+            self._indice_salas_posiciones = None
+        else:
+            ids = Vector()
+            posiciones = Vector()
+            for posicion in range(len(self._salas)):
+                ids.agregarValor(self._salas.obtenerValor(posicion).id)
+                posiciones.agregarValor(posicion)
+            self._indice_salas_directo = None
+            self._indice_salas_ids = ids
+            self._indice_salas_posiciones = posiciones
+
+    def _construir_adjacencia_individual(self):
+        adjacencia = Vector()
+        for posicion in range(len(self._salas)):
+            origen = self._salas.obtenerValor(posicion)
+            vecinos = Vector()
+            for salida in origen.salidas:
+                destino_posicion = self.posicion_sala_por_id(
+                    salida.sala_destino_id
+                )
+                if destino_posicion is not None:
+                    vecinos.agregarValor((destino_posicion, salida))
+            adjacencia.agregarValor(vecinos)
+        self._adjacencia_individual = adjacencia
+
+    def adjacencia_individual(self):
+        if self._adjacencia_individual is None:
+            raise RuntimeError(
+                "Debes finalizar la carga antes de consultar la adyacencia."
+            )
+        return self._adjacencia_individual
+
+    def posicion_sala_por_id(self, sala_id):
+        if type(sala_id) is not int:
+            return None
+        if not self._ordenadas:
+            raise RuntimeError(
+                "Debes finalizar la carga antes de buscar posiciones de sala."
+            )
+        if self._indice_salas_directo is not None:
+            if sala_id < 0 or sala_id >= len(self._indice_salas_directo):
+                return None
+            posicion = self._indice_salas_directo.obtenerValor(sala_id)
+            return posicion if posicion >= 0 else None
+        izquierda = 0
+        derecha = len(self._indice_salas_ids) - 1
+        while izquierda <= derecha:
+            medio = (izquierda + derecha) // 2
+            actual = self._indice_salas_ids.obtenerValor(medio)
+            if actual == sala_id:
+                return self._indice_salas_posiciones.obtenerValor(medio)
+            if actual < sala_id:
+                izquierda = medio + 1
+            else:
+                derecha = medio - 1
+        return None
 
     def sala_por_id(self, sala_id):
         """Busca en O(log n); devuelve None si el ID no existe."""
