@@ -1,7 +1,8 @@
 # Contrato de datos y benchmark
 
-Este contrato documenta los límites externos que requiere la capacidad. Los campos nuevos
-son parte de los datos de entrada; no se embeben en el código valores para una cripta.
+Este contrato documenta los límites externos que requiere la capacidad y los protocolos de
+AB-13/AB-29 y AB-30. Los campos nuevos son parte de los datos de entrada; no se embeben en
+el código valores para una cripta.
 
 ## Esqueleto de cripta
 
@@ -47,8 +48,11 @@ explícitamente. No se debe añadir un cazador artificial a los datos de producc
 No hay un dataset de cripta versionado en el repositorio que satisfaga el tamaño requerido:
 `datos_offline/cripta-01` es versión `d152eb846633`, contiene 6 salas e incluye un
 cazador offline. Sigue siendo menor al tamaño requerido. Se elige, por tanto, un fixture
-sintético de benchmark:
+sintético de benchmark para los ocho escenarios comparativos.
 
+El fixture sintético siguiente se conserva para comparar rango, frecuencia de puerta y
+modalidad. Esas mediciones mantienen exactamente 20 cazadores y no se reemplazan por la
+validación independiente sobre el snapshot versionado de `cripta-06`.
 - **Identidad**: `bench-terreno-cazador-grid-16x16`
 - **Versión del fixture**: `1.0.0`
 - **Dimensiones**: 16 × 16, 256 salas identificadas por fila, de 1 a 256.
@@ -100,13 +104,42 @@ del juego. Su identidad/versionado se cambia solo cuando se cambia esta definici
 registrarse junto con dimensiones y checksum del archivo materializado si el fixture se
 guarda como archivo.
 
+### Snapshot de la cripta de referencia
+
+Además del fixture comparativo, el benchmark incorpora una validación independiente sobre
+una copia versionada de los datos publicados por la API del curso:
+
+- **Cripta**: `cripta-06`, versión `f9ed9afa683d`, catálogo versión `4b9e75a42be5`.
+- **Escala**: 300 salas en seis páginas, 760 salidas dirigidas; 356 salidas declaran
+  `costo` y las restantes conservan el valor efectivo 100.
+- **Cazadores**: 25 instancias de `ent_sabueso_oseo`, ubicadas en las salas 8, 11, 17, 19,
+  34, 41, 60, 98, 108, 134, 148, 151, 152, 163, 176, 190, 216, 230, 241, 251, 256,
+  268, 283, 289 y 295. La ficha publicada define vida máxima 12, ataque 4, defensa 1,
+  velocidad 110, comportamiento `cazador`, rango 600 y botín vacío.
+- **Jugador**: inicia en la sala 141 con los atributos publicados de la cripta; para evitar
+  que la partida termine durante la medición, vida actual y máxima se fijan en
+  1 000 000 000. Los demás atributos no se alteran.
+- **Ejecución**: las 25 instancias se cargan activas en sus salas de origen. Se conserva el
+  estado inicial de puertas del snapshot y no se inyectan cambios artificiales en este
+  escenario. La semilla es 42; el jugador ejecuta `W` en cada decisión. Cada repetición
+  reinicia desde el mismo estado y procesa 1000 ciclos. Se ejecutan 30 repeticiones.
+- **Aislamiento y reproducibilidad**: el esqueleto, catálogo y contenido necesarios se
+  materializan como fixture externo en `bench/datos/`, con versiones de origen y SHA-256 en
+  `bench/datos/manifest.json`. No se consulta la API durante el benchmark ni dentro de los
+  ciclos cronometrados. Cualquier actualización de la cripta o el catálogo requiere crear
+  una nueva versión del snapshot, recalcular el checksum y generar evidencia nueva.
+
+La validación de referencia es adicional: no modifica la identidad, los 20 actores, el
+reparto de rangos ni los ocho escenarios del fixture sintético.
+
 ### Archivo de evidencia
 
 El benchmark acepta `--salida RUTA`, siguiendo la convención existente de exportar evidencia
-JSON UTF-8 con indentación de dos espacios. Para la ejecución de referencia del proyecto se
-conserva y versiona `docs/evidencia/2026-11-04-terreno-cazador-benchmark.json`; no es solo
-un archivo temporal local. La explicación y las conclusiones de la medición se registran en
-`docs/DECISIONES.md`.
+JSON UTF-8 con indentación de dos espacios. El reporte histórico
+`docs/evidencia/2026-11-04-terreno-cazador-benchmark.json` conserva los ocho escenarios
+sintéticos de su ejecución y no se sobrescribe. Una nueva ejecución guarda un reporte
+fechado que incluye los ocho escenarios y la validación adicional de referencia. La
+explicación y las conclusiones de ambas mediciones se registran en `docs/DECISIONES.md`.
 
 El JSON contiene metadatos de ejecución (fecha, sistema operativo y versión, procesador,
 número de núcleos, memoria instalada, entorno de ejecución y versión y perfil de energía),
@@ -119,8 +152,8 @@ conserva si hay discrepancias o ciclos que superan 20 ms, para que el fallo sea 
 Los tiempos de la referencia no forman parte de las duraciones cronometradas.
 
 La estructura JSON usa estas claves de nivel superior: `benchmark`, `fecha`, `fixture`,
-`equipo`, `semilla`, `estado_inicial`, `escenarios`, `cumple_umbral` y
-`decisiones_correctas`. `fixture` contiene `identidad`, `version`, `sha256`, `filas`,
+`equipo`, `semilla`, `estado_inicial`, `escenarios`, `validacion_referencia`,
+`cumple_umbral` y `decisiones_correctas`. `fixture` contiene `identidad`, `version`, `sha256`, `filas`,
 `columnas`, `salas` y `conexiones`; `equipo` contiene `sistema_operativo`, `procesador`,
 `nucleos`, `memoria_bytes`, `entorno_ejecucion`, `version_entorno` y `perfil_energia`.
 Cada elemento de `escenarios` contiene `perfil_rango`, `rangos`, `cambio_puerta_cada_ciclos`,
@@ -129,6 +162,13 @@ Cada elemento de `escenarios` contiene `perfil_rango`, `rangos`, `cambio_puerta_
 el ciclo, el cazador y las decisiones esperada y observada. `cumple_umbral` solo es verdadero
 si todos los máximos equivalen a ≤20 ms; `decisiones_correctas` solo es verdadero si todas
 las listas de discrepancias están vacías.
+
+`validacion_referencia` contiene la identidad y versiones de cripta y catálogo, dimensiones,
+checksum del snapshot, sala inicial, cantidad y ubicación de cazadores, semilla, estado
+inicial y 30 repeticiones. Cada repetición registra 1000 duraciones, su máximo y las
+discrepancias contra la referencia desde cero. `cumple_umbral` y `decisiones_correctas`
+incluyen tanto los ocho escenarios comparativos como esta validación; el reporte histórico
+anterior a esta ampliación no se reescribe.
 
 ### Escenarios y comparabilidad
 

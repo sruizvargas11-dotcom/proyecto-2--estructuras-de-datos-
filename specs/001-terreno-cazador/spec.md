@@ -54,6 +54,12 @@
 
 - Q: ¿Qué escala de mapa debe cubrir el objetivo de rendimiento de 20 ms: la cripta offline disponible o un mapa de benchmark fijo y versionado de mayor tamaño? → A: Usar un mapa de benchmark fijo y versionado de mayor tamaño que la cripta offline disponible; registrar su identidad, versión y dimensiones, sin fijar aquí un tamaño concreto.
 
+### Session 2026-11-17
+
+**Bloque 7**
+
+- Q: La API del curso publica `cripta-06` como cripta de referencia, con 300 salas y 25 instancias de `ent_sabueso_oseo`. ¿Cómo se incorpora al protocolo de rendimiento ya definido? → A: Se conservan los ocho escenarios controlados del fixture sintético, con sus 20 cazadores y reparto 10/10, y se añade una validación independiente sobre un snapshot versionado de `cripta-06` que mantenga activas las 25 instancias. La medición no consulta la red.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Atravesar salidas con costos distintos (Priority: P1)
@@ -115,6 +121,10 @@ costos, rango y posiciones, y verificar la decisión de cada turno.
 10. **Given** el cazador entra a la sala del jugador al completar un movimiento, **When**
     termina ese movimiento, **Then** no ataca inmediatamente y espera hasta su siguiente turno
     programado para atacar (AB-23; FR-004).
+11. **Given** el snapshot versionado de la cripta de referencia contiene 25 instancias de
+    `ent_sabueso_oseo`, **When** se ejecuta la validación de rendimiento de referencia sin
+    red ni renderizado, **Then** se procesa un ciclo real de eventos en como máximo 20 ms y
+    cada decisión coincide con el recálculo desde cero (AB-30; FR-014).
 
 ### User Story 3 - Reconocer el terreno y a los cazadores (Priority: P2)
 
@@ -232,6 +242,19 @@ enemigos, y verificar la información que se muestra.
   La ausencia de una salida inversa se acepta como conexión unidireccional. La ausencia del
   campo costo no es un error y usa el valor predeterminado 100; un campo presente con valor
   `null` sí se rechaza.
+- **FR-014**: Además de los ocho escenarios comparativos de FR-011, el umbral oficial de
+  20 ms se verifica con un snapshot externo y versionado de la cripta de referencia
+  `cripta-06`. El snapshot fija la versión de cripta `f9ed9afa683d`, la versión de catálogo
+  `4b9e75a42be5`, sus 300 salas y las 25 instancias publicadas de `ent_sabueso_oseo`, cuyo
+  rango de catálogo es 600. El benchmark activa esas 25 instancias en sus salas publicadas,
+  parte de la sala inicial 141, conserva los costos y puertas del snapshot, usa la semilla 42
+  y la acción `W` en cada decisión del jugador, y ejecuta 30 repeticiones de 1000 ciclos.
+  La vida inicial y máxima del jugador se fija en 1 000 000 000 para que la partida no
+  termine durante la medición; se conserva el resto de sus atributos publicados. Las
+  decisiones de los cazadores coinciden con el cálculo de referencia desde cero. La descarga
+  o lectura del snapshot ocurre antes de iniciar el cronómetro; no se permiten solicitudes
+  HTTP ni renderizado dentro de los ciclos medidos. Se registra el checksum SHA-256 del
+  snapshot y el mismo conjunto de metadatos de equipo que en FR-011.
 
 ### Key Entities
 
@@ -246,7 +269,7 @@ enemigos, y verificar la información que se muestra.
 
 ### Measurable Outcomes
 
-- **SC-001**: Todos los escenarios AB-01 a AB-29 de este documento se satisfacen en sus
+- **SC-001**: Todos los escenarios AB-01 a AB-30 de este documento se satisfacen en sus
   respectivas pruebas de aceptación.
 - **SC-002**: Se evalúan ocho escenarios, cada uno con 30 repeticiones, exactamente 20
   cazadores, el mismo mapa de benchmark fijo y versionado de mayor tamaño que la cripta
@@ -263,6 +286,9 @@ enemigos, y verificar la información que se muestra.
 - **SC-003**: En todos los casos probados, los movimientos usan el costo y el intervalo
   definidos en FR-001 y FR-002, mientras que las acciones no relacionadas conservan su
   comportamiento previo.
+- **SC-004**: En las 30 repeticiones de 1000 ciclos sobre el snapshot de `cripta-06` con sus
+  25 cazadores activos, ningún ciclo supera 20 ms, no hay discrepancias con la referencia y
+  el reporte permite verificar las versiones y el checksum de los datos medidos.
 
 ## Assumptions
 
@@ -323,3 +349,4 @@ correspondiente cite explícitamente los requisitos funcionales cubiertos.
 | AB-27 | Dada una conexión donde un sentido omite el campo costo y el otro declara un valor distinto de 100, al validar los datos, se rechaza la cripta antes de iniciar y el error identifica la conexión y ambos costos efectivos. | FR-001, FR-013 |
 | AB-28 | Dada una salida de una sala a otra sin una salida inversa correspondiente, al validar los datos, se acepta como conexión unidireccional. | FR-001 |
 | AB-29 | Dado el protocolo de medición del objetivo de 20 ms, se usa en los ocho escenarios el mismo mapa de benchmark fijo y versionado de mayor tamaño que la cripta offline disponible, y se registran su identidad, versión y dimensiones. | FR-011 |
+| AB-30 | Dada la cripta de referencia `cripta-06` versión `f9ed9afa683d` y su catálogo versión `4b9e75a42be5`, con 300 salas y 25 instancias activas de `ent_sabueso_oseo`, al ejecutar 30 repeticiones de 1000 ciclos con semilla 42, acción `W`, sin red ni renderizado, cada ciclo tarda como máximo 20 ms y todas las decisiones coinciden con el recálculo desde cero. | FR-014 |

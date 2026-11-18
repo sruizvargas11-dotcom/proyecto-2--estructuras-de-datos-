@@ -73,9 +73,10 @@ avanza una salida y termina; si llega a la sala del jugador no ataca en ese mism
 5. Iniciar el reloj. Los fallos no deben crear una partida parcialmente válida ni exceder
    `presupuesto_solicitudes`.
 
-Una salida inversa ausente es válida como conexión unidireccional. El benchmark usa un mapa
-fijo/versionado mayor que el mapa offline disponible, y debe registrar identidad, versión y
-dimensiones (AB-29; FR-011).
+Una salida inversa ausente es válida como conexión unidireccional. El benchmark conserva el
+fixture comparativo fijo/versionado y agrega un snapshot de `cripta-06` para validar el límite
+oficial en la cripta de referencia. Ambos registran versión, dimensiones y checksum
+(AB-29–AB-30; FR-011, FR-014).
 
 ### Fixture del benchmark
 
@@ -87,10 +88,25 @@ dimensiones (AB-29; FR-011).
 | Topología | Grilla ortogonal; 240 aristas horizontales y 240 verticales, cada una representada en ambos sentidos (480 conexiones, 960 salidas) |
 | Costos | Deterministas y simétricos; para extremos `u < v`, `1 + ((7*u + 11*v) mod 100)` |
 | Puertas | Ocho aristas designadas en el contrato; todas abiertas inicialmente, se alterna una por cambio en orden fijo |
-| Escala base | La cripta offline disponible, `cripta-01`, tiene 6 salas; el fixture tiene 256 |
+| Escala base | `cripta-01` tiene 6 salas; el fixture comparativo tiene 256 |
 
 Este fixture es dato exclusivo de medición, no una cripta oficial ni una constante de la
 lógica de producción. La definición completa y la secuencia de estados está en
+[el contrato de benchmark](./contracts/datos-entrada-y-benchmark.md).
+
+### Snapshot de referencia
+
+| Atributo | Valor |
+|---|---|
+| Cripta/version | `cripta-06` / `f9ed9afa683d` |
+| Catálogo/version | `4b9e75a42be5` |
+| Dimensiones | 300 salas en seis páginas |
+| Salidas | 760 dirigidas; 356 con costo explícito |
+| Cazadores | 25 `ent_sabueso_oseo`, en sus salas publicadas; rango 600 |
+| Uso | 30 repeticiones × 1000 ciclos, estado fijo, seed 42, acción `W`, sin red |
+
+El snapshot materializado y su SHA-256 residen en `bench/datos/`; no se cargan como datos
+offline de producción ni se consultan en la ruta cronometrada. El protocolo completo está en
 [el contrato de benchmark](./contracts/datos-entrada-y-benchmark.md).
 
 ## Matriz de trazabilidad FR–AB
@@ -113,6 +129,7 @@ en la fase de implementación deberán citar explícitamente cada ID AB y FR.
 | FR-011 | AB-13, AB-29 |
 | FR-012 | AB-16 |
 | FR-013 | AB-19, AB-20, AB-21, AB-24, AB-25, AB-27 |
+| FR-014 | AB-30 |
 
-**Revisión requerida**: todos los FR-001–FR-013 aparecen en al menos un escenario y cada
-AB-01–AB-29 aparece en la tabla de especificación con uno o más FR.
+**Revisión requerida**: todos los FR-001–FR-014 aparecen en al menos un escenario y cada
+AB-01–AB-30 aparece en la tabla de especificación con uno o más FR.
