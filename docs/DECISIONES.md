@@ -1517,6 +1517,7 @@ y uno en rango grande compartido con cambio cada 100 ciclos. Por tanto
 ninguna evidencia previa. T054 y T055 quedan completadas al ejecutar y documentar el
 resultado; T031, T039 y T051 siguen pendientes porque el límite contractual aún falla.
 
+<<<<<<< HEAD
 ## 002: Niebla de guerra, antorcha y viaje automático
 
 Se separa el conocimiento del jugador de la topología real. Cada sala tiene un registro
@@ -1545,3 +1546,40 @@ partida, con indicación de que se midieron cambios locales.
 - [Trazabilidad de los 34 casos](evidencia/2026-11-12-niebla-viaje-trazabilidad.md)
 - [Benchmark JSON](evidencia/2026-11-12-niebla-viaje-benchmark.json)
 - [Resultados de la validación](evidencia/2026-11-12-niebla-viaje-validacion.md)
+=======
+### Quinta iteración: topología inversa persistente (2026-11-18)
+
+El perfil diagnóstico de 1000 ciclos del escenario sintético de rango grande, puerta cada
+ciclo y modo compartido atribuyó bajo cProfile 6.914 s acumulados a
+`CacheDistanciasCazador.obtener`, 4.934 s a `_distancias_hacia_jugador` y 1.932 s a
+`_construir_entrantes`. Esas cifras incluyen el perfilador y solo identifican trabajo
+repetido; no se usan como evidencia de rendimiento.
+
+Se añadió una topología inversa por instancia de caché que conserva referencias a todas las
+salidas dirigidas. En cada búsqueda se consulta si la salida sigue abierta; las distancias se
+recalculan al cambiar el jugador o la revisión de puertas. No se retienen rutas o distancias
+entre revisiones. Las pruebas nuevas cubren cierres/reaperturas directos e historizados,
+IDs dispersos y equivalencia con la búsqueda individual. El cambio no incorpora estructuras
+ni bibliotecas prohibidas.
+
+Con Python 3.12.10 pasaron las 45 pruebas focalizadas y la suite completa de 1194 pruebas.
+Cinco repeticiones diagnósticas del escenario grande compartido con puerta cada ciclo dieron
+un máximo de 3.5494 ms; el escenario grande individual con puerta cada 100 ciclos llegó a
+11.6340 ms. Estas mediciones focalizadas no reemplazan el benchmark contractual.
+
+El benchmark contractual de T060 completó ocho escenarios sintéticos y la validación de
+`cripta-06`, con 30 repeticiones × 1000 ciclos por grupo, 240 000 ciclos sintéticos y 30 000
+de referencia. Hubo cero discrepancias. Todos los escenarios cumplieron el umbral de 20 ms;
+el máximo global fue 12.8721 ms y el máximo de `cripta-06`, 2.0696 ms. El reporte conserva
+el checksum sintético `1280471411e4f73de726d3d76ae183b30d9650054260d7af37382ddb567deae4`
+y el checksum de referencia
+`42d06f7c9c8f9dc15e8f6080409db2a501babbe8f9f1d9e8734e07c80807d4f5`, con versiones de
+cripta `f9ed9afa683d` y catálogo `4b9e75a42be5`.
+
+La evidencia completa está en `docs/evidencia/terreno-cazador-benchmark-iteracion-5.json`;
+los reportes previos permanecen intactos. T056–T061 quedan completadas. T031, T039, T045 y
+T051 se cierran como gates históricos supersedidos por el resultado aprobado de T060. Esto
+no reclasifica los reportes de iteraciones 2–4: conservan sus resultados fallidos y no se
+presentan como aprobados. T039 queda satisfecho por el reporte vigente de iteración 5; el
+archivo `terreno-cazador-benchmark-final.json` se conserva sin sobrescribir.
+>>>>>>> feature/spec-kit-copilot

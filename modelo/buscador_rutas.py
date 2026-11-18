@@ -78,13 +78,35 @@ def _construir_entrantes(cripta, indice=None):
     return entrantes
 
 
+def _construir_topologia_entrante(cripta, indice=None):
+    """Construye una vez las aristas inversas con referencias a cada salida."""
+    entrantes = Vector()
+    for sala in cripta.recorrer_salas():
+        entrantes.agregarValor([sala, Vector()])
+    if indice is None:
+        indice = _crear_indice_valores(entrantes)
+    else:
+        datos_indice = indice.almacenamiento()
+        for registro in entrantes:
+            datos_indice[registro[0].id] = registro
+    datos_indice = indice.almacenamiento() if indice is not None else None
+    for origen in cripta.recorrer_salas():
+        for salida in origen.salidas:
+            registro = (datos_indice[salida.sala_destino.id]
+                        if datos_indice is not None
+                        else _buscar(entrantes, salida.sala_destino))
+            registro[1].agregarValor((origen, salida))
+    return entrantes
+
+
 def construir_entrantes(cripta):
     """Construye las aristas inversas abiertas para un ciclo de decisiones."""
     return _construir_entrantes(cripta)
 
 
 def _distancias_hacia_jugador(cripta, jugador, entrantes=None,
-                              indice_distancias=None, indice_entrantes=None):
+                              indice_distancias=None, indice_entrantes=None,
+                              salidas_dinamicas=False):
     distancias = Vector()
     for sala in cripta.recorrer_salas():
         distancias.agregarValor([sala, None])
@@ -117,7 +139,13 @@ def _distancias_hacia_jugador(cripta, jugador, entrantes=None,
                               if indice_entrantes is not None
                               else _buscar(entrantes, sala))
         entrantes_sala = registro_entrantes[1]
-        for origen, costo_salida in entrantes_sala:
+        for origen, salida_o_costo in entrantes_sala:
+            if salidas_dinamicas:
+                if salida_o_costo.cerrada:
+                    continue
+                costo_salida = salida_o_costo.costo
+            else:
+                costo_salida = salida_o_costo
             anterior = (indice_distancias.almacenamiento()[origen.id]
                         if indice_distancias is not None
                         else _buscar(distancias, origen))
@@ -136,13 +164,15 @@ class CacheDistanciasCazador:
         self._sala_jugador = None
         self._revision_puertas = None
         self._distancias = None
-        self._entrantes = None
         self.indice_entrantes = _crear_indice_valores([
             [sala, None] for sala in cripta.recorrer_salas()
         ])
         self.indice_distancias = _crear_indice_valores([
             [sala, None] for sala in cripta.recorrer_salas()
         ])
+        self._entrantes = _construir_topologia_entrante(
+            cripta, self.indice_entrantes
+        )
 
     def obtener(self, jugador):
         invalida = self._sala_jugador is not jugador.sala_actual
@@ -150,12 +180,10 @@ class CacheDistanciasCazador:
         if revision != self._revision_puertas:
             invalida = True
         if invalida or self._distancias is None:
-            self._entrantes = _construir_entrantes(
-                self.cripta, self.indice_entrantes
-            )
             self._distancias = _distancias_hacia_jugador(
                 self.cripta, jugador, self._entrantes,
-                self.indice_distancias, self.indice_entrantes
+                self.indice_distancias, self.indice_entrantes,
+                salidas_dinamicas=True,
             )
             self._distancias._indice_cazador = self.indice_distancias
             self._sala_jugador = jugador.sala_actual
