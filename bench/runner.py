@@ -38,6 +38,24 @@ def _encabezado(semilla=42):
     return commit, py, so, cpu
 
 
+def _datos_filas(filas):
+    return [
+        {
+            'caso': f.caso,
+            'variante': f.variante,
+            'n': f.n,
+            'ms_med': f.ms,
+            'ms_min': f.ms_min,
+            'ms_p95': f.ms_p95,
+            'ms_max': f.ms_max,
+            'n_rep': f.n_rep,
+            'muestras': list(f.muestras),
+            'extra': f.extra,
+        }
+        for f in filas
+    ]
+
+
 def _guardar_evidencia(filas, commit, py, so, cpu, semilla=42):
     directorio = Path(__file__).parent / 'resultados'
     directorio.mkdir(parents=True, exist_ok=True)
@@ -50,21 +68,7 @@ def _guardar_evidencia(filas, commit, py, so, cpu, semilla=42):
         'cpu': cpu,
         'semilla': semilla,
         'fecha': datetime.now().isoformat(timespec='seconds'),
-        'filas': [
-            {
-                'caso': f.caso,
-                'variante': f.variante,
-                'n': f.n,
-                'ms_med': f.ms,
-                'ms_min': f.ms_min,
-                'ms_p95': f.ms_p95,
-                'ms_max': f.ms_max,
-                'n_rep': f.n_rep,
-                'muestras': list(f.muestras),
-                'extra': f.extra,
-            }
-            for f in filas
-        ],
+        'filas': _datos_filas(filas),
     }
     ruta.write_text(json.dumps(datos, ensure_ascii=False, indent=2), encoding='utf-8')
     return ruta
@@ -76,7 +80,12 @@ def main_bench(salida=None):
         filas = resolubilidad.correr()
         imprimir_tabla(filas)
         from bench.terreno_cazador import crear_reporte
-        crear_reporte(salida)
+        reporte = crear_reporte(salida)
+        reporte['filas_resolubilidad'] = _datos_filas(filas)
+        Path(salida).write_text(
+            json.dumps(reporte, ensure_ascii=False, indent=2) + "\n",
+            encoding='utf-8',
+        )
         print(f"evidencia: {salida}")
         return filas
     commit, py, so, cpu = _encabezado()

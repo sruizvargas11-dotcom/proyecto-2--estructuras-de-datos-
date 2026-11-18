@@ -1,0 +1,74 @@
+Reproduciendo ../../output/CRIPTA-II-victoria-semilla-354.log
+t=0 > mover N
+  [t=0] Entras a Pasillo de las urnas.
+  [t=0] ¡Una trampa se activa! -4 de vida.
+  [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+  [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+t=100 > mover N
+  [t=100] Entras a Cripta baja.
+  [t=132] Rata gigante #e-201 entra en la sala.
+  [t=132] Rata gigante #e-202 entra en la sala.
+  [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+  [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+t=200 > recoger 2
+  [t=200] Recoges Coraza de cuero.
+t=225 > equipar 1
+  [t=225] Equipas Coraza de cuero.
+  [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+  [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+t=275 > mover N
+  [t=275] Entras a Osario profundo.
+  [t=330] Rata gigante #e-201 entra en la sala.
+  [t=330] Rata gigante #e-202 entra en la sala.
+t=375 > recoger 1
+  [t=375] Recoges Llave negra.
+  [t=386] Guardián óseo #e-401 te ataca: -3 de vida.
+  [t=396] Rata gigante #e-201 te ataca: -3 de vida.
+  [t=396] Rata gigante #e-202 te ataca: -2 de vida.
+t=400 > abrir E
+  [t=400] Abres la puerta E.
+t=450 > mover E
+  [t=450] Entras a Salida.
+  [t=450] ¡Escapaste de la cripta!
+
+Resultado: victoria | t=450 | 8 acciones reproducidas
+  cripta_id: cripta-01
+  version_cripta: d152eb846633
+  acciones_jugador: 8
+  enemigos_derrotados: 0
+  tiempo_final: 450
+  resultado: victoria
+Estado final idéntico al registrado en la bitácora (10 líneas comparadas): reproducción idéntica.
+
+=== Reporte de red #20 ===
+fecha: 2026-11-17 23:45:49
+modo: replay
+fuente: offline
+cripta: cripta-01
+version_cripta: d152eb846633
+version_catalogo: f7cb2431af96
+semilla: 354
+bitacora: ../../output/CRIPTA-II-victoria-semilla-354.log
+motivo_fin: replay completo, idéntico a la partida original; victoria: el jugador llegó a la sala de salida
+estado_final: victoria
+tiempo_final: 450
+acciones_jugador: 8
+enemigos_derrotados: 0
+-- Solicitudes de red --
+solicitudes_realizadas: 0 (offline: las lecturas locales no cuentan)
+presupuesto_solicitudes: 9
+restantes: 9
+dentro_del_presupuesto: sí
+lotes_leidos_localmente: contenido 0, catálogo 0
+-- Caché --
+esqueleto: desde caché en disco
+salas_incorporadas: 6 (6 desde disco, 0 desde la fuente)
+fichas_lru_aciertos: 32
+fichas_lru_fallos: 12
+fichas_fallos_resueltos: 12 desde disco, 0 desde la fuente
+fichas_lru: 12 en memoria de 25, 0 desalojos
+indice_hash: 64 cubetas, carga 0.188, cadena máx 2, 2 colisiones, 0 crecimientos, 0.742 comparaciones/búsqueda
+fichas_lru_protegidas: 0 saltadas al desalojar, 0 rechazos por capacidad
+-- Precarga --
+esperas_bloqueantes: 0
+precargas_fallidas: 0

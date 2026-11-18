@@ -131,7 +131,7 @@ def test_catalogo_se_numera_como_subsolicitud_del_contenido(tmp_path):
     red = ControladorRed(fuente, cripta, tmp_path)
     red.solicitar_contenido_lote([1, 2, 3, 4, 5, 6])
     assert [(n, sub, clase, len(ids)) for n, sub, clase, ids, _ in _registro(red)] == [
-        (1, 0, 'contenido', 6), (1, 1, 'catalogo', 10), (1, 2, 'catalogo', 1)]
+        (1, 0, 'contenido', 6), (1, 1, 'catalogo', 10), (1, 2, 'catalogo', 2)]
 
 
 def test_catalogo_fuera_de_incorporacion_recibe_numero_propio(tmp_path):

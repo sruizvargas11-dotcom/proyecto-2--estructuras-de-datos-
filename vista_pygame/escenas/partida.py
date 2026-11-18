@@ -86,6 +86,7 @@ class EscenaPartida(EscenaBase):
         self._indicadores=pygame.Surface((1280,720),pygame.SRCALPHA)
         self._objetivo_indice = None
         self._mostrar_ayuda = False
+        self._texto_comando = None
         self._cerrar_ayuda=pygame.Rect(1195,28,38,38)
         self._mostrar_minimapa = True
         self._layout_minimapa = None
@@ -101,6 +102,8 @@ class EscenaPartida(EscenaBase):
         self._error_mostrado = None
 
     def al_salir(self):
+        if self._texto_comando is not None:
+            pygame.key.stop_text_input()
         self._layout_minimapa = None
         self._topologia_minimapa = None
         self._animaciones.limpiar()
@@ -113,7 +116,31 @@ class EscenaPartida(EscenaBase):
                 or self._puerta_ms<700 or self._comando_enviado or self._recogida is not None
                 or self._animaciones.ocupada or self._candado is not None)
 
+    def _manejar_texto_comando(self, evento):
+        if evento.type == pygame.TEXTINPUT:
+            self._texto_comando = (self._texto_comando + evento.text)[:80]
+            return
+        if evento.type != pygame.KEYDOWN:
+            return
+        if evento.key == pygame.K_BACKSPACE:
+            self._texto_comando = self._texto_comando[:-1]
+        elif evento.key in (pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER):
+            comando = self._texto_comando.strip()
+            self._texto_comando = None
+            pygame.key.stop_text_input()
+            controlador = self.contexto.controlador
+            estado = controlador.estado()
+            if (evento.key != pygame.K_ESCAPE and comando
+                    and estado is not None and estado.estado == "en_curso"
+                    and not self._fin_enviado and self._error_mostrado is None
+                    and not controlador.esperando_red()):
+                self._comando_enviado = True
+                controlador.enviar_comando(comando)
+
     def manejar_evento(self, evento):
+        if self._texto_comando is not None:
+            self._manejar_texto_comando(evento)
+            return
         if self._candado is not None:
             self._candado.manejar_evento(evento,self.contexto.controlador.estado())
             if self._candado.terminada:self._candado=None
@@ -137,6 +164,10 @@ class EscenaPartida(EscenaBase):
                 self._mostrar_ayuda=False
             return
         if self.contexto.controlador.esperando_red():return
+        if evento.type == pygame.KEYDOWN and evento.key == pygame.K_F2 and estado is not None:
+            self._texto_comando = ""
+            pygame.key.start_text_input()
+            return
         if evento.type==pygame.MOUSEWHEEL and MENSAJES_RECT.collidepoint(getattr(evento,'pos',(-1,-1))):
             self._desplazar_mensajes(evento.y)
             return
@@ -496,6 +527,15 @@ class EscenaPartida(EscenaBase):
                              estado.salas_visitadas, estado.sala_id, assets.fuente(14))
         if self._mostrar_ayuda:
             self._dibujar_ayuda(pantalla, assets)
+        if self._texto_comando is not None:
+            rect = pygame.Rect(40, MENSAJES_RECT.top - 58, 760, 52)
+            pygame.draw.rect(pantalla, COLOR_FONDO, rect)
+            pygame.draw.rect(pantalla, COLOR_ORO, rect, 2)
+            fuente = assets.fuente(15)
+            pantalla.blit(fuente.render("Comando · Enter ejecutar · Esc cancelar", True, COLOR_ORO),
+                          (rect.x + 12, rect.y + 8))
+            pantalla.blit(fuente.render("> " + self._texto_comando, True, COLOR_TEXTO),
+                          (rect.x + 12, rect.y + 28))
         if self._error_mostrado is not None:
             self._dibujar_error(pantalla, assets)
 
@@ -577,7 +617,7 @@ class EscenaPartida(EscenaBase):
         for linea in AYUDA.split("\n"):
             pantalla.blit(fuente.render(linea, True, COLOR_TEXTO), (80, y))
             y += 22
-        pantalla.blit(assets.fuente(16).render("X roja o F1: cerrar esta ayuda", True, COLOR_AVISO),
+        pantalla.blit(assets.fuente(16).render("F2: escribir un comando · F1: cerrar ayuda", True, COLOR_AVISO),
                       (80, y + 10))
 
     def _dibujar_error(self, pantalla, assets):

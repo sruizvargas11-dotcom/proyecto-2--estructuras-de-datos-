@@ -62,7 +62,7 @@ def test_al_liberar_espacio_la_ficha_vuelve_a_memoria(offline, tmp_path):
     red._fichas._verificar_invariantes()
 
 
-@pytest.mark.parametrize('sala_id', [1, 3, 5])
+@pytest.mark.parametrize('sala_id', [1, 3])
 def test_sala_con_objetos_se_incorpora_aunque_la_cache_este_llena(offline, tmp_path, sala_id):
     """Antes: RuntimeError 'La ficha ... no se resolvió antes de incorporar'."""
     fuente, cripta = offline
@@ -70,6 +70,15 @@ def test_sala_con_objetos_se_incorpora_aunque_la_cache_este_llena(offline, tmp_p
     red.garantizar_contenido(sala_id)
     assert red.contenido_cargado(sala_id)
     assert len(red._fichas) <= 1
+    red._fichas._verificar_invariantes()
+
+
+def test_sala_con_cazador_requiere_espacio_para_su_ficha(offline, tmp_path):
+    fuente, cripta = offline
+    red = _red_llena_de_protegidas(fuente, cripta, tmp_path)
+    with pytest.raises(CacheFichasLlenaError, match='ent_cazador'):
+        red.garantizar_contenido(5)
+    assert not red.contenido_cargado(5)
     red._fichas._verificar_invariantes()
 
 

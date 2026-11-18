@@ -1,0 +1,29 @@
+CRIPTA_LOG v1
+cripta_id: cripta-01
+version_cripta: d152eb846633
+version_catalogo: f7cb2431af96
+semilla: 354
+jugador_vida_max: 30
+jugador_ataque: 6
+jugador_defensa: 2
+jugador_velocidad: 100
+----------
+t=0 mover N
+t=100 mover N
+t=200 recoger 2
+t=225 equipar 1
+t=275 mover N
+t=375 recoger 1
+t=400 abrir E
+t=450 mover E
+t=450 fin victoria
+= estado=victoria t=450 acciones=8 derrotados=0
+= jugador=jugador:1/30:6:4:100:450:- sala=6 arma=- armadura=objeto:4
+= inventario=objeto:4,objeto:7
+= sala1 rastro=0 enemigos= dormidos= suelo=objeto:1 trampas= salidas=N:0
+= sala2 rastro=0 enemigos= dormidos= suelo=objeto:2 trampas=t-17:1 salidas=N:0,S:0,E:1
+= sala3 rastro=225 enemigos= dormidos= suelo=objeto:3 trampas= salidas=N:0,S:0
+= sala4 rastro=400 enemigos=e-401:20/20:7:3:90:497:-;e-201:12/12:5:1:150:462:-;e-202:12/12:5:1:150:462:- dormidos= suelo=objeto:8 trampas= salidas=S:0,E:0
+= sala5 rastro=-1 enemigos= dormidos=e-501 suelo=objeto:5,objeto:6 trampas= salidas=O:0
+= sala6 rastro=450 enemigos= dormidos= suelo= trampas= salidas=O:0
+= azar_siguiente=12143864567193485826

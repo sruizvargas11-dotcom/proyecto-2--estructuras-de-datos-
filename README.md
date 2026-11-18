@@ -507,6 +507,8 @@ El generador exige una carpeta nueva. Copia los datos a esa ubicación y prepara
 
 ## Evidencias
 
+La [documentación de entrega de CRIPTA II](docs/entrega/README.md) reúne las decisiones, la guía de demostración y los resultados de validación.
+
 [docs/evidencia](docs/evidencia/) conserva resultados de mediciones y el guion que permite repetir una partida. Los JSON son archivos de datos; las explicaciones y conclusiones están en [docs/decisiones](docs/decisiones/).
 
 | Archivo | Qué contiene y de dónde sale |

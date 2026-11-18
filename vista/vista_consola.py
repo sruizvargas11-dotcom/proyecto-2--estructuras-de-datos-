@@ -1,6 +1,7 @@
 from estructuras.array_circular import ArrayCircular
 from estructuras.vector_dinamico import Vector
 
+
 CAPACIDAD_MENSAJES = 20
 ANCHO = 68
 
@@ -208,7 +209,9 @@ class VistaConsola:
     @staticmethod
     def _mapa_historico(salas):
         nombres = ", ".join(
-            f"{sala.nombre} (sala {sala.sala_id})" for sala in salas
+            f"{sala.nombre} (sala {sala.sala_id})"
+            if sala.sala_id is not None else "sala avistada"
+            for sala in salas
         )
         return nombres or "sin salas conocidas"
 

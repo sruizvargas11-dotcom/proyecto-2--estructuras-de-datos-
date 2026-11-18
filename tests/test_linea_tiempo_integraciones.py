@@ -130,22 +130,25 @@ def test_historia_muestra_mapa_historico_y_salas_reveladas_por_antorcha(
 
     inicial = _resumen_en(vista, 0)
     tras_primera_entrada = _resumen_en(vista, 25)
+    from vista.vista_consola import VistaConsola
+    mapa_visible = VistaConsola.formatear_resumen_historico(inicial)[-1]
+    assert "sala avistada" in mapa_visible
+    assert "sala 2" not in mapa_visible
+    assert all(sala.nombre == "sala avistada" for sala in inicial.mapa_conocido
+               if sala.estado == AVISTADA)
     assert _mapa(inicial) == (
         (1, EXPLORADA, 0),
-        (2, AVISTADA, -1),
+        (None, AVISTADA, -1),
     )
     assert _mapa(tras_primera_entrada) == (
         (1, EXPLORADA, 0),
         (2, EXPLORADA, 0),
         (3, EXPLORADA, -1),
-        (4, AVISTADA, -1),
+        (None, AVISTADA, -1),
         (5, EXPLORADA, -1),
     )
     assert sesion.partida.conocimiento.explorada(4)
-    assert next(
-        sala.estado for sala in tras_primera_entrada.mapa_conocido
-        if sala.sala_id == 4
-    ) == AVISTADA
+    assert all(sala.sala_id != 4 for sala in tras_primera_entrada.mapa_conocido)
 
 
 def test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino(
@@ -167,13 +170,13 @@ def test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino(
 
     assert _mapa(_resumen_en(vista_despues, 0)) == (
         (1, EXPLORADA, 0),
-        (2, AVISTADA, -1),
+        (None, AVISTADA, -1),
     )
     assert _mapa(_resumen_en(vista_despues, 25)) == (
         (1, EXPLORADA, 0),
         (2, EXPLORADA, 0),
         (3, EXPLORADA, -1),
-        (4, AVISTADA, -1),
+        (None, AVISTADA, -1),
         (5, EXPLORADA, -1),
     )
     assert _mapa(_resumen_en(vista_despues, 75)) == (
@@ -182,7 +185,7 @@ def test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino(
         (3, EXPLORADA, 25),
         (4, EXPLORADA, -1),
         (5, EXPLORADA, -1),
-        (6, AVISTADA, -1),
+        (None, AVISTADA, -1),
     )
     assert restaurada.partida.tiempo == 25
     assert restaurada.partida.acciones_jugador == 1

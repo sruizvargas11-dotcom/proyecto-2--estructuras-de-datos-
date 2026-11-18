@@ -252,8 +252,9 @@ def test_tipos_nuevos_se_resuelven_una_vez_y_en_lotes(offline, tmp_path):
     red.solicitar_contenido_lote([1, 2, 3, 4, 5, 6])
 
     tipos = fuente.tipos_pedidos()
-    assert len(tipos) == len(set(tipos)) == 11
-    assert [len(l) for l in fuente.lotes_catalogo] == [10, 1]
+    assert len(tipos) == len(set(tipos)) == 12
+    assert "ent_cazador" in tipos
+    assert [len(l) for l in fuente.lotes_catalogo] == [10, 2]
     assert list(red.tipos_descubiertos())[:3] == ['itm_antorcha', 'ent_rata_gigante',
                                                   'itm_daga_oxidada']
     assert len(fuente.contenido) == 1 and fuente.versiones_catalogo == 1
@@ -286,7 +287,7 @@ def test_contenido_y_fichas_vigentes_en_disco_no_generan_request(offline, tmp_pa
     red.solicitar_contenido_lote([1, 2, 3, 4, 5, 6])
     assert (len(fuente.contenido), len(fuente.lotes_catalogo)) == antes
     assert red.contador_salas_desde_disco == 6
-    assert red.contador_fichas_desde_disco == 11
+    assert red.contador_fichas_desde_disco == 12
 
 
 def test_precarga_fallida_no_cae_el_juego(offline, tmp_path):

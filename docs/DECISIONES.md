@@ -8,6 +8,9 @@
 
 **Fecha:** 18 de octubre de 2026.
 
+
+El [anexo de decisiones de la Parte II](entrega/CRIPTA-II-decisiones-consolidadas.md) recoge las secciones 5.1 a 5.6 con sus especificaciones, alternativas y mediciones.
+
 ## Autores
 
 - Jose Daniel Morales Moreno

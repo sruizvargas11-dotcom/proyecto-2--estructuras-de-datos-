@@ -1,0 +1,6 @@
+VEREDICTO: RESOLUBLE
+ORDEN_POR_RONDAS:
+  RONDA 0:
+    - id=itm_llave_bronce | sala=3 | enemigo=ninguno
+    - id=itm_llave_negra | sala=4 | enemigo=ninguno
+PUERTA_FINAL: origen=4 | direccion=E | destino=6

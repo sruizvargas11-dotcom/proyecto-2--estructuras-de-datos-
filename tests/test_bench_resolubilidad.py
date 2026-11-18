@@ -103,7 +103,7 @@ def test_runner_con_salida_conserva_reporte_y_ejecuta_caso(monkeypatch, tmp_path
     monkeypatch.setattr(
         terreno_cazador,
         "crear_reporte",
-        lambda ruta: reportes.append(ruta),
+        lambda ruta: reportes.append(ruta) or {"benchmark": "terreno-y-cazador"},
     )
     monkeypatch.setattr(
         resolubilidad,
@@ -114,6 +114,12 @@ def test_runner_con_salida_conserva_reporte_y_ejecuta_caso(monkeypatch, tmp_path
     ruta = tmp_path / "terreno.json"
 
     assert runner.main_bench(ruta) == filas
+    import json
+
+    evidencia = json.loads(ruta.read_text(encoding="utf-8"))
+    assert evidencia["benchmark"] == "terreno-y-cazador"
+    assert evidencia["filas_resolubilidad"][0]["variante"] == "incremental"
+    assert evidencia["filas_resolubilidad"][0]["ms_med"] == 0.1
     assert reportes == [ruta]
     assert casos == [True]
 

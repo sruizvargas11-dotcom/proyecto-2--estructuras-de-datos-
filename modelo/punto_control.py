@@ -50,6 +50,26 @@ def _preparar_copia(partida, incluir_historial=True):
     _excluir_pergaminos(partida.jugador)
 
 
+def _clonar_estado(partida):
+    try:
+        return deepcopy(partida)
+    except RecursionError:
+        # Reservar identidades antes de copiar los enlaces del mapa evita
+        # recorrer recursivamente cadenas de salas y recuerdos de puertas.
+        nodos = list(partida.cripta.recorrer_salas())
+        for sala in partida.cripta.recorrer_salas():
+            nodos.extend(sala.salidas)
+        for registro in partida.conocimiento.registros:
+            nodos.append(registro)
+            nodos.extend(registro.recuerdos)
+        # deepcopy exige su propio memo para mantener referencias compartidas.
+        memo = {id(nodo): type(nodo).__new__(type(nodo)) for nodo in nodos}
+        copia = deepcopy(partida, memo)
+        for nodo in nodos:
+            vars(memo[id(nodo)]).update(deepcopy(vars(nodo), memo))
+        return copia
+
+
 def _copiar_sin_auxiliares(partida):
     historial = partida.historial
     reloj_historial = partida.reloj.historial
@@ -85,7 +105,7 @@ def _copiar_sin_auxiliares(partida):
         partida._resolver_ficha = None
         for nombre, _ in callbacks:
             setattr(partida, nombre, Vector())
-        estado = deepcopy(partida)
+        estado = _clonar_estado(partida)
         _preparar_copia(estado, incluir_historial=False)
         return estado
     finally:
@@ -125,6 +145,6 @@ class PuntoControl:
 
     def restaurar(self):
         """Devuelve una instancia fresca sin historial ni pergaminos copiados."""
-        estado = deepcopy(self._estado)
+        estado = _clonar_estado(self._estado)
         _preparar_copia(estado)
         return estado

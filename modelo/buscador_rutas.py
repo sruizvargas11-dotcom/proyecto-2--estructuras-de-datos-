@@ -65,28 +65,28 @@ def construir_entrantes(cripta):
 
 
 def _distancias_hacia_jugador(cripta, jugador, entrantes=None):
-    distancias = Vector()
-    for sala in cripta.recorrer_salas():
-        distancias.agregarValor([sala, None])
+    distancias, indice = _crear_indice_registros(cripta)
     if entrantes is None:
         entrantes = _construir_entrantes(cripta)
-    objetivo = _buscar(distancias, jugador.sala_actual)
+    objetivo = _registro_indice(distancias, indice, jugador.sala_actual)
     objetivo[1] = 0
     frontera = ColaPrioridadRuta()
     frontera.insertar(_registro(jugador.sala_actual, 0))
     while len(frontera):
         registro = frontera.extraer_minimo()
         sala, costo = registro[0], registro[1]
-        registro = _buscar(distancias, sala)
+        registro = _registro_indice(distancias, indice, sala)
         if registro[1] != costo:
             continue
         entrantes_sala = _buscar(entrantes, sala)[1]
         for origen, costo_salida in entrantes_sala:
-            anterior = _buscar(distancias, origen)
+            anterior = _registro_indice(distancias, indice, origen)
             nuevo = costo + costo_salida
             if anterior[1] is None or nuevo < anterior[1]:
                 anterior[1] = nuevo
                 frontera.insertar(_registro(origen, nuevo))
+    for registro in distancias:
+        del registro[2:]
     return distancias
 
 
@@ -96,24 +96,17 @@ class CacheDistanciasCazador:
     def __init__(self, cripta):
         self.cripta = cripta
         self._sala_jugador = None
-        self._puertas = Vector()
+        self._puertas = ()
         self._distancias = None
         self._entrantes = None
 
     def obtener(self, jugador):
-        puertas = Vector()
-        for sala in self.cripta.recorrer_salas():
-            for salida in sala.salidas:
-                puertas.agregarValor((sala.id, salida.direccion, salida.cerrada))
-        invalida = self._sala_jugador is not jugador.sala_actual
-        if not invalida and self._puertas is not None:
-            if len(puertas) != len(self._puertas):
-                invalida = True
-            else:
-                for i in range(len(puertas)):
-                    if puertas.obtenerValor(i) != self._puertas.obtenerValor(i):
-                        invalida = True
-                        break
+        puertas = tuple(
+            salida.cerrada
+            for sala in self.cripta.recorrer_salas()
+            for salida in sala.salidas
+        )
+        invalida = self._sala_jugador is not jugador.sala_actual or puertas != self._puertas
         if invalida or self._distancias is None:
             self._entrantes = _construir_entrantes(self.cripta)
             self._distancias = _distancias_hacia_jugador(

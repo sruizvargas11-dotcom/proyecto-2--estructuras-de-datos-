@@ -1,0 +1,1296 @@
+
+====================================================================
+ Entrada derruida (sala 1)                                     t = 0
+====================================================================
+ Vida [####################] 300/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ (sin mensajes)
+
+====================================================================
+ Entrada derruida (sala 1)                                     t = 0
+====================================================================
+ Vida [####################] 300/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+Estado histórico | t=0
+Entrada derruida (sala 1)
+Vida 300/300 | Ataque 6 | Defensa 2 | Velocidad 100
+Inventario: vacío
+Efectos: ninguno
+Enemigos: ninguno
+Mapa conocido: Entrada derruida (sala 1), sala avistada
+
+====================================================================
+ Entrada derruida (sala 1)                                     t = 0
+====================================================================
+ Vida [####################] 300/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 100
+====================================================================
+ Vida [###################.] 285/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-201 12/12 rastreador
+   2. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+ Trampas:
+   Dardos en la pared (desarmada, se rearma en t=300)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 200
+====================================================================
+ Vida [#################...] 263/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-201 3/12 rastreador
+   2. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+ Trampas:
+   Dardos en la pared (desarmada, se rearma en t=300)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 300
+====================================================================
+ Vida [#################...] 260/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 400
+====================================================================
+ Vida [################....] 251/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-202 3/12 rastreador
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 500
+====================================================================
+ Vida [################....] 251/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+   2. Poción menor (cura 8)
+   3. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 500
+====================================================================
+ Vida [################....] 251/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+   2. Poción menor (cura 8)
+   3. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 500
+====================================================================
+ Vida [################....] 251/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+   2. Poción menor (cura 8)
+   3. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 525
+====================================================================
+ Vida [################....] 251/300
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Poción menor (cura 8)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (1/10): 1. Daga oxidada
+--------------------------------------------------------------------
+ [t=66] Rata gigante #e-202 te ataca: -7 de vida.
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 575
+====================================================================
+ Vida [################....] 251/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Poción menor (cura 8)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (1/10): 1. Daga oxidada [equipada]
+--------------------------------------------------------------------
+ [t=100] Atacas a Rata gigante #e-201: -9 de vida.
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+
+====================================================================
+ Cripta baja (sala 3)                                        t = 675
+====================================================================
+ Vida [################....] 251/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Llave de bronce (llave)
+   2. Coraza de cuero (+2 defensa)
+ Inventario (1/10): 1. Daga oxidada [equipada]
+--------------------------------------------------------------------
+ [t=132] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+
+====================================================================
+ Cripta baja (sala 3)                                        t = 700
+====================================================================
+ Vida [################....] 251/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Coraza de cuero (+2 defensa)
+ Inventario (2/10): 1. Daga oxidada [equipada]; 2. Llave de bronce
+--------------------------------------------------------------------
+ [t=132] Rata gigante #e-202 te ataca: -5 de vida.
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+
+====================================================================
+ Cripta baja (sala 3)                                        t = 725
+====================================================================
+ Vida [################....] 251/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo: nada
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=198] Rata gigante #e-201 te ataca: -7 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 825
+====================================================================
+ Vida [################....] 247/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  Cripta baja (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, tienes la llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Poción menor (cura 8)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (desarmada, se rearma en t=1025)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=200] Atacas a Rata gigante #e-201: -3 de vida.
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 875
+====================================================================
+ Vida [################....] 247/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  Cripta baja (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (abierta, se cierra en t=1325) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Poción menor (cura 8)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (desarmada, se rearma en t=1025)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=200] Rata gigante #e-201 muere.
+ [t=200] Cae al suelo: Poción menor.
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+
+====================================================================
+ Nicho sellado (sala 5)                                      t = 975
+====================================================================
+ Vida [###############.....] 239/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   O  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Pergamino de retroceso (deshace tu última acción; se lee con P)
+   2. Antídoto (cura el veneno)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=264] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+
+====================================================================
+ Nicho sellado (sala 5)                                     t = 1000
+====================================================================
+ Vida [###############.....] 239/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   O  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Antídoto (cura el veneno)
+ Inventario (4/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero; 4. Pergamino de retroceso
+--------------------------------------------------------------------
+ [t=300] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=300] Atacas a Rata gigante #e-202: -9 de vida.
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+
+====================================================================
+ Nicho sellado (sala 5)                                     t = 1100
+====================================================================
+ Vida [###############.....] 234/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   O  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Antídoto (cura el veneno)
+ Inventario (4/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero; 4. Pergamino de retroceso
+--------------------------------------------------------------------
+ [t=330] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+
+====================================================================
+ Nicho sellado (sala 5)                                     t = 1000
+====================================================================
+ Vida [###############.....] 239/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   O  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Antídoto (cura el veneno)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=396] Rata gigante #e-202 te ataca: -6 de vida.
+ [t=400] Atacas a Rata gigante #e-202: -3 de vida.
+ [t=400] Rata gigante #e-202 muere.
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+
+====================================================================
+ Pasillo de las urnas (sala 2)                              t = 1100
+====================================================================
+ Vida [###############.....] 239/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  Cripta baja (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  Nicho sellado (abierta, se cierra en t=1325) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Poción menor (cura 8)
+   2. Poción menor (cura 8)
+ Trampas:
+   Dardos en la pared (armada)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=400] Cae al suelo: Poción menor.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+
+====================================================================
+ Cripta baja (sala 3)                                       t = 1200
+====================================================================
+ Vida [###############.....] 239/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo: nada
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=500] No hay enemigos en esta sala.
+ [t=500] Recoges Daga oxidada.
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1300
+====================================================================
+ Vida [###############.....] 239/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 20/20 guardián
+   2. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=525] Equipas Daga oxidada.
+ [t=575] Entras a Cripta baja.
+ [t=675] Recoges Llave de bronce.
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1400
+====================================================================
+ Vida [###############.....] 226/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 13/20 guardián
+   2. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=700] Recoges Coraza de cuero.
+ [t=725] Entras a Pasillo de las urnas.
+ [t=725] ¡Una trampa se activa! -4 de vida.
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1500
+====================================================================
+ Vida [##############......] 210/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 3/20 guardián
+   2. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=825] Abres la puerta E.
+ [t=875] Entras a Nicho sellado.
+ [t=975] Cazador de la cripta #e-501 te ataca: -8 de vida.
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1600
+====================================================================
+ Vida [#############.......] 205/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 18/18 cazador
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=975] Recoges Pergamino de retroceso.
+ [t=1000] Esperas.
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1700
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Cazador de la cripta #e-501 10/18 cazador
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=1075] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1000] Lees el pergamino: el tiempo retrocede a antes de tu última acción.
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1800
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=1000] Entras a Pasillo de las urnas.
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1800
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=1025] Un chasquido: Dardos en la pared vuelve a estar armada.
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+ [t=1800] No hay enemigos en esta sala.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1800
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=1075] Cazador de la cripta #e-501 entra en la sala.
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1800
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (3/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero
+--------------------------------------------------------------------
+ [t=1100] Entras a Cripta baja.
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1825
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, tienes la llave) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Poción menor (cura 8)
+ Inventario (4/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero; 4. Llave negra
+--------------------------------------------------------------------
+ [t=1175] Cazador de la cripta #e-501 entra en la sala.
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] Recoges Llave negra.
+
+====================================================================
+ Osario profundo (sala 4)                                   t = 1875
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Poción menor (cura 8)
+ Inventario (4/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero; 4. Llave negra
+--------------------------------------------------------------------
+ [t=1200] Entras a Osario profundo.
+ [t=1275] Cazador de la cripta #e-501 entra en la sala.
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] Recoges Llave negra.
+ [t=1825] Abres la puerta E.
+
+====================================================================
+ Salida (sala 6)                                            t = 1875
+====================================================================
+ Vida [#############.......] 200/300
+ Ataque 9   Defensa 2   Velocidad 100
+ Equipo: arma Daga oxidada
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   O  Osario profundo (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo: nada
+ Inventario (4/10): 1. Daga oxidada [equipada]; 2. Llave de bronce; 3. Coraza de cuero; 4. Llave negra
+--------------------------------------------------------------------
+ [t=1300] Atacas a Guardián óseo #e-401: -7 de vida.
+ [t=1311] Guardián óseo #e-401 te ataca: -6 de vida.
+ [t=1375] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1400] Atacas a Guardián óseo #e-401: -10 de vida.
+ [t=1422] Guardián óseo #e-401 te ataca: -9 de vida.
+ [t=1475] Cazador de la cripta #e-501 te ataca: -7 de vida.
+ [t=1500] Atacas a Guardián óseo #e-401: -3 de vida.
+ [t=1500] Guardián óseo #e-401 muere.
+ [t=1575] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1600] Atacas a Cazador de la cripta #e-501: -8 de vida.
+ [t=1675] Cazador de la cripta #e-501 te ataca: -5 de vida.
+ [t=1700] Atacas a Cazador de la cripta #e-501: -10 de vida.
+ [t=1700] Cazador de la cripta #e-501 muere.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] No hay enemigos en esta sala.
+ [t=1800] Recoges Llave negra.
+ [t=1825] Abres la puerta E.
+ [t=1875] Entras a Salida.
+ [t=1875] ¡Escapaste de la cripta!
+
+¡Victoria! Escapaste de la cripta.
+  cripta_id: cripta-01
+  version_cripta: d152eb846633
+  acciones_jugador: 25
+  enemigos_derrotados: 4
+  tiempo_final: 1875
+  resultado: victoria

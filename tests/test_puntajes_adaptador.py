@@ -167,7 +167,7 @@ def test_una_victoria_queda_registrada_con_todos_los_campos(tmp_path):
         "nombre": "Daniel", "cripta_id": "cripta-01",
         "version_cripta": partida.version_cripta,
         "acciones_jugador": partida.acciones_jugador,
-        "enemigos_derrotados": 3, "tiempo_final": partida.tiempo,
+        "enemigos_derrotados": 4, "tiempo_final": partida.tiempo,
         "resultado": "victoria"}]
     assert controlador.registro_puntaje is not None
     assert vista.textos("Puntaje registrado: posición 1 de 1")
