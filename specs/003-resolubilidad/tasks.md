@@ -208,11 +208,11 @@ description: "Tareas de implementación para la verificación de resolubilidad"
   - **Criterio**: `git diff --check` pasa; `docs/DECISIONES.md` contiene problema, alternativas, decisión, complejidad, evidencia y límites; README y quickstart documentan `--verificar`, `--forzar`, pruebas y ambos modos de bench; `docs/PROMPTS_LLM.md` registra el cambio.
   - **Dependencias**: T023, T025–T027.
 
-- [ ] T031 Ejecutar la suite y regresión final con `python -m pytest -q` y pruebas focalizadas existentes.
+- [X] T031 Ejecutar la suite y regresión final con `python -m pytest -q` y pruebas focalizadas existentes.
   - **Atiende**: FR-001–FR-024; SC-001–SC-005; G14–G17; RS-E01–RS-E36.
   - **Criterio**: `python -m pytest -q` termina con código 0; también pasan `python -m pytest tests/test_controlador_replay.py tests/vista/test_sin_pygame_en_replay_bench.py tests/test_linea_tiempo_g18.py tests/test_linea_tiempo_g19.py tests/test_linea_tiempo_g20.py tests/test_linea_tiempo_g21.py tests/test_linea_tiempo_g22.py tests/test_linea_tiempo_g23.py tests/test_bench_runner.py -q`. Adjuntar resultados y evidencia de benchmark a la revisión final.
   - **Dependencias**: T001–T030.
-  - **Resultado de esta ejecución**: 1 312 pasaron; solo fallan los siete casos preexistentes de capacidad 004 enumerados en el informe. Se deja pendiente porque el criterio exige código 0 y corregir esos casos está fuera del alcance autorizado.
+  - **Resultado de esta ejecución**: 2026-11-17, sobre `main` 87e166d (con la línea de tiempo 004 integrada): `python -m pytest -q` → 1 378 pasaron, código 0; pruebas focalizadas del criterio → 30 pasaron; pruebas de resolubilidad → 105 pasaron. Los 7 fallos previos de la capacidad 004 quedaron resueltos con su integración. Los 6 fallos que introdujo `f8fd381` (cazador en la sala 5 de `cripta-01` offline) se corrigieron actualizando los valores esperados de esas pruebas a los datos nuevos, sin cambiar código.
 
 ## Dependencias y orden de ejecución
 

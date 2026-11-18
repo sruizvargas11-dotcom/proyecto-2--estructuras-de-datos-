@@ -232,7 +232,7 @@ def test_partida_completa_hasta_la_victoria_es_reproducible(tmp_path):
         assert vista.fin == "victoria"
         partida = sesion.partida
         assert partida.jugador.sala_actual.id == partida.cripta.sala_salida_id
-        assert partida.enemigos_derrotados == 3
+        assert partida.enemigos_derrotados == 4  # incluye el cazador de la sala 5
         resultados.append((_acciones(ruta), partida.jugador.vida, vista.mensajes))
     assert resultados[0] == resultados[1]
 

@@ -62,7 +62,8 @@ def test_al_liberar_espacio_la_ficha_vuelve_a_memoria(offline, tmp_path):
     red._fichas._verificar_invariantes()
 
 
-@pytest.mark.parametrize('sala_id', [1, 3, 5])
+# Sala 5 ya no aplica: desde f8fd381 contiene un cazador cuya ficha debe protegerse.
+@pytest.mark.parametrize('sala_id', [1, 3])
 def test_sala_con_objetos_se_incorpora_aunque_la_cache_este_llena(offline, tmp_path, sala_id):
     """Antes: RuntimeError 'La ficha ... no se resolvió antes de incorporar'."""
     fuente, cripta = offline
