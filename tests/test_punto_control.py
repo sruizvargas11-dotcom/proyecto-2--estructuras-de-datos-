@@ -105,3 +105,25 @@ def test_copiar_cripta_extensa_conserva_enlaces_sin_recursion():
             assert vecinos.obtenerValor(0)[1] is salida
             recuerdo = registro.recuerdos.obtenerValor(0)
             assert recuerdo.destino is conocimiento_copiado.registro(indice + 1)
+
+
+def test_punto_control_copia_una_cripta_de_256_salas_con_cazadores():
+    from bench.terreno_cazador import _crear_partida, _fixture
+
+    datos, _ = _fixture()
+    partida, _ = _crear_partida(datos, [1000, 10000])
+    restaurada = PuntoControl.capturar(partida).restaurar()
+
+    assert len(restaurada.cripta) == 256
+    assert restaurada.cripta is not partida.cripta
+    sala = restaurada.jugador.sala_actual
+    assert sala is restaurada.cripta.sala_por_id(sala.id)
+    assert restaurada.conocimiento.registro(sala.id).sala is sala
+    for registro in restaurada.conocimiento.registros:
+        for recuerdo in registro.recuerdos:
+            assert recuerdo.origen is registro
+            assert any(salida is recuerdo.salida for salida in registro.sala.salidas)
+            assert recuerdo.destino is restaurada.conocimiento.registro(recuerdo.destino_id)
+            if recuerdo.destino is not None:
+                assert any(entrante is recuerdo for entrante in recuerdo.destino.entrantes)
+    assert restaurada.reloj.proximo().dato.dueno is restaurada.jugador

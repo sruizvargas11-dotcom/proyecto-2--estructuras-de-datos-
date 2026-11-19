@@ -75,6 +75,9 @@ def test_bench_reporte_contrato_sin_vista(tmp_path, monkeypatch):
     monkeypatch.setattr(
         terreno_cazador, "_correr_referencia", lambda *args: ([1] * 1000, [])
     )
+    monkeypatch.setattr(
+        terreno_cazador, "_correr_referencia", lambda *args: ([1] * 1000, [])
+    )
     ruta = tmp_path / "benchmark.json"
     reporte = terreno_cazador.crear_reporte(ruta)
     assert len(reporte["escenarios"]) == 8
@@ -96,6 +99,13 @@ def test_bench_reporte_contrato_sin_vista(tmp_path, monkeypatch):
         len(rep["duraciones_ciclo_ns"]) == 1000
         for grupo in comparacion["grupos"]
         for rep in grupo["repeticiones"]
+    )
+    referencia = reporte["validacion_referencia"]
+    assert len(referencia["repeticiones"]) == 30
+    assert all(
+        len(repeticion["duraciones_ciclo_ns"]) == 1000
+        and not repeticion["discrepancias"]
+        for repeticion in referencia["repeticiones"]
     )
 
 

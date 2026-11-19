@@ -1,0 +1,381 @@
+Vida inicial: 30 de 30
+Partida en cripta-01 | semilla 354 | H para ver los comandos
+
+====================================================================
+ Entrada derruida (sala 1)                                     t = 0
+====================================================================
+ Vida [####################] 30/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ (sin mensajes)
+> MAPA
+
+====================================================================
+ Entrada derruida (sala 1)                                     t = 0
+====================================================================
+ Vida [####################] 30/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+> N
+
+====================================================================
+ Pasillo de las urnas (sala 2)                               t = 100
+====================================================================
+ Vida [############........] 18/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Entrada derruida (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-201 12/12 rastreador
+   2. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Daga oxidada (+3 ataque)
+ Trampas:
+   Dardos en la pared (desarmada, se rearma en t=300)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+> N
+
+====================================================================
+ Cripta baja (sala 3)                                        t = 200
+====================================================================
+ Vida [########............] 12/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-201 12/12 rastreador
+   2. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Llave de bronce (llave)
+   2. Coraza de cuero (+2 defensa)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+> R 2
+
+====================================================================
+ Cripta baja (sala 3)                                        t = 225
+====================================================================
+ Vida [########............] 12/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-201 12/12 rastreador
+   2. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Llave de bronce (llave)
+ Inventario (1/10): 1. Coraza de cuero
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+> EQ
+
+====================================================================
+ Cripta baja (sala 3)                                        t = 275
+====================================================================
+ Vida [######..............] 9/30
+ Ataque 6   Defensa 4   Velocidad 100
+ Equipo: armadura Coraza de cuero
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 100]
+   S  Pasillo de las urnas (abierta) [costo 100]
+ Enemigos:
+   1. Rata gigante #e-201 12/12 rastreador
+   2. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Llave de bronce (llave)
+ Inventario (1/10): 1. Coraza de cuero [equipada]
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+ [t=225] Equipas Coraza de cuero.
+ [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+ [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+> N
+
+====================================================================
+ Osario profundo (sala 4)                                    t = 375
+====================================================================
+ Vida [######..............] 9/30
+ Ataque 6   Defensa 4   Velocidad 100
+ Equipo: armadura Coraza de cuero
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, sin llave) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 20/20 guardián
+   2. Rata gigante #e-201 12/12 rastreador
+   3. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Llave negra (llave)
+   2. Poción menor (cura 8)
+ Inventario (1/10): 1. Coraza de cuero [equipada]
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [1] Entrada derruida (aquí): N->sala sin explorar (costo 100, abierta)
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+ [t=225] Equipas Coraza de cuero.
+ [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+ [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+ [t=275] Entras a Osario profundo.
+ [t=330] Rata gigante #e-201 entra en la sala.
+ [t=330] Rata gigante #e-202 entra en la sala.
+> R 1
+
+====================================================================
+ Osario profundo (sala 4)                                    t = 400
+====================================================================
+ Vida [#...................] 1/30
+ Ataque 6   Defensa 4   Velocidad 100
+ Equipo: armadura Coraza de cuero
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (cerrada, tienes la llave) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 20/20 guardián
+   2. Rata gigante #e-201 12/12 rastreador
+   3. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Poción menor (cura 8)
+ Inventario (2/10): 1. Coraza de cuero [equipada]; 2. Llave negra
+--------------------------------------------------------------------
+ [t=0] Entras a Pasillo de las urnas.
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+ [t=225] Equipas Coraza de cuero.
+ [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+ [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+ [t=275] Entras a Osario profundo.
+ [t=330] Rata gigante #e-201 entra en la sala.
+ [t=330] Rata gigante #e-202 entra en la sala.
+ [t=375] Recoges Llave negra.
+ [t=386] Guardián óseo #e-401 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -2 de vida.
+> AB E
+
+====================================================================
+ Osario profundo (sala 4)                                    t = 450
+====================================================================
+ Vida [#...................] 1/30
+ Ataque 6   Defensa 4   Velocidad 100
+ Equipo: armadura Coraza de cuero
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 20/20 guardián
+   2. Rata gigante #e-201 12/12 rastreador
+   3. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Poción menor (cura 8)
+ Inventario (2/10): 1. Coraza de cuero [equipada]; 2. Llave negra
+--------------------------------------------------------------------
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+ [t=225] Equipas Coraza de cuero.
+ [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+ [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+ [t=275] Entras a Osario profundo.
+ [t=330] Rata gigante #e-201 entra en la sala.
+ [t=330] Rata gigante #e-202 entra en la sala.
+ [t=375] Recoges Llave negra.
+ [t=386] Guardián óseo #e-401 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -2 de vida.
+ [t=400] Abres la puerta E.
+> HISTORIA 0
+Estado histórico | t=0
+Entrada derruida (sala 1)
+Vida 30/30 | Ataque 6 | Defensa 2 | Velocidad 100
+Inventario: vacío
+Efectos: ninguno
+Enemigos: ninguno
+Mapa conocido: Entrada derruida (sala 1), sala avistada
+
+====================================================================
+ Osario profundo (sala 4)                                    t = 450
+====================================================================
+ Vida [#...................] 1/30
+ Ataque 6   Defensa 4   Velocidad 100
+ Equipo: armadura Coraza de cuero
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   S  Cripta baja (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos:
+   1. Guardián óseo #e-401 20/20 guardián
+   2. Rata gigante #e-201 12/12 rastreador
+   3. Rata gigante #e-202 12/12 rastreador
+ Suelo:
+   1. Poción menor (cura 8)
+ Inventario (2/10): 1. Coraza de cuero [equipada]; 2. Llave negra
+--------------------------------------------------------------------
+ [t=0] ¡Una trampa se activa! -4 de vida.
+ [t=66] Rata gigante #e-201 te ataca: -4 de vida.
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+ [t=225] Equipas Coraza de cuero.
+ [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+ [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+ [t=275] Entras a Osario profundo.
+ [t=330] Rata gigante #e-201 entra en la sala.
+ [t=330] Rata gigante #e-202 entra en la sala.
+ [t=375] Recoges Llave negra.
+ [t=386] Guardián óseo #e-401 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -2 de vida.
+ [t=400] Abres la puerta E.
+> E
+
+====================================================================
+ Salida (sala 6)                                             t = 450
+====================================================================
+ Vida [#...................] 1/30
+ Ataque 6   Defensa 4   Velocidad 100
+ Equipo: armadura Coraza de cuero
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   O  Osario profundo (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo: nada
+ Inventario (2/10): 1. Coraza de cuero [equipada]; 2. Llave negra
+--------------------------------------------------------------------
+ [t=66] Rata gigante #e-202 te ataca: -4 de vida.
+ [t=100] Entras a Cripta baja.
+ [t=132] Rata gigante #e-201 entra en la sala.
+ [t=132] Rata gigante #e-202 entra en la sala.
+ [t=198] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=198] Rata gigante #e-202 te ataca: -3 de vida.
+ [t=200] Recoges Coraza de cuero.
+ [t=225] Equipas Coraza de cuero.
+ [t=264] Rata gigante #e-201 te ataca: -2 de vida.
+ [t=264] Rata gigante #e-202 te ataca: -1 de vida.
+ [t=275] Entras a Osario profundo.
+ [t=330] Rata gigante #e-201 entra en la sala.
+ [t=330] Rata gigante #e-202 entra en la sala.
+ [t=375] Recoges Llave negra.
+ [t=386] Guardián óseo #e-401 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-201 te ataca: -3 de vida.
+ [t=396] Rata gigante #e-202 te ataca: -2 de vida.
+ [t=400] Abres la puerta E.
+ [t=450] Entras a Salida.
+ [t=450] ¡Escapaste de la cripta!
+
+¡Victoria! Escapaste de la cripta.
+  cripta_id: cripta-01
+  version_cripta: d152eb846633
+  acciones_jugador: 8
+  enemigos_derrotados: 0
+  tiempo_final: 450
+  resultado: victoria
+Vida final: 1

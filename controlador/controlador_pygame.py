@@ -70,7 +70,7 @@ CAPACIDAD_MENSAJES = 20
 @dataclass
 class SalidaVisual:
     direccion: str
-    sala_destino_id: int
+    sala_destino_id: int | None
     nombre_destino: str
     cerrada: bool
     tiene_llave: bool
@@ -186,12 +186,14 @@ def construir_estado(partida, proximos_turnos=None, cargando=False):
         destino = salida.sala_destino if salida.sala_destino is not None \
             else partida.cripta.sala_por_id(salida.sala_destino_id)
         if conocimiento.explorada(salida.sala_destino_id) and destino is not None:
+            destino_id = destino.id
             nombre_destino = destino.nombre
         else:
+            destino_id = None
             nombre_destino = "sala avistada"
         salidas.append(SalidaVisual(
             direccion=salida.direccion,
-            sala_destino_id=salida.sala_destino_id,
+            sala_destino_id=destino_id,
             nombre_destino=nombre_destino,
             cerrada=salida.cerrada,
             tiene_llave=partida.llave_para(salida) is not None if salida.cerrada else False,
@@ -521,18 +523,34 @@ class ControladorPygame:
             partida = self.sesion.partida
         cripta = partida.cripta
         conocimiento = partida.conocimiento
+        from estructuras.array_ordenado import ArrayOrdenado
+
+        nodos_visibles = ArrayOrdenado()
+        siguiente_avistada = -1
+        for registro in conocimiento.registros:
+            if registro.estado == EXPLORADA:
+                nodos_visibles.insertar(registro.id, registro.id)
+            elif registro.estado == AVISTADA:
+                nodos_visibles.insertar(registro.id, siguiente_avistada)
+                siguiente_avistada -= 1
+
         topologia = []
         for registro in conocimiento.registros:
             estado = registro.estado
             if estado == EXPLORADA:
                 sala = registro.sala
-                salidas = [(s.direccion, s.sala_destino_id) for s in sala.salidas]
+                salidas = []
+                for salida in sala.salidas:
+                    destino = nodos_visibles.busqueda_binaria(salida.sala_destino_id)
+                    if destino is not None:
+                        salidas.append((salida.direccion, destino))
                 topologia.append(SalaTopologia(sala.id, sala.nombre, salidas))
             elif estado == AVISTADA:
-                topologia.append(SalaTopologia(registro.id, "", []))
+                topologia.append(SalaTopologia(nodos_visibles.busqueda_binaria(registro.id), "", []))
         self._topologia = topologia
         self._sala_inicial_id = cripta.sala_inicial_id
-        self._sala_salida_id = cripta.sala_salida_id
+        self._sala_salida_id = (cripta.sala_salida_id
+                               if conocimiento.explorada(cripta.sala_salida_id) else None)
         return topologia
 
     def topologia_cripta(self):
@@ -746,6 +764,12 @@ class ControladorPygame:
                               getattr(o, "encendida", False)) for o in objetos]
         with self._lock:
             self._panel_inventario = (criterio, panel)
+
+    def mostrar_resumen_historico(self, resumen):
+        from vista.vista_consola import VistaConsola
+
+        for linea in VistaConsola.formatear_resumen_historico(resumen):
+            self.agregar_mensaje(resumen.tiempo, linea)
 
     def mostrar_ayuda(self):
         """La ayuda de la GUI es un overlay local (F1) que no pasa por el

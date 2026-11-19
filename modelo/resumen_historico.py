@@ -1,7 +1,7 @@
 """Datos independientes para presentar un estado historico."""
 
 from estructuras.vector_dinamico import Vector
-from modelo.conocimiento import DESCONOCIDA
+from modelo.conocimiento import AVISTADA, EXPLORADA
 
 
 class ObjetoHistorico:
@@ -128,7 +128,7 @@ class ResumenHistorico:
 
         mapa_conocido = Vector()
         for registro in partida.conocimiento.registros:
-            if registro.estado != DESCONOCIDA:
+            if registro.estado == EXPLORADA:
                 mapa_conocido.agregarValor(
                     SalaConocidaHistorica(
                         registro.id,
@@ -136,6 +136,11 @@ class ResumenHistorico:
                         registro.sala.tiempo_rastro,
                         registro.estado,
                     )
+                )
+
+            elif registro.estado == AVISTADA:
+                mapa_conocido.agregarValor(
+                    SalaConocidaHistorica(None, "sala avistada", -1, AVISTADA)
                 )
 
         return cls(

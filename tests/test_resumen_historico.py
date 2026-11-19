@@ -23,7 +23,10 @@ def test_resumen_historico_incluye_campos_de_fr004(tmp_path):
     )
     sala.enemigos_activos.insertar_al_final(enemigo)
     sala_conocida = partida.cripta.sala_por_id(2)
+    partida.conocimiento.visitar(sala_conocida, partida.tiempo)
     sala_conocida.tiempo_rastro = 15
+    sala_oculta = partida.cripta.sala_por_id(3)
+    sala_oculta.tiempo_rastro = 4
 
     resumen = ResumenHistorico.desde_partida(partida)
 
@@ -46,3 +49,7 @@ def test_resumen_historico_incluye_campos_de_fr004(tmp_path):
         and registro.tiempo_rastro == sala_conocida.tiempo_rastro
         for registro in resumen.mapa_conocido
     )
+    avistadas = [sala for sala in resumen.mapa_conocido if sala.estado == "avistada"]
+    assert avistadas
+    assert all((sala.sala_id, sala.nombre, sala.tiempo_rastro) ==
+               (None, "sala avistada", -1) for sala in avistadas)

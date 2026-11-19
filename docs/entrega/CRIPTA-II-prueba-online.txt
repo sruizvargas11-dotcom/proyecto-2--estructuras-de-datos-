@@ -1,0 +1,144 @@
+Nombre del jugador [Jugador]: VEREDICTO: RESOLUBLE
+Partida en cripta-06 | semilla 2418252419 | H para ver los comandos
+
+====================================================================
+ Umbral de la necrópolis (sala 141)                            t = 0
+====================================================================
+ Vida [####################] 30/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 200]
+   S  sala avistada (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+   2. Daga oxidada (+3 ataque)
+   3. Coraza de cuero (+2 defensa)
+   4. Poción menor (cura 8)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ (sin mensajes)
+> Estado histórico | t=0
+Umbral de la necrópolis (sala 141)
+Vida 30/30 | Ataque 6 | Defensa 2 | Velocidad 100
+Inventario: vacío
+Efectos: ninguno
+Enemigos: ninguno
+Mapa conocido: sala avistada, Umbral de la necrópolis (sala 141), sala avistada, sala avistada
+
+====================================================================
+ Umbral de la necrópolis (sala 141)                            t = 0
+====================================================================
+ Vida [####################] 30/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 200]
+   S  sala avistada (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+   2. Daga oxidada (+3 ataque)
+   3. Coraza de cuero (+2 defensa)
+   4. Poción menor (cura 8)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ (sin mensajes)
+>
+====================================================================
+ Umbral de la necrópolis (sala 141)                            t = 0
+====================================================================
+ Vida [####################] 30/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 200]
+   S  sala avistada (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+   2. Daga oxidada (+3 ataque)
+   3. Coraza de cuero (+2 defensa)
+   4. Poción menor (cura 8)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [141] Umbral de la necrópolis (aquí): N->sala sin explorar (costo 200, abierta); S->sala sin explorar (costo 100, abierta); E->sala sin explorar (costo 100, abierta)
+>
+====================================================================
+ Umbral de la necrópolis (sala 141)                            t = 0
+====================================================================
+ Vida [####################] 30/30
+ Ataque 6   Defensa 2   Velocidad 100
+ Equipo: nada equipado
+ Efectos: ninguno
+--------------------------------------------------------------------
+ Salidas:
+   N  sala avistada (abierta) [costo 200]
+   S  sala avistada (abierta) [costo 100]
+   E  sala avistada (abierta) [costo 100]
+ Enemigos: ninguno
+ Suelo:
+   1. Antorcha (luz por 2000)
+   2. Daga oxidada (+3 ataque)
+   3. Coraza de cuero (+2 defensa)
+   4. Poción menor (cura 8)
+ Inventario (0/10): vacío
+--------------------------------------------------------------------
+ [t=0] Mapa conocido:
+ [t=0] [141] Umbral de la necrópolis (aquí): N->sala sin explorar (costo 200, abierta); S->sala sin explorar (costo 100, abierta); E->sala sin explorar (costo 100, abierta)
+ [t=0] Puntaje registrado: posición 1 de 1
+
+Partida terminada por el jugador.
+  cripta_id: cripta-06
+  version_cripta: f9ed9afa683d
+  acciones_jugador: 0
+  enemigos_derrotados: 0
+  tiempo_final: 0
+  resultado: en_curso
+
+=== Reporte de red #12 ===
+fecha: 2026-11-17 23:16:28
+modo: partida
+fuente: http
+cripta: cripta-06
+version_cripta: f9ed9afa683d
+version_catalogo: 4b9e75a42be5
+semilla: 2418252419
+bitacora: ..\cierre-online-final\bitacoras\cripta-06_2418252419.log
+motivo_fin: salida controlada: el jugador terminó la sesión (Q)
+estado_final: en_curso
+tiempo_final: 0
+acciones_jugador: 0
+enemigos_derrotados: 0
+-- Solicitudes de red --
+solicitudes_realizadas: 3
+presupuesto_solicitudes: 63
+restantes: 60
+dentro_del_presupuesto: sí
+por_tipo: contenido 0, catálogo 1, otras 2 (lista de criptas, datos generales, páginas, versiones y reintentos 429)
+-- Caché --
+esqueleto: desde caché en disco
+salas_incorporadas: 10 (10 desde disco, 0 desde la fuente)
+fichas_lru_aciertos: 21
+fichas_lru_fallos: 7
+fichas_fallos_resueltos: 0 desde disco, 7 desde la fuente
+fichas_lru: 7 en memoria de 25, 0 desalojos
+indice_hash: 64 cubetas, carga 0.109, cadena máx 2, 1 colisiones, 0 crecimientos, 0.754 comparaciones/búsqueda
+fichas_lru_protegidas: 0 saltadas al desalojar, 0 rechazos por capacidad
+-- Precarga --
+esperas_bloqueantes: 0
+precargas_fallidas: 0
+Puntaje guardado en: ..\cierre-online-final\puntajes.json
+Resultados de cripta-06, versión f9ed9afa683d (hasta 10):
+1. Prueba | interrumpida | enemigos: 0 | acciones: 0 | tiempo: 0

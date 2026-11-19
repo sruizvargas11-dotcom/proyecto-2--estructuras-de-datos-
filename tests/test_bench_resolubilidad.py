@@ -104,13 +104,18 @@ def test_runner_integra_casos_niebla_y_terreno(monkeypatch, tmp_path, con_salida
     monkeypatch.setattr(
         terreno_cazador,
         "crear_reporte",
-        lambda ruta: reportes.append(ruta),
+        lambda ruta: reportes.append(ruta) or {"benchmark": "terreno-y-cazador"},
     )
     monkeypatch.setattr(runner, "imprimir_tabla", lambda filas: None)
 
     assert runner.main_bench(salida) == [fila_base, fila_niebla]
     assert llamadas == ["caso", "niebla"]
     assert reportes == [salida or ruta_terreno]
+    import json
+    evidencia = json.loads((salida or ruta_terreno).read_text(encoding="utf-8"))
+    assert evidencia["benchmark"] == "terreno-y-cazador"
+    assert evidencia["filas_resolubilidad"][0]["variante"] == "incremental"
+    assert evidencia["filas_resolubilidad"][0]["ms_med"] == 0.1
 
 
 def test_bench_cli_pasa_la_ruta_solicitada(monkeypatch, tmp_path):

@@ -59,7 +59,7 @@ Desde la raíz del proyecto:
 
 ```powershell
 .\.venv\Scripts\python.exe main.py --gui              # en línea, con el API
-.\.venv\Scripts\python.exe main.py --gui --offline    # sin internet (solo cripta-01)
+.\.venv\Scripts\python.exe main.py --gui --offline    # sin internet (seis criptas incluidas)
 ```
 
 **Consola**
@@ -83,7 +83,7 @@ La pantalla muestra la sala actual, las salidas, los enemigos, los objetos del s
 
 Se gana al llegar a la sala de salida y se pierde cuando la vida del jugador llega a cero. Para atravesar una puerta cerrada primero hay que abrirla con la llave adecuada. Los enemigos se activan al entrar en su sala; pueden ser guardianes, errantes, rastreadores o cazadores.
 
-La cripta offline `cripta-01` incluye un cazador de rango 200 en la sala opcional 5, detrás de la puerta que requiere la llave de bronce. Sus salidas usan costo 100, el valor predeterminado cuando los datos no declaran un costo.
+Osario menor (`cripta-01`) incluye un cazador de rango 200 en la sala opcional 5, tras la puerta que requiere la llave de bronce. Sus salidas usan costo 100, el valor predeterminado cuando el dato no está declarado.
 
 ### Cómo avanza el tiempo
 
@@ -507,7 +507,13 @@ python main.py --offline --offline-dir datos_ensayo --cripta cripta-prueba
 
 El generador exige una carpeta nueva. Copia los datos a esa ubicación y prepara la cripta de ensayo sin modificar `datos_offline/`.
 
+## Criptas descargadas
+
+El modo offline incluye seis criptas oficiales, con catálogo y versiones por mapa. Osario menor conserva el cazador de rango 200 en la sala opcional 5. Cripta sellada (`cripta-05`) se bloquea por el veredicto NO RESOLUBLE; usa `--forzar` para iniciar una partida de prueba. La [regresión de los seis mapas](docs/entrega/CRIPTAS-OFFLINE.json) registra carga, consulta histórica y movimiento.
+
 ## Evidencias
+
+El paquete [docs/entrega](docs/entrega/README.md) reúne una guía de demostración, una partida reproducible, la revisión de cierre y mediciones complementarias. La evidencia vigente del benchmark de terreno sigue siendo [la iteración 6](docs/evidencia/terreno-cazador-benchmark-iteracion-6.json); los reportes de cierre anteriores se conservan como antecedentes.
 
 [docs/evidencia](docs/evidencia/) conserva resultados de mediciones y el guion que permite repetir una partida. Los JSON son archivos de datos; las explicaciones y conclusiones están en [docs/decisiones](docs/decisiones/).
 
@@ -542,7 +548,7 @@ La versión actual permite jugar por consola, guardar y cargar una sesión, repr
 
 Quedan aspectos del cierre del plan que deben validarse o integrarse con el equipo:
 
-- Se validó en vivo el flujo completo de `cripta-02`, que no está incluida en los datos offline: la partida terminó en victoria tras 39 acciones y 7 enemigos derrotados; recorrió llaves, una puerta cerrada, combates, una trampa y objetos. El reporte registró 10 de 23 solicitudes, 20 salas incorporadas y ninguna espera bloqueante ni error de precarga. No se forzaron fallos de red, respuestas malformadas, incompatibilidad de versiones, agotamiento del presupuesto ni recuperación desde caché poblada; esos casos requieren pruebas controladas del adaptador. Los detalles están en [la evidencia de integración con cripta-02](docs/evidencia/2026-11-18-cripta-02-integracion-api.md).
+- Se validó en vivo una partida completa de `cripta-02`, cargada desde HTTP antes de incorporarla al catálogo offline: terminó en victoria tras 39 acciones y 7 enemigos derrotados; recorrió llaves, una puerta cerrada, combates, una trampa y objetos. El reporte registró 10 de 23 solicitudes, 20 salas incorporadas y ninguna espera bloqueante ni error de precarga. No se forzaron fallos de red, respuestas malformadas, incompatibilidad de versiones, agotamiento del presupuesto ni recuperación desde caché poblada; esos casos requieren pruebas controladas del adaptador. Los detalles están en [la evidencia de integración con cripta-02](docs/evidencia/2026-11-18-cripta-02-integracion-api.md).
 - La medición exploratoria de 100 ciclos por escala (x1, x10 y x50) registró máximos de 25.272, 467.599 y 2519.470 ms, respectivamente. El ciclo de 20 ms no se cumple en esas condiciones; el detalle está en [el reporte de escalado](docs/evidencia/2026-11-18-ciclo-20ms.json).
 - La última corrida integral de `python main.py --bench` (iteración 6, 2026-11-18) tuvo cero discrepancias y un máximo sintético de 18.7119 ms; el máximo de `cripta-06` fue 1.2799 ms. El reporte contractual indica `cumple_umbral=true`. La evidencia está en [el reporte de iteración 6](docs/evidencia/terreno-cazador-benchmark-iteracion-6.json). Se conserva el seguimiento anterior, cuyo máximo de 24.8793 ms mantuvo `cumple_umbral=false`; no se alteró ese resultado histórico.
 - El reporte de iteración 6 también compara uno y veinte cazadores en 30 000 ciclos por grupo, con cero discrepancias. Es una medición diagnóstica separada que no modifica el umbral contractual.

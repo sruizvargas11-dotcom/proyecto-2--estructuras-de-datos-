@@ -1,0 +1,56 @@
+[
+  {
+    "cripta": "cripta-01",
+    "salas": 6,
+    "version": "d152eb846633",
+    "inicio": 1,
+    "requiere_forzar": false,
+    "consulta_historia": true,
+    "resultado": "en_curso"
+  },
+  {
+    "cripta": "cripta-02",
+    "salas": 20,
+    "version": "52532a77ee04",
+    "inicio": 1,
+    "requiere_forzar": false,
+    "consulta_historia": true,
+    "resultado": "en_curso"
+  },
+  {
+    "cripta": "cripta-03",
+    "salas": 40,
+    "version": "f9186ac25124",
+    "inicio": 1,
+    "requiere_forzar": false,
+    "consulta_historia": true,
+    "resultado": "en_curso"
+  },
+  {
+    "cripta": "cripta-04",
+    "salas": 50,
+    "version": "7074a17814ad",
+    "inicio": 1,
+    "requiere_forzar": false,
+    "consulta_historia": true,
+    "resultado": "en_curso"
+  },
+  {
+    "cripta": "cripta-05",
+    "salas": 24,
+    "version": "48bfa3b75055",
+    "inicio": 1,
+    "requiere_forzar": true,
+    "consulta_historia": true,
+    "resultado": "en_curso"
+  },
+  {
+    "cripta": "cripta-06",
+    "salas": 300,
+    "version": "f9ed9afa683d",
+    "inicio": 141,
+    "requiere_forzar": false,
+    "consulta_historia": true,
+    "resultado": "en_curso"
+  }
+]

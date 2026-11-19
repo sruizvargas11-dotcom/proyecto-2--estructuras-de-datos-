@@ -1,0 +1,38 @@
+[
+  {
+    "cripta": "cripta-01",
+    "mapa_historia_movimiento_guardado_carga": true,
+    "sala_final": 2,
+    "tiempo": 100
+  },
+  {
+    "cripta": "cripta-02",
+    "mapa_historia_movimiento_guardado_carga": true,
+    "sala_final": 2,
+    "tiempo": 60
+  },
+  {
+    "cripta": "cripta-03",
+    "mapa_historia_movimiento_guardado_carga": true,
+    "sala_final": 2,
+    "tiempo": 60
+  },
+  {
+    "cripta": "cripta-04",
+    "mapa_historia_movimiento_guardado_carga": true,
+    "sala_final": 2,
+    "tiempo": 60
+  },
+  {
+    "cripta": "cripta-05",
+    "mapa_historia_movimiento_guardado_carga": true,
+    "sala_final": 2,
+    "tiempo": 60
+  },
+  {
+    "cripta": "cripta-06",
+    "mapa_historia_movimiento_guardado_carga": true,
+    "sala_final": 121,
+    "tiempo": 200
+  }
+]

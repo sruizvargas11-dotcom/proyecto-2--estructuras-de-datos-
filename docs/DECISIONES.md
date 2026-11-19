@@ -23,6 +23,8 @@ https://github.com/sruizvargas11-dotcom/proyecto-1-estructuras-de-datos-
 
 Este documento reúne las decisiones técnicas que tomamos para resolver los problemas de la sección 4 del enunciado. Para cada problema se explica qué operaciones ejecuta realmente el juego y con qué frecuencia, qué alternativas consideramos y por qué se descartaron, qué estructura y estrategia implementamos, su complejidad, la evidencia que la respalda (mediciones con --bench y pruebas) y los límites en los que la decisión deja de ser apropiada, según la sección 8 del enunciado. Cada entrada la redacta un rol y la revisa otro, y sirve como base para explicar y defender cualquier decisión durante la revisión del proyecto.
 
+El anexo de [decisiones consolidadas de la Parte II](entrega/CRIPTA-II-decisiones-consolidadas.md) reúne material de revisión para las capacidades nuevas. Las decisiones vigentes y sus resultados medidos siguen registrados en este documento y en las evidencias enlazadas por cada sección.
+
 ### Problemas a resolver
 
 - **4.1 Agenda de eventos:** el juego avanza por tiempo virtual, no por turnos; las acciones del jugador, de los enemigos y de los efectos tienen que ejecutarse en orden de tiempo, y poder cancelarse o reprogramarse sin recorrer toda la agenda.
@@ -2083,3 +2085,14 @@ La tabla gráfica de puntajes de Pygame ya está implementada en la escena final
 con `ControladorPygame` está cubierta por pruebas. La ejecución focalizada del 18 de noviembre
 pasó 22 pruebas con Python 3.12.10 y Pygame 2.6.1. Se corrigió el estado del README, que todavía
 la describía como pendiente.
+
+### Catálogo offline por cripta (2026-11-18)
+
+Se incorporaron snapshots versionados de las seis criptas oficiales en `datos_offline/`. Cada
+mapa que requiere estadísticas distintas conserva su propio catálogo; Osario menor mantiene el
+catálogo original. `DatosOffline` selecciona las fichas y la versión del catálogo según la
+cripta activa, y entrega una fuente independiente al iniciar otra partida para que cambiar
+de mapa no altere los datos de una sesión ya abierta. Cripta sellada (`cripta-05`) conserva el
+veredicto NO RESOLUBLE y requiere `--forzar` para iniciar. La lista de mapas y el resumen de
+regresión están en `docs/entrega/CRIPTAS-OFFLINE.json` y
+`docs/entrega/REGRESION-MAIN-INTEGRADO.json`.

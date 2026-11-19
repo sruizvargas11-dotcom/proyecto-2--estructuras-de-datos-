@@ -151,19 +151,20 @@ def test_snapshot_y_topologia_ocultan_avistadas_y_desconocidas_y_revelan_al_expl
     assert len(estado0.salidas) == 1
     assert estado0.salidas[0].direccion == "N"
     assert estado0.salidas[0].nombre_destino == "sala avistada"
+    assert estado0.salidas[0].sala_destino_id is None
     assert estado0.salidas[0].costo == 100
 
     topologia0 = c.topologia_cripta()
     por_id0 = {s.sala_id: s for s in topologia0}
-    assert set(por_id0) == {1, 2}
+    assert set(por_id0) == {1, -1}
     assert por_id0[1].nombre == "Entrada derruida"
-    assert por_id0[1].salidas == [("N", 2)]
-    assert por_id0[2].nombre == "" and por_id0[2].salidas == []
+    assert por_id0[1].salidas == [("N", -1)]
+    assert por_id0[-1].nombre == "" and por_id0[-1].salidas == []
     for desconocida in (3, 4, 5, 6):
         assert desconocida not in por_id0
 
     layout0 = calcular_layout_minimapa(topologia0, c.sala_inicial_id())
-    assert [sid for sid, _, _ in layout0] == [1, 2]
+    assert [sid for sid, _, _ in layout0] == [1, -1]
 
     c.enviar_comando("N")
     assert _esperar(lambda: c.estado().sala_id == 2)
@@ -175,13 +176,45 @@ def test_snapshot_y_topologia_ocultan_avistadas_y_desconocidas_y_revelan_al_expl
 
     topologia2 = c.topologia_cripta()
     por_id2 = {s.sala_id: s for s in topologia2}
-    assert set(por_id2) == {1, 2, 3, 5}
+    assert set(por_id2) == {1, 2, -1, -2}
     assert por_id2[2].nombre == "Pasillo de las urnas"
-    assert por_id2[3].nombre == "" and por_id2[3].salidas == []
-    assert por_id2[5].nombre == "" and por_id2[5].salidas == []
+    assert por_id2[-1].nombre == "" and por_id2[-1].salidas == []
+    assert por_id2[-2].nombre == "" and por_id2[-2].salidas == []
     for desconocida in (4, 6):
         assert desconocida not in por_id2
 
     layout2 = calcular_layout_minimapa(topologia2, c.sala_inicial_id())
-    assert set(sid for sid, _, _ in layout2) == {1, 2, 3, 5}
+    assert set(sid for sid, _, _ in layout2) == {1, 2, -1, -2}
     c.salir()
+
+def test_f2_ejecuta_historia_en_la_partida_grafica(tmp_path):
+    from types import SimpleNamespace
+
+    import pygame
+
+    from vista_pygame.escenas.partida import EscenaPartida
+
+    controlador = _controlador(tmp_path)
+    try:
+        _iniciar(controlador, tmp_path)
+        escena = EscenaPartida(SimpleNamespace(controlador=controlador))
+        escena.al_entrar(None)
+        antes = controlador.estado()
+        escena.manejar_evento(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_F2))
+        escena.manejar_evento(pygame.event.Event(pygame.TEXTINPUT, text="HISTORIA 0"))
+        escena.manejar_evento(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_RETURN))
+
+        assert _esperar(lambda: any("Estado histórico" in mensaje
+                                    for mensaje in controlador.mensajes()))
+        assert controlador.estado().tiempo == antes.tiempo
+        assert controlador.estado().acciones_jugador == antes.acciones_jugador
+        escena.manejar_evento(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_F2))
+        escena.manejar_evento(pygame.event.Event(pygame.TEXTINPUT, text="HISTORIA 1"))
+        escena._fin_enviado = True
+        enviados = []
+        controlador.enviar_comando = enviados.append
+        escena.manejar_evento(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_RETURN))
+        assert enviados == []
+        assert escena._texto_comando is None
+    finally:
+        controlador.salir()
