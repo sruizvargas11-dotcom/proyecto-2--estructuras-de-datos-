@@ -1,4 +1,4 @@
-## BITACORA DE PROMPTS EMPLEADOS
+## BITACORA DE PROMPTS 
 
 Este documento es la bitácora de uso de LLM que exige el enunciado del proyecto. Su propósito es dejar registro de todos los prompts relacionados con el proyecto que cada integrante del equipo envió a un LLM. Por cada entrada se indica la fecha aproximada, la herramienta o modelo utilizado, el prompt enviado y una frase breve sobre para qué se utilizó la respuesta. No se copian las respuestas completas del LLM ni se incluyen credenciales, datos personales o información ajena al proyecto. El LLM se usó como herramienta de apoyo: el código y los textos obtenidos con su ayuda son responsabilidad del grupo, igual que cualquier otro entregable.
 
@@ -15,6 +15,8 @@ Los prompts incluidos son propuestas de asesoramiento académico basadas en los 
 La conversación de trabajo con Claude fue extensa y, durante su desarrollo, la sesión se resumió automáticamente para permitir su continuidad. Por este motivo, no se conserva la transcripción literal de los primeros intercambios ni sus fechas exactas.
 
 Las entradas de esa etapa reconstruyen los temas tratados y la finalidad de las solicitudes, en lugar de reproducir cada mensaje. Las fechas no registradas deberán completarse o corregirse a partir del historial disponible o de información que Daniel pueda confirmar; las referencias temporales aproximadas no deben interpretarse como fechas verificadas.
+
+### Prompts del primer proyecto (Parte I)
 
 ### Fecha no registrada, anterior al 11 de octubre de 2026 — Diseño y estructuras de datos
 
@@ -74,6 +76,8 @@ Las entradas de esa etapa reconstruyen los temas tratados y la finalidad de las 
 
 Para el desarrollo de las actividades se utilizaron ChatGPT y Claude como herramientas de asistencia.
 
+### Prompts del segundo proyecto (Parte II)
+
 ### 04 de noviembre de 2026, 16:36 — Implementación del spec-kit
 
 **Prompt para inicializar el constitution.md**
@@ -115,6 +119,8 @@ Se registran 33 prompts, enviados entre el 4 y el 18 de octubre de 2026, que con
 Cuando un prompt incluía código, archivos o salidas de consola, ese contenido se indica entre corchetes (por ejemplo `[código: …]` o `[adjunto: …]`) en lugar de copiarlo completo.
 
 ### Bitácora completa de prompts
+
+### Prompts del primer proyecto (Parte I)
 
 #### 1
 - **Fecha:** 2026-10-04
@@ -478,11 +484,11 @@ Cuando un prompt incluía código, archivos o salidas de consola, ese contenido 
 
 ### Herramientas utilizadas
 
-Claude (claude.ai) para análisis, diseño y redacción de prompts; Claude Code para implementación, pruebas y auditorías sobre el repositorio.
+Claude (claude.ai) para análisis, diseño y redacción de prompts; Claude Code para implementación, pruebas y auditorías sobre el repositorio. En la Parte II, GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna) para especificar, planificar e implementar la spec 004 (línea de tiempo); sus prompts se extrajeron textualmente del historial local de Copilot.
 
 ### Resumen de los prompts
 
-Se registran los prompts enviados entre septiembre y el 18 de octubre de 2026 que contribuyeron de forma directa al proyecto. Los prompts se copian tal como se escribieron, con sus errores de ortografía, para dejar el registro real. Por su carácter se agrupan así:
+Se registran los prompts enviados entre septiembre y el 18 de noviembre de 2026 (Parte I: entradas 1 a 15; Parte II: entradas 16 a 24) que contribuyeron de forma directa al proyecto. Los prompts se copian tal como se escribieron, con sus errores de ortografía, para dejar el registro real. Por su carácter se agrupan así:
 
 - **Implementación guiada:** se indican los requerimientos y las decisiones de diseño y se pide implementar sobre ellos: adaptadores de red y offline, bitácora de partida y migración de la vista a Pygame (1, 4, 5, 6).
 - **Organización del trabajo:** división del proyecto en roles y bloques, pruebas por bloque y reparto del trabajo de Pygame entre dos integrantes (2, 3, 7).
@@ -496,6 +502,8 @@ Se registran los prompts enviados entre septiembre y el 18 de octubre de 2026 qu
 Cuando un prompt incluía imágenes o salidas de consola, ese contenido se indica entre corchetes en lugar de copiarlo. Las horas están en hora de Costa Rica (UTC−06:00).
 
 ### Bitácora completa de prompts
+
+### Prompts del primer proyecto (Parte I)
 
 #### 1
 - **Fecha:** septiembre de 2026 (inicio del proyecto, aproximada)
@@ -804,14 +812,7 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
   > Ok, quiero que mantengamos la portada, o sea, la misma portada, que mantengamos el mismo personaje. Que eso es como, ok, el concepto quiero que sea como tipo en El Señor de los Anillos, cuando van a entrar a las minas de Moria y ya la cripta como tal, el concepto de la cripta sean como las minas de Moria. Entonces quiero que la portada se mantenga igual, que se vea como el personaje. Entonces cuando ya entramos a la cripta es que entramos como a las minas. Entonces que adentro sea el mismo concepto, nada más mantener igual, entonces solo cambiar como esa parte.
 - **Uso:** Generar arte conceptual en pixel art del interior de la cripta (ambientación de minas de diseño propio) para el compañero, conservando la portada original.
 
-#### 11
-- **Fecha:** 2026-10-17, 17:01 – 18:17
-- **Herramienta:** Claude
-- **Prompts:**
-  > necesito que le envies a un companero qPARA que el lllm que el usa verifique la jugabilidad y la funcionalidad ademas la conexion de ala api y el modo offline
 
-  > Haz el prompt agrégale que verifique todo lo de pergamino de retroceso etc
-- **Uso:** Preparar el documento de QA para un compañero: verificación por fases de pruebas, API, modo offline, reglas y pergamino de retroceso.
 
 #### 12
 - **Fecha:** 2026-10-18, 10:24 – 10:26
@@ -851,6 +852,440 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
   > usa estos prompts para sebastia y algunos de los que estan ahi
 - **Uso:** Redactar `docs/ARQUITECTURA_PYGAME.md` y completar esta sección de la bitácora.
 
+### Prompts del segundo proyecto (Parte II)
+
+Prompts de la spec 004 (línea de tiempo), del 9 al 18 de noviembre de 2026. Los de GitHub Copilot CLI se copiaron textualmente de su historial local; las horas están en hora de Costa Rica (UTC−06:00).
+
+#### 16
+- **Fecha:** 2026-11-09, 15:45 – 18:10
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**15:45**
+
+~~~text
+/speckit-specify
+~~~
+
+**15:51**
+
+~~~text
+/speckit-specify No crees ni cambies de rama de Git: ya estoy en spec/sebastian.
+Trabaja exclusivamente en SPECIFY_FEATURE_DIRECTORY=specs/004-linea-tiempo.
+No modifiques otras capacidades ni la constitución.
+
+CAPACIDAD
+  Línea de tiempo del juego CRIPTA (Parte II, §3.6).
+
+OBJETIVO
+  El jugador puede consultar cómo estaba la partida en cualquier instante
+  pasado, desde el inicio, sin modificar la partida actual.
+
+REGLAS
+  1. Estado en el instante t: después de ejecutar todos los eventos con
+     tiempo menor o igual que t; si a t le corresponde una decisión del
+     jugador, justo antes de tomarla.
+  2. "historia t" muestra el estado en el instante t del reloj virtual.
+  3. "historia #k" muestra el estado justo antes de la acción número k del
+     jugador.
+  4. El resumen muestra como mínimo: reloj, sala del jugador, vida y
+     estadísticas, inventario, efectos activos, enemigos de esa sala con su
+     vida y el mapa conocido en ese momento.
+  5. La consulta no consume tiempo, no se registra como acción y no altera
+     el estado del juego ni el historial del pergamino.
+  6. El pergamino sigue limitado a 5 acciones y es independiente.
+  7. Las acciones revertidas con pergamino dejan de existir en la línea de
+     tiempo.
+  8. No se guarda más de una copia completa del estado cada K acciones del
+     jugador; K se configura con --checkpoint-cada K y su valor por defecto
+     se justifica con mediciones.
+  9. Fuera de esas copias solo se guarda la información necesaria para
+     reconstruir los cambios.
+  10. Una consulta no puede requerir aplicar ni deshacer cambios de más de K
+      acciones del jugador.
+  11. La consulta no realiza solicitudes de red.
+  12. "--replay partida.log --hasta t" imprime el mismo resumen sin abrir la
+      interfaz; si la partida termina antes de t, muestra el estado final e
+      informa que terminó antes.
+  13. Guardar y cargar conserva la historia completa y el mapa conocido.
+  14. Los archivos de partida de la Parte I se migran explícitamente o se
+      rechazan con un mensaje; nunca se cargan en silencio.
+
+CASOS OBLIGATORIOS (escenarios de aceptación)
+  - G18: t posterior al reloj se rechaza.
+  - G19: las acciones revertidas quedan excluidas.
+  - G20: eventos simultáneos en t.
+  - G21: la consulta no altera nada.
+  - G22: --hasta posterior al final muestra el estado final y un aviso.
+  - G23: archivo de la Parte I con migración o incompatibilidad explícita.
+
+RENDIMIENTO
+  Consulta menor a 50 ms con al menos 5000 acciones y el K por defecto.
+
+FORMATO
+  - Usa "Historia de usuario N" (no "Historia N").
+  - Requisitos FR-NNN.
+  - Criterios de éxito SC-NNN medibles.
+  - Tabla de trazabilidad G18–G23 → escenario → FR.
+  - NO incluyas estructuras de datos, algoritmos, clases ni módulos.
+~~~
+
+**15:58**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo/spec.md. Haz solo estos dos cambios:
+1. Elimina el criterio SC-006 (prueba de uso con participantes): no lo pide el enunciado.
+2. En el escenario 1 de la Historia de usuario 1, la consulta muestra un estado, no una lista de eventos. Cambia el "Then" a: "se muestra el estado resultante de todos los eventos con tiempo menor o igual que t, justo antes de esa decisión".
+No cambies nada más.
+~~~
+
+**16:31**
+
+~~~text
+/speckit-clarify Revisa solo specs/004-linea-tiempo/spec.md. Asegúrate de
+resolver al menos estas dudas, además de las que encuentres:
+1. Si en el mismo instante t hay eventos de enemigos programados después de
+   la decisión del jugador (mayor número de secuencia), ¿se incluyen?
+2. ¿historia #k con k igual a la cantidad de acciones realizadas muestra el
+   estado actual o se rechaza?
+3. ¿Los archivos de la Parte I se migran o se rechazan? Elige una opción.
+4. ¿Qué texto mínimo muestra el aviso cuando --hasta supera el final?
+5. ¿El valor por defecto de K se fija en la especificación o en el plan?
+Registra preguntas y respuestas en la sección Clarifications y actualiza los
+requisitos afectados. No inventes reglas que no estén en el enunciado. No
+programes.
+~~~
+
+**16:33**
+
+~~~text
+Resuelve también estas dudas en specs/004-linea-tiempo/spec.md: (a) SC-002: ¿el K por defecto es el mayor que cumpla SC-001? (b) SC-001: ¿los 50 ms se exigen sobre el máximo de todas las mediciones o sobre el p95, con el máximo documentado? (c) ¿la numeración de acciones empieza en 1? (d) FR-013 y Assumptions deben quedar coherentes con la decisión sobre archivos de la Parte I. Registra todo en Clarifications y actualiza los requisitos afectados. No cambies otros archivos.
+~~~
+
+**16:37**
+
+~~~text
+/speckit-plan Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama ni modifiques otras specs o la constitución. Respeta la constitución y el código actual. Produce plan.md, research.md, data-model.md, quickstart.md y contracts/. No agregues reglas que no estén en spec.md. No programes.
+
+DECISIONES DE DISEÑO
+- Registro permanente de acciones del jugador: arreglo propio con número de acción e instante del reloj, separado del historial del pergamino (que consume sus deltas y se limita a 5; ver docs/equipo/revision_persistencia.md).
+- Puntos de control: uno cada K acciones, en un arreglo ordenado por tiempo. Deben incluir el estado del random.Random (getstate) y la agenda de eventos; NO deben incluir la caché LRU ni el historial del pergamino.
+- historia t: búsqueda binaria propia (sin bisect) del último punto de control con tiempo menor o igual que t. historia #k: acceso directo al punto k // K.
+- Reconstrucción en una partida temporal aislada, nunca sobre la real. Evaluar dos variantes y elegir con mediciones: (a) re-simular hacia adelante desde el punto de control anterior; (b) invertir cambios hacia atrás desde el estado actual cuando esté a menos de K acciones. Para (b) hace falta un registro permanente de cambios, porque los deltas actuales solo guardan el valor anterior y se consumen.
+- Pergamino: cortar el final del registro de acciones y los puntos de control posteriores al punto revertido.
+- --replay --hasta reutiliza la misma reconstrucción sin vista.
+
+ALTERNATIVAS PARA research.md
+BST simple (degenera con tiempos crecientes); AVL (funciona, pero agrega rotaciones innecesarias porque todo se agrega y se corta al final); tabla hash (no resuelve "el último menor o igual que t"); búsqueda lineal (referencia de medición); sin puntos de control (viola el límite de K).
+
+MEDICIONES PLANIFICADAS (--bench)
+Consulta con al menos 5000 acciones y K = 10, 50, 100 y otros: tiempo (mediana, p95, máximo) y memoria; búsqueda binaria vs. lineal; re-simular vs. invertir; tiempo de carga de un punto de control.
+
+RIESGO CONOCIDO
+La carga completa del formato binario actual tarda alrededor de 72 ms con 5000 salas (ver revision_persistencia.md), más que el límite de 50 ms. El plan debe proponer cómo serializar los puntos de control para cumplirlo, sin dar cifras que no se hayan medido.
+
+DEPENDENCIAS
+Niebla (José): su conocimiento debe entrar en el punto de control. Terreno (Daniel): costos y movimientos deben reconstruirse igual.
+~~~
+
+**16:43**
+
+~~~text
+No borres plan.md. Explícame por qué querías borrarlo y qué ibas a hacer después. Si necesitas cambiarlo, edítalo en lugar de borrarlo.
+~~~
+
+**16:46**
+
+~~~text
+/speckit-tasks Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Divide el plan en tareas pequeñas con identificador estable, responsable (Sebastián), dependencias, requisito FR o SC que atiende y comando o prueba de cierre. Separa: componentes, integración con otras capacidades, mediciones y documentación. Incluye una tarea de prueba por cada caso G18 a G23 y una prueba de historia #k en los múltiplos de K. No ejecutes las tareas.
+~~~
+
+**16:57**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (tasks.md y, si hace falta, plan.md). No cambies de rama ni programes. Corrige:
+1. MVC: la búsqueda binaria, la selección (k - 1) // K, la reconstrucción y la construcción del resumen como datos van en el modelo (modelo/). El controlador solo recibe "historia t" / "historia #k" y llama al modelo; la vista solo muestra el resumen. Así --replay --hasta (FR-011) obtiene el mismo resumen sin instanciar la vista. Ajusta T009, T010 y T011.
+2. Verifica con git ls-files que existan los archivos mencionados (persistencia/PartidaBinaria.py, controlador/guardado.py, controlador/controlador_replay.py, vista/consola.py); usa los nombres reales o indica que son archivos nuevos.
+3. Agrega una tarea de prueba que verifique que ninguna consulta reconstruye más de K acciones del jugador (FR-010).
+4. Marca como "integración (turno de integración)" las tareas que editan controlador/controlador_juego.py, main.py o el guardado común.
+5. Agrega la tarea que crea tests/test_linea_tiempo_rendimiento.py antes de T026.
+Mantén los IDs existentes; agrega las nuevas al final de su fase.
+~~~
+
+**17:08**
+
+~~~text
+/speckit-analyze Trabaja exclusivamente en specs/004-linea-tiempo. Comprueba la consistencia entre la constitución, spec.md, plan.md y tasks.md. Reporta: requisitos sin tarea, tareas sin requisito, reglas del plan que no estén en la spec, estructuras de datos mencionadas en spec.md, casos G18 a G23 sin escenario o sin prueba, violaciones de la separación MVC y uso de bibliotecas prohibidas. No programes ni modifiques archivos.
+~~~
+
+**17:24**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (plan.md, research.md y tasks.md). No cambies de rama ni programes. Corrige los hallazgos del análisis:
+1. heapq: indica en plan.md que la agenda de eventos usa el HeapMinimo propio del proyecto y que heapq, bisect y collections están prohibidos por la constitución.
+2. Agrega a tasks.md: (a) una tarea, antes de la primera tarea de código, que verifique que spec.md, plan.md y tasks.md tienen commit antes de cualquier cambio de código; (b) una tarea final que documente las decisiones, alternativas y mediciones de la línea de tiempo en el archivo DECISIONES.md que use el proyecto.
+3. La cifra de ~72 ms viene de docs/equipo/revision_persistencia.md, que está en main (commit 1e21b9a) pero no en esta rama. En plan.md y research.md cítala como "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025", sin presentarla como verificada aquí.
+4. Agrega una tarea de integración (turno de integración) que implemente la bandera --checkpoint-cada K en main.py, con validación de K positivo (FR-009, FR-014).
+5. Agrega una tarea, después de T025, que integre en el modelo la estrategia de reconstrucción elegida según las mediciones (FR-010).
+6. En T021, indica que --replay --hasta usa el mismo constructor de resumen del modelo que historia t, sin instanciar la vista (FR-011).
+Mantén los IDs existentes; las nuevas van al final de su fase.
+~~~
+
+**17:31**
+
+[/speckit-analyze ejecutado de nuevo con el mismo texto de las 17:08 (segunda ronda de análisis).]
+
+**17:45**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo/spec.md. No cambies de rama. Aplica solo la sugerencia 3: deja FR-005 como única regla sobre consultas a instantes futuros, quita esa condición de FR-003 y actualiza la trazabilidad de G18 para que cite FR-005 y FR-006 (no FR-003). No modifiques plan.md ni tasks.md todavía.
+~~~
+
+**17:48**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (plan.md y tasks.md). No cambies de rama ni programes. Aplica:
+1. Saca T031 de la lista de tareas y crea al inicio de tasks.md una sección "Precondiciones (gates)" que diga, citando el principio VII de la constitución, que spec.md, plan.md y tasks.md deben tener commit antes de cualquier cambio de código. No asignes un FR inventado.
+2. Amplía T024 para que incluya una prueba en tests/test_separacion_mvc.py que verifique que --bench no instancia la vista (principio III).
+3. En T006 y donde corresponda, reemplaza la referencia a FR-003 por FR-005 para el rechazo de instantes futuros, coherente con spec.md.
+4. En plan.md, presenta la búsqueda binaria, la fórmula (k - 1) // K, la restauración sin cargar el grafo completo y las integraciones con Niebla y Terreno como decisiones de implementación, no como criterios de aceptación. La memoria es una métrica informativa.
+Mantén los IDs existentes.
+~~~
+
+**18:00**
+
+[/speckit-analyze ejecutado de nuevo con el mismo texto de las 17:08 (tercera ronda de análisis).]
+
+**18:10**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo/spec.md. Aplica solo A1: en SC-002 precisa que el "volumen conservado" son los bytes persistidos de los registros y puntos de control para cada K evaluado. No modifiques plan.md ni tasks.md.
+~~~
+
+**18:10**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (plan.md y tasks.md). Aplica: (A1) amplía T024 para medir e informar los bytes persistidos de registros y puntos de control para cada K, manteniendo la memoria de ejecución como dato informativo; (P1) en plan.md y T015 describe la preservación de la caché LRU como detalle interno de la reconstrucción aislada vinculado a FR-006, no como criterio nuevo; (P2) etiqueta la comparación hacia adelante/inversa y los valores K = 10, 50, 100 como protocolo exploratorio de benchmark; el criterio formal sigue siendo comparar al menos tres valores positivos y elegir el mayor que cumpla SC-001. Mantén los IDs. No cambies spec.md.
+~~~
+
+- **Uso:** Escribir y aclarar la especificación de la spec 004 (línea de tiempo), producir el plan, research, data-model, contratos y tareas, analizar su consistencia en tres rondas y corregir los hallazgos (MVC, `(k − 1) // K`, prohibición de heapq/bisect/collections, cita de los ~72 ms como medición pendiente, precondición de commit, tarea de `--checkpoint-cada` y tarea de DECISIONES.md). El índice `k // K` del prompt del plan se corrigió en estas mismas rondas.
+
+#### 17
+- **Fecha:** 2026-11-10, 13:57 – 20:06
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**13:57**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta solo las tareas T001 a T005 de tasks.md (preparación y componentes base). Respeta la constitución y los contratos: estructuras propias, sin dict como índice o caché, sin heapq, bisect, collections ni sorted, y toda la lógica en el modelo. No edites archivos de otros integrantes ni las tareas marcadas como integración. Escribe primero las pruebas y cita en cada una el requisito que verifica. Usa .\.venv\Scripts\python.exe para ejecutar pytest. Al terminar muéstrame el diff, el resultado de pytest y marca en tasks.md solo las tareas completadas. No hagas commit.
+~~~
+
+**15:44**
+
+~~~text
+En modelo/punto_control.py la línea 65 usa un dict como memo de copy.deepcopy para excluir el historial del pergamino. La constitución prohíbe dict como índice o tabla de búsqueda. Reemplázalo por otra forma de excluir el historial y la caché LRU del punto de control (por ejemplo, separarlos temporalmente de la partida antes de copiar y volver a asignarlos después, o reutilizar el codificador de persistencia/estado_partida.py con exclusiones). Explica la opción elegida, mantén las pruebas pasando y no toques otros archivos. Usa .\.venv\Scripts\python.exe. No hagas commit.
+~~~
+
+**16:20**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta solo las tareas T006 a T008 de tasks.md (pruebas de la Historia de usuario 1: G18, G20 y historia #k en los múltiplos de K). Escribe solo las pruebas, no el código que las hace pasar: es normal que fallen por ahora. Cita en cada prueba el requisito que verifica. Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. No edites archivos de otros integrantes. Usa .\.venv\Scripts\python.exe. Al terminar muéstrame el diff, el resultado de pytest para esas pruebas y marca en tasks.md solo las tareas completadas. No hagas commit.
+~~~
+
+**18:10**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta solo la parte del modelo de las tareas T009 a T011: la búsqueda binaria propia del último punto de control con tiempo menor o igual que t, la selección del punto con (k - 1) // K y la construcción del resumen histórico como datos. No toques controlador/controlador_juego.py, main.py ni la vista: eso es del turno de integración.
+Las pruebas T006 a T008 son de punta a punta (pasan por el controlador y una vista falsa), así que seguirán fallando hasta la integración: no las modifiques. En su lugar, agrega pruebas unitarias del modelo que verifiquen directamente: (1) la búsqueda del punto de control, incluido t igual al tiempo de un punto, t entre dos puntos y t anterior al inicio; (2) que historia #k use (k - 1) // K, en especial k = K y k = 2K; (3) que una consulta futura se rechace; (4) que el resumen tenga los campos de FR-004. Cita el requisito en cada prueba.
+Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe. Al terminar muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**19:37**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta las tareas T012, T013 y T015 (pruebas de G19 y G21, y la reconstrucción aislada que no altera partida, pergamino ni caché). Si alguna prueba de aceptación necesita el controlador, déjala como prueba de punta a punta pendiente de integración y no la fuerces; agrega además pruebas unitarias del modelo que verifiquen: (1) que después de una consulta el reloj, el estado, el conteo de acciones y el historial del pergamino son idénticos; (2) que cortar la historia desde la acción m elimina el registro y los puntos de control posteriores. No toques controlador/controlador_juego.py, main.py ni la vista (T014 es de integración). Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**19:57**
+
+[El mismo /speckit-implement de T012, T013 y T015 de las 19:37 se envió de nuevo con el mismo texto.]
+
+**19:59**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta las tareas T016 a T018 (pruebas de G22, G23 y guardado/carga) y la tarea de prueba de que ninguna consulta reconstruye más de K acciones. Las pruebas que necesiten el controlador, main.py o el guardado común quedan como pruebas de punta a punta pendientes de integración: no las fuerces. Agrega además pruebas unitarias del modelo que verifiquen: (1) que el número de acciones re-simuladas en cualquier consulta es menor o igual que K, incluido justo antes de un punto de control; (2) que la detección de un archivo de la Parte I produce un rechazo explícito con mensaje (si puede hacerse en el modelo o la persistencia sin tocar el guardado común). No toques controlador/controlador_juego.py, controlador/guardado.py, main.py ni la vista. Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**20:06**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama ni modifiques código de producción. Escribe solo las pruebas de aceptación de punta a punta que faltan, aunque fallen por ahora porque dependen de la integración:
+1. T016: tests/test_linea_tiempo_g22.py — --replay partida.log --hasta t produce el mismo resumen que historia t sin instanciar la vista, y con t posterior al final muestra el estado final y un aviso (FR-011, G22).
+2. T017: tests/test_linea_tiempo_g23.py — cargar un archivo de partida de la Parte I se rechaza con un mensaje explícito, nunca en silencio (FR-013, G23).
+3. T018: tests/test_linea_tiempo_guardado.py — guardar y cargar conserva la historia completa y el mapa conocido, y las consultas dan lo mismo antes y después (FR-012, SC-005).
+Usa las interfaces que definen los contratos en specs/004-linea-tiempo/contracts/. Cita el requisito en cada prueba. Sin dict como índice, heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe y muéstrame que fallan por la razón correcta (no por errores de sintaxis o de importación de archivos existentes). No marques las tareas como completas en tasks.md. No hagas commit.
+~~~
+
+- **Uso:** Implementar por tandas los componentes del modelo (registro de acciones, puntos de control, búsqueda binaria, selección con `(k − 1) // K`, resumen histórico y reconstrucción aislada) y escribir las pruebas G18–G23 y del límite K; eliminar el `dict` usado como memo en `punto_control.py`.
+
+#### 18
+- **Fecha:** 2026-11-14, 20:09 – 2026-11-16, 14:34
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**14/11 20:09**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ahora es el turno de integración de la línea de tiempo: Niebla (002), Terreno (001) y Resolubilidad (003) ya están en main. Completa la parte de integración de T009 a T011: el controlador recibe "historia t" e "historia #k", llama al modelo (modelo/historia.py, modelo/resumen_historico.py) y la vista solo muestra el resumen. No muevas lógica al controlador ni a la vista. Objetivo: que pasen las pruebas de aceptación G18, G20 y historia #k en múltiplos de K sin modificarlas. Respeta la constitución. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**14/11 20:32**
+
+~~~text
+Revisé tu integración y no puedo aceptarla así. Guardar un ResumenHistorico en cada evento y cada decisión viola FR-008/FR-009 (fuera de los puntos de control solo se guarda lo necesario para reconstruir) y evita usar los puntos de control y el reconstructor (FR-010). Rehazlo así:
+1. Elimina self.resumenes, RegistroResumen y registrar_resumen. No guardes resúmenes por evento ni por decisión.
+2. Conserva: el comando HISTORIA en interpretar, la rama del bucle que consulta al modelo y llama a vista.mostrar_resumen_historico, el registro de acciones en registrar_accion y el método de la vista.
+3. Los puntos de control completos se toman cada K acciones con modelo/punto_control.py (estado, random y agenda). K no puede estar fijo en 1 dentro del controlador: debe venir de la configuración (valor por defecto del modelo, preparado para --checkpoint-cada).
+4. Para responder historia t o historia #k: elegir el punto con la búsqueda binaria o con (k - 1) // K, restaurarlo en una partida temporal con modelo/reconstructor_historia.py y re-simular como máximo K acciones registradas (y los eventos hasta t, cortando antes de la decisión del jugador si corresponde), sin vista. Revisa si controlador/controlador_replay.py ya permite ejecutar acciones registradas sobre una partida sin vista y reutilízalo. Luego construye el resumen con ResumenHistorico.desde_partida sobre la partida temporal.
+5. Revierte el cambio en controlador/narrador_eventos.py, salvo que sea indispensable; si lo es, explícame por qué.
+Objetivo: que G18, G20 y historia #k pasen sin modificar las pruebas, y que sigan pasando las pruebas del modelo y del límite de K. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y pytest. No hagas commit.
+~~~
+
+**14/11 20:50**
+
+~~~text
+/speckit-implement
+Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Completa la integración de T014 y T015: al revertir con el pergamino, la historia debe cortarse desde la acción revertida, eliminando el registro de acciones, el registro de cambios y los puntos de control posteriores, sin recorrer toda la historia; el pergamino conserva su límite de 5 acciones y no se modifica por las consultas. No guardes resúmenes por evento: la consulta sigue reconstruyendo desde los puntos de control. Objetivo: que pase G19 sin modificarla, y que sigan pasando G18, G20, G21, historia #k y las pruebas existentes del pergamino y del historial. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y pytest. No hagas commit.
+~~~
+
+**15/11 17:44**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Completa T019, T020, T021 y la tarea de la bandera --checkpoint-cada K:
+1. Guardar y cargar la partida debe conservar la historia completa (registro de acciones y puntos de control) y el mapa conocido, subiendo la versión del formato y rechazando con mensaje explícito los archivos de la Parte I. Al cargar, la historia debe continuar desde la acción 1 de la partida, no solo desde el inicio de la sesión: ajusta o elimina _acciones_historia_base si ya no hace falta. Si la serialización de Historia dentro de Partida falló antes, resuélvelo en el formato de guardado, no excluyendo la historia.
+2. "--replay partida.log --hasta t" usa la misma reconstrucción y el mismo resumen del modelo que historia t, sin instanciar la vista ni hacer solicitudes de red; si la partida termina antes de t, muestra el estado final e informa que terminó antes.
+3. La bandera --checkpoint-cada K configura el K de la historia, con K por defecto del modelo y rechazo de valores no positivos.
+No guardes resúmenes por evento. Objetivo: que pasen G22, G23 y la prueba de guardado sin modificarlas, y que sigan pasando todas las demás. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y pytest. No hagas commit.
+~~~
+
+**15/11 18:24**
+
+~~~text
+Sobre bitacora_partida.py: explícame por qué agregaste datos_jugador al encabezado. Si solo hacía falta para que el replay funcionara sin red, y ya revertimos el --offline forzado, quítalo. Si es necesario por otra razón, confirma que una bitácora vieja (sin esos campos) se sigue leyendo y reproduciendo igual, y agrega una prueba que lo verifique.
+~~~
+
+**15/11 18:28**
+
+~~~text
+En main.py revierte el cambio que fuerza --offline en todo --replay: --replay debe usar la misma fuente de datos que antes (caché local y API respetando el presupuesto, u offline solo si se pasa --offline), como exige la Parte I §4.11. La restricción sin red de FR-010 aplica a la consulta y reconstrucción de la historia, no a cargar los datos de la cripta del replay. Si la prueba G22 necesita no usar la red, que ella misma pase --offline en la línea de comandos que ejecuta, sin modificar sus aserciones.
+
+Sobre bitacora_partida.py: explícame por qué agregaste datos_jugador al encabezado. Si solo hacía falta para que el replay funcionara sin red, quítalo. Si es necesario por otra razón, confirma que una bitácora vieja (sin esos campos) se sigue leyendo y reproduciendo igual, y agrega una prueba que lo verifique.
+
+Usa .\.venv\Scripts\python.exe y corre la suite completa. Muéstrame el diff y el resultado. No hagas commit.
+~~~
+
+**15/11 18:36**
+
+[En el mensaje original este texto aparece pegado tres veces seguidas; se copia una sola vez.]
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta T022 y T023: escribe primero pruebas de integración que verifiquen (1) que historia t muestra el mapa conocido de ese momento, no el actual, incluidas las salas reveladas por la antorcha; (2) que después de viajar con "ir a", guardar, cargar y usar el pergamino, la historia sigue mostrando el mapa conocido correcto en cada instante; (3) que los movimientos con costos de salida y las acciones de los cazadores se reconstruyen igual que en la partida original. Luego haz la integración mínima necesaria en modelo/punto_control.py y modelo/reconstructor_historia.py. No modifiques el código de la niebla ni del terreno: si hace falta un cambio ahí, explícamelo primero. No guardes resúmenes por evento. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y la suite completa. No hagas commit.
+~~~
+
+**15/11 18:57**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta las tareas de medición (T024, T025, T026 y la que crea tests/test_linea_tiempo_rendimiento.py), usando el formato unificado de bench/medicion.py:
+1. Agrega a --bench un caso de línea de tiempo con una historia determinista de al menos 5000 acciones del jugador y al menos 30 consultas repartidas (por tiempo y por número de acción), para K = 10, 50, 100 y al menos otro valor mayor. Informa mediana, p95, máximo, acciones reconstruidas por consulta, bytes persistidos de registros y puntos de control, y memoria.
+2. Compara las alternativas: búsqueda binaria contra lineal para encontrar el punto de control; sin puntos de control (reconstruir desde el inicio) como referencia; y re-simular hacia adelante contra invertir hacia atrás si la segunda variante existe; si no existe, dilo.
+3. Agrega una prueba de que --bench no instancia la vista.
+4. Con los resultados, propón el K por defecto como el mayor que cumpla p95 < 50 ms, pero NO cambies K_POR_DEFECTO todavía: muéstrame la tabla y la propuesta.
+No modifiques los casos de bench de otros integrantes. Usa .\.venv\Scripts\python.exe. Corre --bench y pytest por separado, nunca a la vez. Muéstrame los resultados. No hagas commit.
+~~~
+
+**15/11 22:01**
+
+~~~text
+Las mediciones muestran que K = 200 es el mayor valor evaluado que cumple p95 < 50 ms (p95 20,4 ms, máximo 43,6 ms, 2,8 MiB). Cambia K_POR_DEFECTO a 200 en modelo/historia.py y marca T026 como completa. No cambies nada más. Corre la suite completa con .\.venv\Scripts\python.exe. No hagas commit.
+~~~
+
+**16/11 14:34**
+
+~~~text
+Dos cosas en bench/casos/linea_tiempo.py, sin cambiar las mediciones:
+1. El texto "K_POR_DEFECTO no se modifica" está desactualizado: K_POR_DEFECTO ya es 200. Cambia el mensaje para que informe el K por defecto actual y si coincide con la propuesta.
+2. Con K = 50, una consulta por acción tuvo un máximo de ~203 ms en dos corridas distintas, mientras su p95 es 8 ms. Sin modificar código de producción, identifica qué consulta y qué repetición producen ese máximo y explica la causa probable (por ejemplo, recolector de basura, primera consulta en frío o algún punto de control concreto). Si es el recolector de basura, indica si bench/medicion.py ya lo controla.
+Usa .\.venv\Scripts\python.exe. No hagas commit.
+~~~
+
+- **Uso:** Integrar la línea de tiempo con el controlador, el pergamino, el guardado, el replay, la niebla y el terreno; rechazar la primera integración, que guardaba un resumen por evento; revertir el `--offline` forzado en `--replay`; medir K = 10, 50, 100 y 200 con `--bench`, fijar K = 200 y analizar el máximo aislado de K = 50.
+
+#### 19
+- **Fecha:** noviembre de 2026 (fechas no registradas)
+- **Herramienta:** Claude
+- **Prompts:** no se conserva el texto literal: la conversación se resumió automáticamente durante su desarrollo. Los temas fueron el plan de fases de la Parte II, la redacción de los prompts de Spec Kit de las entradas 16 a 18, la revisión de lo que entregaba Copilot (de ahí salieron las correcciones de la entrada 18), la interpretación del benchmark y las operaciones de git.
+- **Uso:** Planificar la spec 004, preparar los prompts de Spec Kit y detectar desviaciones de la especificación en el código generado.
+
+#### 20
+- **Fecha:** 2026-11-17 (antes de las 16:00)
+- **Herramienta:** Claude
+- **Prompts:**
+  > Que falta , explícame la estructura de todo lo trabajado dame una explicación de cómo se integra todo
+
+  > Genera un md de todo esto
+
+  > En palabras sencillas y generales agrega que hace mi spec además dame los prompts de spec kit
+- **Uso:** Generar un documento de integración de la línea de tiempo (MVC, flujos y relación con el resto del equipo).
+
+#### 21
+- **Fecha:** 2026-11-17, 16:09 – 16:54
+- **Herramienta:** Claude
+- **Prompts:**
+  > Que me falta ?
+
+  > Puede claude code hacer esto ?
+
+  > a mí astra me tiró que falta esto en general: [informe de revisión de otra herramienta sobre las tareas abiertas de 003 y 004]
+- **Uso:** Ordenar las tareas pendientes y separar las propias (T027, T028, T033, T034) de las de otros integrantes.
+
+#### 22
+- **Fecha:** 2026-11-17, 21:38 – 22:12
+- **Herramienta:** Claude
+- **Prompts:**
+  > [lista de pendientes del equipo] como hago lo pendiente mio ?
+
+  > /speckit-implement Solo T033 de specs/004-linea-tiempo. Revisa tests/test_linea_tiempo_limites_modelo.py: ¿alguna prueba verifica que historia t e historia #k re-simulan como máximo K acciones, incluyendo k justo después de un punto de control y justo antes del siguiente? Si existe, corrige en tasks.md la referencia tests/test_linea_tiempo_limite_K.py por el archivo real. Si no existe, agrégala ahí sin tocar código de producción. Muéstrame el diff. esto no puedes darme los comandos exactos o como resuelvo esto ? ademas puedes darme una idea o un borrador de los documentos o deciciones tecnicas
+
+  > como hago estos?
+
+  > [salidas de consola de PowerShell, pytest y git]
+- **Uso:** Cerrar T033 (verificación del límite K y corrección de referencia), T027 (documentos de la spec con K = 200), T028 (regresiones: 1379 pruebas aprobadas) y T034 (sección 4.14 de `DECISIONES.md`); actualizar el README.
+
+#### 23
+- **Fecha:** 2026-11-17, 22:06
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**22:06**
+
+~~~text
+puedes darme el registro de prompts >
+~~~
+
+- **Uso:** Pedir a Copilot el registro de prompts para esta bitácora (no conservaba el texto literal; se extrajo después del historial local).
+
+#### 24
+- **Fecha:** 2026-11-18, 19:35 – 19:43
+- **Herramienta:** Claude
+- **Prompts:**
+  > como le pido a copilot que me de textualmente los prompts
+
+  > [salidas de consola de PowerShell con el historial de Copilot]
+
+  > puedes darme un solo comando para agregarlo a prompstllm md osea todo el tecto
+- **Uso:** Extraer del historial local de Copilot CLI (`~/.copilot/session-state/*/events.jsonl`) el texto literal de los prompts de las entradas 16 a 18 y 23, y agregarlos a esta bitácora.
+
 ## JOSE FABIO BARRANTES RAMIREZ
 
 ### Herramientas utilizadas
@@ -876,6 +1311,8 @@ La asistencia incluyó explicaciones, comparación de alternativas, revisión, p
 Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre corchetes (por ejemplo `[imagen adjunta]` o `[adjunto: …]`) en lugar de copiarlo, y las rutas personales se anonimizan. Las respuestas a preguntas de Codex incluyen la pregunta entre corchetes como contexto.
 
 ### Bitácora completa de prompts
+
+### Prompts del primer proyecto (Parte I)
 
 #### 1
 - **Fecha:** 2026-10-05, 01:07 – 03:21
@@ -1209,6 +1646,8 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
   > [17:04] entonces completa lo que falta haz las pruebas que falten la separacion MVC, cancela el pr y rehazlo
 - **Uso:** Mover el controlador gráfico al paquete controlador, corregir esperas y cancelación HTTP, ampliar pruebas y sustituir el PR anterior por el PR 28. Verificación final registrada: 1088 pruebas aprobadas.
 
+### Prompts del segundo proyecto (Parte II)
+
 #### 27
 - **Fecha:** 2026-11-11, 18:03
 - **Herramienta/modelo:** Antigravity, Claude Opus 5.5 (Low)
@@ -1285,7 +1724,7 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
   > Corrige la exposición de salas avistadas y desconocidas en las vistas de la 002 (FR-003, FR-006, SC-002, NV-25). En VistaConsola._salidas y construir_estado de controlador_pygame, muestra el nombre del destino solo si partida.conocimiento.explorada(id) es verdadero; para un destino avistado muestra «sala avistada» sin nombre ni ID en el texto. Conserva dirección, costo y estado visible de la puerta actual. En ControladorPygame._leer_topologia publica una copia plana de salas exploradas y avistadas: nombres y aristas solo desde exploradas, nodos avistados sin nombre ni salidas, omite desconocidas. Construye esa copia en el hilo del modelo al publicar mostrar_estado, y publícala junto al estado bajo el lock existente. En la escena, recalcula el layout cuando cambie esa topología, incluida carga o retroceso; conserva el cálculo BFS existente. Añade pruebas de regresión para consola y snapshot/minimapa que comprueben sala avistada sin nombre, desconocida ausente y revelación al explorar. Ejecuta pruebas focalizadas de la 002 y las vistas. Limita los cambios a vistas, su controlador y pruebas. Reporta resultado y archivos.
 - **Uso:** Corregir la revelación anticipada de salas en consola y Pygame y verificar la regresión.
 
-## Implementación de resolubilidad (2026-11-13)
+## Daniel Centeno — Prompts del segundo proyecto (Parte II): resolubilidad (2026-11-13)
 
 ### Herramienta
 
