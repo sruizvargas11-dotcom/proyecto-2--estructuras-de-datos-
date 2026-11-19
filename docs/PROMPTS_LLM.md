@@ -1,4 +1,4 @@
-## BITACORA DE PROMPTS EMPLEADOS
+## BITACORA DE PROMPTS
 
 Este documento es la bitácora de uso de LLM que exige el enunciado del proyecto. Su propósito es dejar registro de todos los prompts relacionados con el proyecto que cada integrante del equipo envió a un LLM. Por cada entrada se indica la fecha aproximada, la herramienta o modelo utilizado, el prompt enviado y una frase breve sobre para qué se utilizó la respuesta. No se copian las respuestas completas del LLM ni se incluyen credenciales, datos personales o información ajena al proyecto. El LLM se usó como herramienta de apoyo: el código y los textos obtenidos con su ayuda son responsabilidad del grupo, igual que cualquier otro entregable.
 
@@ -15,6 +15,8 @@ Los prompts incluidos son propuestas de asesoramiento académico basadas en los 
 La conversación de trabajo con Claude fue extensa y, durante su desarrollo, la sesión se resumió automáticamente para permitir su continuidad. Por este motivo, no se conserva la transcripción literal de los primeros intercambios ni sus fechas exactas.
 
 Las entradas de esa etapa reconstruyen los temas tratados y la finalidad de las solicitudes, en lugar de reproducir cada mensaje. Las fechas no registradas deberán completarse o corregirse a partir del historial disponible o de información que Daniel pueda confirmar; las referencias temporales aproximadas no deben interpretarse como fechas verificadas.
+
+### Prompts del primer proyecto (Parte I)
 
 ### Fecha no registrada, anterior al 11 de octubre de 2026 — Diseño y estructuras de datos
 
@@ -73,6 +75,8 @@ Las entradas de esa etapa reconstruyen los temas tratados y la finalidad de las 
 **Uso registrado:** se solicitó implementar las tareas correspondientes al rol 2, con énfasis en la calibración del umbral de ordenamiento y las actividades de verificación y evaluación del rendimiento.
 
 Para el desarrollo de las actividades se utilizaron ChatGPT y Claude como herramientas de asistencia.
+
+### Prompts del segundo proyecto (Parte II)
 
 ### 04 de noviembre de 2026, 16:36 — Implementación del spec-kit
 
@@ -357,6 +361,8 @@ En la Parte II se registran 22 prompts más (34 a 55), enviados entre el 5 y el 
 Cuando un prompt incluía código, archivos o salidas de consola, ese contenido se indica entre corchetes (por ejemplo `[código: …]` o `[adjunto: …]`) en lugar de copiarlo completo.
 
 ### Bitácora completa de prompts
+
+### Prompts del primer proyecto (Parte I)
 
 #### 1
 - **Fecha:** 2026-10-04
@@ -1472,8 +1478,6 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
   > Ok, quiero que mantengamos la portada, o sea, la misma portada, que mantengamos el mismo personaje. Que eso es como, ok, el concepto quiero que sea como tipo en El Señor de los Anillos, cuando van a entrar a las minas de Moria y ya la cripta como tal, el concepto de la cripta sean como las minas de Moria. Entonces quiero que la portada se mantenga igual, que se vea como el personaje. Entonces cuando ya entramos a la cripta es que entramos como a las minas. Entonces que adentro sea el mismo concepto, nada más mantener igual, entonces solo cambiar como esa parte.
 - **Uso:** Generar arte conceptual en pixel art del interior de la cripta (ambientación de minas de diseño propio) para el compañero, conservando la portada original.
 
-
-
 #### 11
 - **Fecha:** 2026-10-17, 17:01 – 18:17
 - **Herramienta:** Claude
@@ -1482,7 +1486,6 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
 
   > Haz el prompt agrégale que verifique todo lo de pergamino de retroceso etc
 - **Uso:** Preparar el documento de QA para un compañero: verificación por fases de pruebas, API, modo offline, reglas y pergamino de retroceso.
-
 
 #### 12
 - **Fecha:** 2026-10-18, 10:24 – 10:26
@@ -1983,6 +1986,8 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
 
 ### Bitácora completa de prompts
 
+### Prompts del primer proyecto (Parte I)
+
 #### 1
 - **Fecha:** 2026-10-05, 01:07 – 03:21
 - **Prompts:**
@@ -2315,6 +2320,8 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
   > [17:04] entonces completa lo que falta haz las pruebas que falten la separacion MVC, cancela el pr y rehazlo
 - **Uso:** Mover el controlador gráfico al paquete controlador, corregir esperas y cancelación HTTP, ampliar pruebas y sustituir el PR anterior por el PR 28. Verificación final registrada: 1088 pruebas aprobadas.
 
+### Prompts del segundo proyecto (Parte II)
+
 #### 27
 - **Fecha:** 2026-11-11, 18:03
 - **Herramienta/modelo:** Antigravity, Claude Opus 5.5 (Low)
@@ -2391,7 +2398,7 @@ Cuando un prompt incluía imágenes o archivos, ese contenido se indica entre co
   > Corrige la exposición de salas avistadas y desconocidas en las vistas de la 002 (FR-003, FR-006, SC-002, NV-25). En VistaConsola._salidas y construir_estado de controlador_pygame, muestra el nombre del destino solo si partida.conocimiento.explorada(id) es verdadero; para un destino avistado muestra «sala avistada» sin nombre ni ID en el texto. Conserva dirección, costo y estado visible de la puerta actual. En ControladorPygame._leer_topologia publica una copia plana de salas exploradas y avistadas: nombres y aristas solo desde exploradas, nodos avistados sin nombre ni salidas, omite desconocidas. Construye esa copia en el hilo del modelo al publicar mostrar_estado, y publícala junto al estado bajo el lock existente. En la escena, recalcula el layout cuando cambie esa topología, incluida carga o retroceso; conserva el cálculo BFS existente. Añade pruebas de regresión para consola y snapshot/minimapa que comprueben sala avistada sin nombre, desconocida ausente y revelación al explorar. Ejecuta pruebas focalizadas de la 002 y las vistas. Limita los cambios a vistas, su controlador y pruebas. Reporta resultado y archivos.
 - **Uso:** Corregir la revelación anticipada de salas en consola y Pygame y verificar la regresión.
 
-## Implementación de resolubilidad (2026-11-13)
+## Daniel Centeno — Prompts del segundo proyecto (Parte II): resolubilidad (2026-11-13)
 
 ### Herramienta
 
