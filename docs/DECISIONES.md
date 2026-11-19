@@ -2066,12 +2066,18 @@ forman parte del umbral contractual.
 
 ### Revisión de integración HTTP y puntajes Pygame (2026-11-18)
 
-Se validó parcialmente una cripta que solo ofrece el servicio HTTP: `cripta-02` pasó la
-verificación de resolubilidad, inició una partida y permitió completar el movimiento de la
-sala 1 a la sala 2 con el costo efectivo esperado. La sesión se cerró voluntariamente después
-de ese paso, por lo que todavía no cuenta como partida completa ni como validación de todos
-los casos borde de la API. El detalle y los límites están en
+La primera prueba de `cripta-02` solo cubrió la verificación, el inicio y un movimiento; se
+conserva en la evidencia como alcance parcial. En una segunda ejecución se completó la partida
+contra el servicio HTTP hasta victoria: 39 acciones, 7 enemigos derrotados, tiempo virtual
+3185, 10 solicitudes de 23 y 20 salas incorporadas sin esperas bloqueantes ni errores de
+precarga. La sesión ejercitó las dos llaves, una puerta cerrada, combates, una trampa y objetos.
+Se usaron las versiones de cripta `52532a77ee04` y catálogo `4b9e75a42be5`. El detalle está en
 `docs/evidencia/2026-11-18-cripta-02-integracion-api.md`.
+
+La partida en vivo no fuerza errores de transporte o datos. Siguen pendientes pruebas
+controladas de fallos de red, respuestas malformadas, incompatibilidad de versiones,
+agotamiento del presupuesto y recuperación desde caché poblada; no se afirma cobertura de
+esos casos a partir de esta sesión.
 
 La tabla gráfica de puntajes de Pygame ya está implementada en la escena final y su integración
 con `ControladorPygame` está cubierta por pruebas. La ejecución focalizada del 18 de noviembre
