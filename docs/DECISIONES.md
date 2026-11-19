@@ -1821,3 +1821,17 @@ máximo de 6.3323 ms. Veinte cazadores tuvieron mediana de 1.7143 ms, p95 de 2.3
 máximo de 5.762 ms. Ambos grupos procesaron 30 000 ciclos y tuvieron cero discrepancias.
 Estas mediciones comparan la escala bajo la configuración declarada; son diagnósticas y no
 forman parte del umbral contractual.
+
+### Revisión de integración HTTP y puntajes Pygame (2026-11-18)
+
+Se validó parcialmente una cripta que solo ofrece el servicio HTTP: `cripta-02` pasó la
+verificación de resolubilidad, inició una partida y permitió completar el movimiento de la
+sala 1 a la sala 2 con el costo efectivo esperado. La sesión se cerró voluntariamente después
+de ese paso, por lo que todavía no cuenta como partida completa ni como validación de todos
+los casos borde de la API. El detalle y los límites están en
+`docs/evidencia/2026-11-18-cripta-02-integracion-api.md`.
+
+La tabla gráfica de puntajes de Pygame ya está implementada en la escena final y su integración
+con `ControladorPygame` está cubierta por pruebas. La ejecución focalizada del 18 de noviembre
+pasó 22 pruebas con Python 3.12.10 y Pygame 2.6.1. Se corrigió el estado del README, que todavía
+la describía como pendiente.

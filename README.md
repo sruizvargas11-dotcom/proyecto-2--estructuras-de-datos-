@@ -542,12 +542,12 @@ La versión actual permite jugar por consola, guardar y cargar una sesión, repr
 
 Quedan aspectos del cierre del plan que deben validarse o integrarse con el equipo:
 
-- Probar una partida completa y los casos borde con una cripta desconocida del servicio. La validación local no equivale a esa prueba.
+- Se validó la integración en vivo con `cripta-02`, una cripta del servicio que no está incluida en los datos offline: pasó `--verificar`, inició una partida real y completó un movimiento entre salas con el costo publicado por el mapa. La sesión de prueba se cerró voluntariamente después de ese movimiento; todavía falta completar una partida hasta victoria o derrota y recorrer los casos borde en esa cripta. El alcance y los resultados están en [la evidencia de integración con cripta-02](docs/evidencia/2026-11-18-cripta-02-integracion-api.md).
 - La medición exploratoria de 100 ciclos por escala (x1, x10 y x50) registró máximos de 25.272, 467.599 y 2519.470 ms, respectivamente. El ciclo de 20 ms no se cumple en esas condiciones; el detalle está en [el reporte de escalado](docs/evidencia/2026-11-18-ciclo-20ms.json).
 - La última corrida integral de `python main.py --bench` (iteración 6, 2026-11-18) tuvo cero discrepancias y un máximo sintético de 18.7119 ms; el máximo de `cripta-06` fue 1.2799 ms. El reporte contractual indica `cumple_umbral=true`. La evidencia está en [el reporte de iteración 6](docs/evidencia/terreno-cazador-benchmark-iteracion-6.json). Se conserva el seguimiento anterior, cuyo máximo de 24.8793 ms mantuvo `cumple_umbral=false`; no se alteró ese resultado histórico.
 - El reporte de iteración 6 también compara uno y veinte cazadores en 30 000 ciclos por grupo, con cero discrepancias. Es una medición diagnóstica separada que no modifica el umbral contractual.
 - El reporte de red ya está integrado en `--bench`; repetir las mediciones en los equipos del grupo.
-- Completar la pantalla gráfica de puntajes. La consola ya muestra la tabla al finalizar; Pygame recibe sus filas con `tabla_puntajes()`. Ambos usan el mismo archivo y agrupan por cripta y versión.
+- La pantalla gráfica de puntajes está implementada: muestra el resumen y la clasificación filtrada por cripta y versión, resalta la partida actual y permite recorrer la lista. Las pruebas focalizadas de cierre, transición y tabla de puntajes pasaron (22 pruebas con Python 3.12.10 y Pygame 2.6.1).
 - Revisar y consolidar entre los roles las secciones del Documento de Decisiones.
 
 La calibración de ordenamiento llega hasta 500 elementos y no cubre comparadores costosos. Los tiempos publicados corresponden al equipo de la medición. Los resultados recientes corresponden a Windows 11 con Python 3.12.10; las instrucciones para otros sistemas no representan una validación adicional de la suite en ellos.
