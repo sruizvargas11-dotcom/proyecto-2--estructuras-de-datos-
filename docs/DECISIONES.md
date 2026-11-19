@@ -2096,3 +2096,28 @@ de mapa no altere los datos de una sesión ya abierta. Cripta sellada (`cripta-0
 veredicto NO RESOLUBLE y requiere `--forzar` para iniciar. La lista de mapas y el resumen de
 regresión están en `docs/entrega/CRIPTAS-OFFLINE.json` y
 `docs/entrega/REGRESION-MAIN-INTEGRADO.json`.
+
+### Revalidación de entrega en `rama-version-prefinal` (2026-11-18)
+
+La primera corrida de `python -m pytest -q` con Python 3.12.10 tuvo 1401 pruebas aprobadas y 2
+fallidas en `tests/test_linea_tiempo_integraciones.py`. Ambas esperaban que el mapa histórico
+conservara el ID de una sala avistada; el resumen lo oculta de acuerdo con FR-003. También había
+una aserción que esperaba que el conocimiento futuro sobreviviera a un retroceso. Se corrigieron
+las expectativas para comprobar el anonimato de las salas avistadas y que el retroceso restaure
+el estado desconocido; no fue necesario cambiar el código de producción. La suite completa pasó
+después **1403 pruebas**. Los casos corregidos fueron
+`test_historia_muestra_mapa_historico_y_salas_reveladas_por_antorcha` y
+`test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino`.
+
+La primera corrida de `python main.py --bench` tuvo cero discrepancias, pero registró un máximo
+de 27.655 ms en rango pequeño, modalidad compartida y cambio de puerta cada 100 ciclos. Se conserva
+sin alteraciones en `docs/evidencia/2026-11-18-revalidacion-entrega-terreno-cazador.json`.
+
+La repetición contractual usó el mismo fixture versionado de 256 salas, semilla 42, ocho
+escenarios, 30 repeticiones y 1000 ciclos por repetición, además de la referencia `cripta-06` y
+la comparación de escala. No hubo discrepancias. El máximo sintético fue 18.8242 ms en rango
+pequeño, modalidad compartida y cambio de puerta cada 100 ciclos; el máximo de `cripta-06` fue
+1.8333 ms. El reporte indica `cumple_umbral=true` y `decisiones_correctas=true`; está en
+`docs/evidencia/2026-11-18-revalidacion-entrega-terreno-cazador-intento-2.json`. Esta es la
+evidencia vigente de la rama. El máximo queda cerca del límite, por lo que se conserva también el
+resultado fallido anterior y no se atribuye una causa al pico aislado.

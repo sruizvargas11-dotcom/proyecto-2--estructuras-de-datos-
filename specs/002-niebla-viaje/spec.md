@@ -12,22 +12,22 @@
 
 ### Session 2026-11-11
 
-> Estado: **propuestas de José pendientes de revisión de Daniel**. No constan como aprobadas por
-> Daniel; si la revisión las cambia, se corrige primero esta spec en un commit separado
-> (constitución VII).
+> Estado: las seis decisiones de esta sesión fueron revisadas y aprobadas por Daniel el
+> 2026-11-18. Si una revisión posterior cambia alguna, se corrige primero esta spec en un
+> commit separado (constitución VII).
 
-- Q: ¿Qué ocurre si el destino de `ir a` es la sala actual? → A (propuesta): se informa la
+- Q: ¿Qué ocurre si el destino de `ir a` es la sala actual? → A (aprobada): se informa la
   llegada sin consumir turno ni tiempo virtual.
-- Q: ¿Qué ocurre si ya hay enemigos en la sala al emitir la orden? → A (propuesta): el viaje se
+- Q: ¿Qué ocurre si ya hay enemigos en la sala al emitir la orden? → A (aprobada): el viaje se
   detiene sin caminar, con causa «enemigos», y no consume tiempo.
-- Q: ¿Qué causa se muestra si coinciden varias en el mismo paso? → A (propuesta): prioridad fin
+- Q: ¿Qué causa se muestra si coinciden varias en el mismo paso? → A (aprobada): prioridad fin
   de partida > daño > enemigos > llegada (la pérdida de ruta solo se evalúa si ninguna aplica).
-- Q: ¿Cómo se responde a un ID inexistente o no explorado? → A (propuesta): con el mismo mensaje
+- Q: ¿Cómo se responde a un ID inexistente o no explorado? → A (aprobada): con el mismo mensaje
   de rechazo, sin revelar si la sala existe, y sin consumir tiempo.
-- Q: ¿Qué muestra el mapa conocido? → A (propuesta): de cada sala explorada, nombre, salidas
+- Q: ¿Qué muestra el mapa conocido? → A (aprobada): de cada sala explorada, nombre, salidas
   (dirección y costo) y estado recordado de cada puerta; de cada avistada, solo que existe una
   sala sin explorar detrás de la salida, sin ID ni nombre; nada de las desconocidas.
-- Q: ¿La antorcha observa las puertas de las vecinas reveladas? → A (propuesta): no; revela las
+- Q: ¿La antorcha observa las puertas de las vecinas reveladas? → A (aprobada): no; revela las
   vecinas y sus salidas sin observar puertas remotas. El jugador observa una puerta solo cuando
   está físicamente en cualquiera de sus dos extremos.
 
@@ -301,8 +301,9 @@ comprobar que la vista muestra solo información conocida y la causa.
 - La activación de enemigos dormidos al entrar y el resto de reglas de P1 no cambian.
 - La cripta de referencia para FR-017 es la indicada por el enunciado; si existe enmienda
   oficial, prevalece.
-- Las decisiones de la sesión de clarificación del 2026-11-11 son propuestas de José pendientes
-  de revisión de Daniel; no se atribuye aprobación.
+- Las seis decisiones de la sesión de clarificación del 2026-11-11 fueron revisadas y aprobadas
+  por Daniel el 2026-11-18. El alcance del mapa conocido se traza en NV-03; los casos adicionales
+  corresponden a NV-30..NV-34.
 - Los identificadores NV son locales a esta capacidad; no se asignan números globales G sin
   coordinarlos con la matriz del equipo.
 - Las estructuras, algoritmos, clases y módulos se definen en `plan.md` (fase D) respetando la
@@ -344,8 +345,8 @@ comprobar que la vista muestra solo información conocida y la causa.
 | NV-27 | Una sala avistada no se usa como tránsito. | FR-009 |
 | NV-28 | El cazador no queda limitado por la niebla del jugador. | FR-006 |
 | NV-29 | `--bench` mide consultas, recuerdos y paso de `ir a`; paso ≤ 5 ms con entorno y semilla registrados. | FR-016, FR-017 |
-| NV-30 | (Propuesta) Destino igual a la sala actual: se informa la llegada sin consumir turno. | FR-008 |
-| NV-31 | (Propuesta) Enemigos presentes al ordenar: parada sin caminar y sin tiempo. | FR-012 |
-| NV-32 | (Propuesta) Causas coincidentes: se muestra fin de partida > daño > enemigos > llegada. | FR-012 |
-| NV-33 | (Propuesta) ID inexistente y no explorado reciben el mismo mensaje, sin tiempo. | FR-008 |
-| NV-34 | (Propuesta) La antorcha no observa puertas remotas; sus salidas no se usan como tránsito hasta observarlas. | FR-004, FR-005, FR-009 |
+| NV-30 | Destino igual a la sala actual: se informa la llegada sin consumir turno. | FR-008 |
+| NV-31 | Enemigos presentes al ordenar: parada sin caminar y sin tiempo. | FR-012 |
+| NV-32 | Causas coincidentes: se muestra fin de partida > daño > enemigos > llegada. | FR-012 |
+| NV-33 | ID inexistente y no explorado reciben el mismo mensaje, sin tiempo. | FR-008 |
+| NV-34 | La antorcha no observa puertas remotas; sus salidas no se usan como tránsito hasta observarlas. | FR-004, FR-005, FR-009 |

@@ -32,5 +32,5 @@
 ## Notes
 
 - Los términos `--bench`, `--replay` y `partida.log` son interfaces observables exigidas por el enunciado y la constitución, no detalles de implementación.
-- Los seis puntos abiertos del borrador se resolvieron en la sesión de clarificación del 2026-11-11 como **propuestas de José pendientes de revisión de Daniel** (NV-30 a NV-34); no se atribuye aprobación.
+- Las seis decisiones de clarificación del 2026-11-11 fueron revisadas y aprobadas por Daniel el 2026-11-18. El comportamiento del mapa conocido se traza en NV-03; los casos adicionales se registran en NV-30 a NV-34.
 - Los seis casos del Apéndice B están trazados como NV-07, NV-10, NV-12, NV-17/NV-18, NV-22 y NV-23.

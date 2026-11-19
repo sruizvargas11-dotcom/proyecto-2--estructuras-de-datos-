@@ -4,7 +4,7 @@ from adaptadores.datos_offline import DatosOffline
 from controlador.controlador_juego import ControladorJuego
 from controlador.guardado import cargar
 from controlador.inicio_partida import nueva_partida
-from modelo.conocimiento import AVISTADA, EXPLORADA
+from modelo.conocimiento import AVISTADA, DESCONOCIDA, EXPLORADA
 from modelo.entidades.enemigo import Enemigo
 from modelo.entidades.objetos.antorcha import Antorcha
 from modelo.entidades.objetos.pergamino_retroceso import PergaminoRetroceso
@@ -132,20 +132,23 @@ def test_historia_muestra_mapa_historico_y_salas_reveladas_por_antorcha(
     tras_primera_entrada = _resumen_en(vista, 25)
     assert _mapa(inicial) == (
         (1, EXPLORADA, 0),
-        (2, AVISTADA, -1),
+        (None, AVISTADA, -1),
     )
     assert _mapa(tras_primera_entrada) == (
         (1, EXPLORADA, 0),
         (2, EXPLORADA, 0),
         (3, EXPLORADA, -1),
-        (4, AVISTADA, -1),
+        (None, AVISTADA, -1),
         (5, EXPLORADA, -1),
     )
-    assert sesion.partida.conocimiento.explorada(4)
-    assert next(
-        sala.estado for sala in tras_primera_entrada.mapa_conocido
-        if sala.sala_id == 4
-    ) == AVISTADA
+    avistadas = [
+        sala for sala in tras_primera_entrada.mapa_conocido
+        if sala.estado == AVISTADA
+    ]
+    assert len(avistadas) == 1
+    assert (avistadas[0].sala_id, avistadas[0].nombre) == (
+        None, "sala avistada"
+    )
 
 
 def test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino(
@@ -167,13 +170,13 @@ def test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino(
 
     assert _mapa(_resumen_en(vista_despues, 0)) == (
         (1, EXPLORADA, 0),
-        (2, AVISTADA, -1),
+        (None, AVISTADA, -1),
     )
     assert _mapa(_resumen_en(vista_despues, 25)) == (
         (1, EXPLORADA, 0),
         (2, EXPLORADA, 0),
         (3, EXPLORADA, -1),
-        (4, AVISTADA, -1),
+        (None, AVISTADA, -1),
         (5, EXPLORADA, -1),
     )
     assert _mapa(_resumen_en(vista_despues, 75)) == (
@@ -182,12 +185,12 @@ def test_mapa_historico_persiste_tras_ir_a_guardar_cargar_y_pergamino(
         (3, EXPLORADA, 25),
         (4, EXPLORADA, -1),
         (5, EXPLORADA, -1),
-        (6, AVISTADA, -1),
+        (None, AVISTADA, -1),
     )
     assert restaurada.partida.tiempo == 25
     assert restaurada.partida.acciones_jugador == 1
     assert restaurada.partida.conocimiento.estado_sala(4) == AVISTADA
-    assert restaurada.partida.conocimiento.estado_sala(6) != EXPLORADA
+    assert restaurada.partida.conocimiento.estado_sala(6) == DESCONOCIDA
     assert _mapa(_resumen_en(vista_despues, 25)) == _mapa(
         vista_despues.resumenes_historicos[-1]
     )
