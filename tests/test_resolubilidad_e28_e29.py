@@ -68,9 +68,9 @@ def test_rs_e28_ciclo_mas_corto_y_desempate_lexicografico_por_llave():
     ciclo_ab = ("key-a", "key-b", "key-a")
     ciclo_ae = ("key-a", "key-e", "key-a")
     ciclo_acd = ("key-a", "key-c", "key-d", "key-a")
-    assert sum(ciclo == ciclo_ab for ciclo in ciclos) == 2
+    assert sum(ciclo == ciclo_ab for ciclo in ciclos) == 1
     assert sum(ciclo == ciclo_ae for ciclo in ciclos) == 1
-    assert sum(ciclo == ciclo_acd for ciclo in ciclos) == 2
+    assert sum(ciclo == ciclo_acd for ciclo in ciclos) == 1
     assert all(ciclo[0] == min(ciclo[:-1]) for ciclo in ciclos)
 
     for ciclo in resultado.ciclos:

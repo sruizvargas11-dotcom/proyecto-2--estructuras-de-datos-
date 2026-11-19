@@ -37,6 +37,8 @@ Este documento reúne las decisiones técnicas que tomamos para resolver los pro
 - **4.10 Guardado binario:** la partida se guarda en un formato binario propio que permite continuarla exactamente, recuperar una sala sin leer todo el archivo y detectar versiones incompatibles.
 - **4.11 Bitácora de partida y reproducción:** cada acción del jugador se registra para reproducir la partida con --replay, el mecanismo principal para reportar y repetir errores durante la evaluación.
 - **4.12 Efectos temporales:** veneno, modificadores de velocidad, antorcha y regeneración deben funcionar con el tiempo virtual, poder cancelarse y deshacerse con el historial.
+- **4.13 Verificación de resolubilidad:** antes de jugar, determinar si la cripta puede ganarse y, si no, explicar las llaves inobtenibles, la frontera bloqueada y los ciclos, sin volver a recorrer la cripta por cada llave.
+- **4.14 Índice hash de la caché de fichas:** localizar una ficha de la caché sin recorrer la ListaLRU, conservando la protección de fichas en uso, la capacidad y los contadores.
 
 ---
 
@@ -1233,6 +1235,246 @@ Las pruebas de reversión usan el `Historial` real (`iniciar_accion`, `confirmar
 - No existe `cancelar_modificador_velocidad`: el enunciado solo pide que el efecto termine solo. Si hiciera falta, se puede agregar con el mismo patrón que `cancelar_veneno`.
 - Falta definir cómo una trampa o un enemigo aplicaría veneno directamente. `aplicar_veneno` ya recibe esos datos, pero ninguna ficha del catálogo actual (por ejemplo, `trp_dardos`) tiene un campo de daño por veneno, así que no se inventó la regla.
 - Al usar un objeto, `Partida.usar_objeto` consume las pociones y los antídotos; la antorcha no se consume al encenderse (`modelo/partida.py:344-361`).
+
+## 4.13 Verificación de resolubilidad
+
+### Problema
+
+Antes de comenzar, hay que determinar si desde la sala inicial se puede obtener la
+llave de salida y cruzar una puerta que la requiera para entrar en la sala de salida.
+Cuando no se puede, el reporte debe explicar las llaves inobtenibles, sus dependencias,
+los ciclos y la frontera bloqueada. El mismo resultado se presenta en consola y al
+iniciar una partida, sin revelar ubicaciones en el resumen de inicio.
+
+### Alternativas consideradas
+
+| Alternativa | Ventaja | Costo o límite |
+| --- | --- | --- |
+| Recorrer toda la región de nuevo por cada llave | Implementación directa y útil como oráculo independiente | Repite trabajo hasta O(K·(S+E)) en una cadena de K llaves |
+| Recorrido incremental con puertas pendientes | Cada sala y salida se explora al ser alcanzable; una llave libera las puertas que la requieren | Requiere conservar las puertas pendientes por llave y cerrar las rondas en orden determinista |
+| Diagnóstico mediante otro recorrido global por cada llave candidata | Sencillo de explicar | Aumenta el costo cuando se diagnostican muchas llaves |
+
+### Decisión
+
+El modelo calcula el veredicto y el resultado estructurado con un recorrido
+incremental, una cola de salas y puertas pendientes asociadas a sus llaves. Las
+llaves de cada ronda se ordenan por sala numérica e id antes de liberar las puertas
+para la ronda siguiente. Los costos de las salidas no intervienen. El recorrido
+completo repetido se conserva solo como referencia de benchmark y oráculo de
+equivalencia.
+
+La frontera se obtiene de las puertas pendientes al terminar ese recorrido. Para
+diagnosticar indispensabilidad se limita el análisis a la región exterior y a las
+llaves candidatas. Para cada llave participante se informa un ciclo simple más corto;
+los empates siguen el orden lexicográfico de ids y puertas, y un ciclo compartido
+por varias llaves se informa una sola vez. Cada puerta de la frontera indica dónde
+está la llave que requiere. El modelo no formatea
+texto: la presentación produce el reporte estable y el resumen sin ubicaciones.
+`--verificar` no instancia la vista; al iniciar, el controlador bloquea estados no
+resolubles o no verificables salvo `--forzar`. Los errores de datos no se fuerzan.
+La consulta de llaves respeta el presupuesto de solicitudes y su persistencia se
+valida contra la versión de la cripta. Las llaves pendientes, las ubicaciones y
+las salas visitadas se indexan con la `TablaHash` propia descrita en 4.14.
+
+### Análisis de complejidad
+
+Con S salas, E salidas y K llaves, el recorrido incremental esperado es
+O(S + E + K log K), dado el ordenamiento determinista de llaves por ronda. El
+diagnóstico de indispensabilidad puede costar O(|U|·(S+E)), donde U es el conjunto
+de llaves candidatas; no comparte el límite lineal del recorrido principal. La
+selección del ciclo más corto es polinómica y determinista. No se usan bibliotecas
+de grafos ni diccionarios o conjuntos como índices/cachés en la lógica del modelo.
+
+### Evidencia empírica
+
+El caso `resolubilidad` compara el resultado incremental y el de referencia antes
+de cronometrar; genera cadenas deterministas con semilla 42 y duplica S/E/K en tres
+tamaños. Cinco ejecuciones preliminares a K=96/192/384 mostraron razones p95 de
+1.063–3.335× y 0.777–3.172×, por lo que se estabilizó el protocolo: una llamada de
+calentamiento fuera de la muestra, GC deshabilitado solo al cronometrar, 100
+repeticiones incrementales, 20 de referencia y tamaños K=128/256/512.
+
+Con `cProfile` en la misma entrada S/E/K=1024/1024/512, antes/después se registraron
+216 211/208 027 llamadas totales, 15 364/14 341 llamadas a `_hash` y
+5 123/4 099 a `contiene`; el tiempo perfilado fue 0.170/0.174 s, demasiado ruidoso
+para reclamar aceleración. Se decidió usar el resultado booleano de
+`TablaHash.insertar` para evitar la comprobación `contiene` duplicada en la expansión
+de región. No se modificaron FNV-1a, las estructuras propias ni el orden del reporte.
+
+En el commit limpio `b0ee832`, `--bench` midió p95 incremental 16.804, 35.474 y
+58.179 ms; las razones de duplicación fueron 2.111× y 1.640×. `--bench --salida`
+midió 25.169, 31.468 y 62.256 ms, con razones 1.250× y 1.979×. SC-001, cripta-06
+versión `f9ed9afa683d` desde caché (300 salas, 4 llaves), dio mediana 11.177 ms,
+p95 16.074 ms y máximo 30.315 ms. SC-001 y SC-004 pasan sin alterar sus umbrales.
+Entorno, medianas, máximos, muestras y el resto del protocolo:
+[quickstart de resolubilidad](../specs/003-resolubilidad/quickstart.md).
+
+Con las criptas oficiales en modo offline (2026-11-18), `--verificar` dio RESOLUBLE
+(código 0) para cripta-01, cripta-02, cripta-03, cripta-04 y cripta-06, y NO
+RESOLUBLE (código 1) para cripta-05 «Cripta sellada», por el ciclo
+`itm_llave_hierro -> itm_llave_negra -> itm_llave_hierro`. Al revalidar sobre `main`
+`7655ecb`, con los cambios de terreno y cazador al modelo, las 106 pruebas de
+resolubilidad pasan y SC-004 se mantiene: p95 incremental 9.75, 22.44 y 37.76 ms,
+con razones de duplicación 2.30× y 1.68× (entorno Linux de revisión).
+
+### Límites conocidos
+
+- El diagnóstico de llaves indispensables puede dominar el tiempo en una cripta con
+  muchas llaves candidatas; la medición del caso de cadena no cubre todos los peores
+  casos de diagnóstico.
+- cripta-01 ya no está publicada en el API; sus ubicaciones de llaves offline se
+  derivaron del contenido oficial del paquete (sala 3 y sala 4).
+
+### Revisión con criptas oficiales (2026-11-18)
+
+Al verificar `cripta-05` (oficial, NO RESOLUBLE por el ciclo `itm_llave_hierro -> itm_llave_negra`) se vio que el reporte repetía el ciclo una vez por llave participante y que la frontera no mostraba dónde está cada llave, aunque FR-013 lo pedía. Se enmendó la especificación y se corrigió el reporte: los ciclos idénticos se descartan después de ordenarlos (costo O(C) adicional sobre la lista ya ordenada de C ciclos) y cada puerta de la frontera imprime las ubicaciones que el modelo ya calculaba. La alcanzabilidad, el orden por rondas y la complejidad del recorrido no cambian.
+
+## 4.14 Índice hash de la caché de fichas
+
+*Redacta: Daniel Centeno*
+
+### Problema
+
+- Averiguar si una ficha está en caché es una de las operaciones más frecuentes del juego, y la `ListaLRU` de 4.4 la resolvía recorriendo la lista: O(k), con k = capacidad.
+- El mismo recorrido se repetía en `buscar`, `insertar`, `marcar_en_uso` y `desmarcar_en_uso`.
+- El índice nuevo debía conservar la protección de fichas en uso (`en_uso > 0`), la capacidad `--cache-size` y los contadores existentes, sin duplicar lo que ya informa el diagnóstico de red.
+- La `ListaLRU` se guarda con la partida (`persistencia/estado_partida.py`): el índice tenía que funcionar al cargarse en otro proceso, y las partidas guardadas antes del cambio debían seguir cargando.
+
+### Alternativas consideradas
+
+| Aspecto | Alternativa | Por qué se descarta o se elige |
+| --- | --- | --- |
+| Ubicación | Tabla integrada dentro de `listalru.py` | No se puede probar aislada ni reutilizar. |
+| | **Módulo propio `estructuras/tabla_hash.py`** | **Elegida.** Se prueba sola (colisiones, crecimiento) y se reutiliza en 4.13 (puertas pendientes por llave). |
+| Colisiones | Direccionamiento abierto (lineal, cuadrático, doble hash) | Borrar requiere lápidas; con desalojos frecuentes se acumulan y obligan a reconstruir la tabla. |
+| | Encadenamiento reutilizando `ListaSimple` | Borrar por clave necesita el nodo anterior y mezcla sus contadores con las métricas del índice. |
+| | **Encadenamiento separado con nodos propios** | **Elegida.** Borrar es desenlazar un nodo, sin lápidas. |
+| Función hash | `hash()` de Python | Para textos cambia en cada proceso (`PYTHONHASHSEED`): la tabla guardada no serviría al cargar la partida. |
+| | Suma de caracteres o djb2 | Anagramas e ids con prefijos comunes (`ent_`, `itm_`) colisionan. |
+| | Polinomial de Horner con número primo de cubetas | Válida y clásica; FNV-1a reparte mejor y su reducción es más barata. |
+| | **FNV-1a de 32 bits con cubetas potencia de 2** | **Elegida.** |
+| Tamaño | Fijo según `--cache-size` | Nunca crece, pero no deja evidencia de crecimiento. |
+| | Siempre dinámico desde 8 cubetas | En partida se reconstruiría varias veces al inicio. |
+| | **Tabla que crece, pero la LRU la crea ya dimensionada** | **Elegida.** En partida no crece; el crecimiento se prueba en la tabla aislada. |
+| Protección al desalojar | Dos listas (libres y protegidas), desalojo O(1) | Al liberar una ficha se pierde su recencia real o vuelve a costar O(k); cambia qué se desaloja y rompe pruebas existentes. |
+| | **Mantener el recorrido desde el fondo y medirlo** | **Elegida.** No cambia el orden de desalojo; el contador `protegidas_saltadas` mide el costo real. |
+| Guardados previos | Subir `ESQUEMA_ESTADO` y rechazar guardados viejos | Obliga a coordinar el esquema con otros roles. |
+| | Excluir el índice del guardado | Requiere modificar el codificador (otro rol). |
+| | **Reconstruir el índice la primera vez que se use** | **Elegida.** O(k) una sola vez, sin tocar el esquema. |
+| Comparación con búsqueda lineal | Copiar la clase anterior en `bench/` | Las dos versiones se separan con el tiempo. |
+| | **Parámetro `ListaLRU(capacidad, indice="hash"\|"lineal")`** | **Elegida.** Misma clase y misma política; solo cambia la búsqueda. |
+
+### Decisión
+
+**`TablaHash` (`estructuras/tabla_hash.py`):**
+
+- **Función hash:** FNV-1a de 32 bits sobre los bytes UTF-8 del texto, o sobre los 8 bytes del entero (complemento a dos). `bool` y otros tipos se rechazan con `TypeError`, para no mezclar `True` con `1`. El valor es el mismo en cualquier proceso y máquina.
+- **Cubetas:** potencia de 2 (mínimo 8); la cubeta es `h & (m - 1)`. El arreglo es una lista de Python de tamaño fijo usada como almacenamiento contiguo, igual que en `Vector`; no se usa `dict` ni `set`.
+- **Colisiones:** encadenamiento separado con `_EntradaHash` (clave, hash, valor, siguiente). Cada entrada guarda su hash: al buscar se compara primero el número y solo si coincide se compara la clave.
+- **Crecimiento:** duplica las cubetas cuando la carga superaría 0.75. Reutiliza las mismas entradas y su hash guardado, sin recalcular. No se reduce, porque los usos actuales tienen tamaño acotado.
+- **Pruebas:** el constructor acepta `funcion_hash` solo para pruebas (por ejemplo, una función constante que fuerza colisión total). Con el valor por defecto no se guarda ninguna función en el objeto, así que la tabla se puede serializar con la partida.
+- **Diagnóstico:** contadores de búsquedas, comparaciones, inserciones, actualizaciones, eliminaciones, colisiones y redimensionamientos; además `cadena_maxima()`, `cubetas_ocupadas()` y `_verificar_invariantes()`, ninguna de las cuales altera los contadores.
+
+**`ListaLRU` (`estructuras/listalru.py`):**
+
+- **Índice:** `id_ficha → NodoDoble` de la `ListaDoble`. Al desalojar, la víctima sale de la lista y del índice usando `nodo.valor.id_ficha`.
+- **Compatibilidad:** se conservan `_nodo`, `_lista` y `_capacidad`; `_nodo` ahora consulta la tabla, así que consumidores y pruebas no cambian. Se agregó `contiene()`, que no cambia el orden ni los aciertos y fallos.
+- **Dimensionado:** la tabla se crea con la capacidad de la caché, de modo que en una partida nunca crece.
+- **Protección:** el desalojo sigue recorriendo desde el fondo y salta las fichas con `en_uso > 0`; cada ficha saltada suma a `contador_protegidas_saltadas`.
+- **Guardados anteriores:** si el objeto cargado no trae índice, se reconstruye una vez desde la lista, sin cambiar el orden, las fichas ni sus referencias.
+- **Modo lineal:** `indice="lineal"` conserva la búsqueda anterior con la misma política de desalojo y protección; existe para comparar en `--bench`.
+- **Verificación:** `_verificar_invariantes()` comprueba tamaño dentro de la capacidad, `en_uso` no negativo, ids sin repetir, mismo tamaño en índice y lista, y que cada id del índice apunte exactamente a su nodo.
+
+**Integración (`controlador/controlador_red.py`, `controlador/reporte_red.py`, `persistencia/estado_partida.py`):**
+
+- **Guardado:** `estructuras.tabla_hash` se agregó a `MODULOS` para que el codificador acepte las clases nuevas.
+- **Métricas:** `estadisticas_cache()` conserva sus claves y agrega `rechazos_capacidad` y las claves `indice_*`. El reporte suma dos líneas, `indice_hash` y `fichas_lru_protegidas`, sin repetir aciertos ni fallos.
+- **Ficha rechazada por capacidad:** si la LRU no puede guardar una ficha porque todas las de memoria están protegidas, el `tipo_id` se recuerda y `ficha()` la lee de la caché persistente (una lectura de disco, ninguna solicitud de red). `resolver_catalogo` reintenta guardarla en memoria en cuanto haya espacio.
+- **Ficha desalojada dentro de un lote:** si un lote trae más tipos que `--cache-size` y una ficha se desaloja antes de incorporarla, `_ficha_de_clase` y la protección de enemigos la recuperan por la ruta normal (memoria → disco).
+- **Protección de enemigos todo o nada:** `_proteger_lote` marca `en_uso` las fichas de todos los enemigos de un lote antes de publicarlo, o ninguna. Si una no cabe, se lanza `CacheFichasLlenaError` (subclase de `RuntimeError`) con el mensaje "Aumente --cache-size", sin dejar salas a medias ni enemigos duplicados al reintentar.
+
+### Análisis de complejidad
+
+| Operación | Antes (4.4) | Con índice hash |
+| --- | --- | --- |
+| `buscar`, `contiene`, `marcar_en_uso`, `desmarcar_en_uso` | O(k) | O(1) esperado; O(k) si todas las claves colisionan |
+| `insertar` sin desalojo | O(k) | O(1) esperado |
+| Buscar la víctima de desalojo | O(k) | O(k) en el peor caso por las protegidas |
+| Quitar la víctima del índice | — | O(1) esperado |
+| Crecer la tabla aislada | — | O(n + m), poco frecuente; O(1) amortizado por inserción |
+| Reconstruir el índice de un guardado previo | — | O(k), una sola vez |
+| Espacio adicional | — | O(k + m), con m = cubetas |
+
+Calcular FNV-1a cuesta O(L), con L = longitud del id; los ids del catálogo son cortos.
+
+### Resultados esperados
+
+- Localizar una ficha con un número constante de comparaciones, sin importar la capacidad.
+- Resultados idénticos a la búsqueda lineal: mismos aciertos, fallos, desalojos, orden y protecciones.
+- La misma bitácora (`partida.log`) produce la misma partida antes y después del cambio.
+- Partidas guardadas que funcionan en otro proceso y guardados previos que siguen cargando.
+- El tamaño de la caché no cambia el juego, solo cuántas fichas se leen de disco.
+
+### Evidencia empírica
+
+**Pruebas (61 nuevas; la suite completa pasó con 1149 pruebas).**
+
+- `tests/test_tabla_hash.py`:
+  - Valores de referencia publicados de FNV-1a, y el mismo hash en procesos con distinto `PYTHONHASHSEED`.
+  - Colisión total forzada, y borrado en cabeza, medio y final de una cadena.
+  - Crecimiento 8 → 256 cubetas (5 redimensionamientos) conservando las mismas entradas, y capacidad inicial que evita crecer.
+  - 3000 operaciones aleatorias contra un oráculo de lista de pares.
+  - Diagnóstico que no altera contadores.
+- `tests/test_listalru_hash.py`:
+  - Índice sincronizado al insertar, actualizar y desalojar.
+  - Desalojo que salta protegidas y lo cuenta; rechazo cuando todas están protegidas.
+  - Modos hash y lineal idénticos en secuencias aleatorias con semillas 1, 7 y 42.
+  - Colisiones forzadas dentro de la LRU.
+  - Guardado cargado en otro proceso con otra semilla, y guardado sin índice que se reconstruye.
+- `tests/test_cache_hash_red.py`:
+  - Claves de `estadisticas_cache()` conservadas.
+  - Ficha rechazada que se lee de disco sin solicitudes de red y vuelve a memoria al liberar espacio.
+  - Lote que no se publica si un enemigo no se puede proteger.
+  - Partida idéntica con `--cache-size` 25, 10 y 3; con 1, detención con el motivo.
+  - Línea del índice presente en el reporte.
+
+**Comparación de comportamiento.**
+
+- Con `--cache-size 25`, una partida de 30 acciones con semilla 3 dio el mismo estado final, los mismos mensajes y el mismo `partida.log` byte a byte antes y después del cambio.
+- Una bitácora grabada con el código anterior se reprodujo idéntica con el nuevo, también con `--cache-size 3`.
+- Con `--cache-size` 10 y 3, el código anterior fallaba al iniciar la partida (ficha desalojada antes de incorporarse); ahora la partida es idéntica a la de 25.
+- Con la caché llena de fichas protegidas, el código anterior fallaba al incorporar 5 de 6 salas; ahora las 6 se incorporan.
+
+**Medición hash contra lineal.** 5000 accesos con ids `ent_tipo_N` (semilla 42); en cada fallo se inserta la ficha. Mediana de 5 repeticiones. Los dos modos dieron los mismos aciertos, fallos y desalojos.
+
+| Capacidad | Lineal | Hash | Comparaciones lineal | Comparaciones hash |
+| --- | --- | --- | --- | --- |
+| 25 | 19.28 ms | 21.60 ms | 133 503 | 3 129 |
+| 100 | 56.89 ms | 21.63 ms | 531 536 | 3 057 |
+| 500 | 263.22 ms | 25.51 ms | 2 563 555 | 2 887 |
+
+- **Capacidad por defecto (25):** el índice reduce las comparaciones unas 42 veces, pero el tiempo es similar o un poco mayor, porque calcular FNV-1a en Python cuesta más o menos lo mismo que recorrer 25 nodos.
+- **Capacidades mayores:** la ventaja se hace clara. El tiempo con hash se mantiene casi constante, mientras que el lineal crece con la capacidad.
+- **Reporte de red de una partida offline (capacidad 25):** 64 cubetas, carga 0.172, cadena máxima 2, 1 colisión, 0 crecimientos y 0.511 comparaciones por búsqueda.
+
+Equipo: entorno Linux de desarrollo, Python 3. Fecha: 05-11-2026. Los tiempos deben repetirse en el equipo del grupo para la versión final.
+
+**Comandos para verificar** (PowerShell, desde la raíz del repositorio):
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests\test_tabla_hash.py tests\test_listalru_hash.py tests\test_cache_hash_red.py -v
+.\.venv\Scripts\python.exe main.py --bench
+```
+
+### Límites conocidos
+
+- Con la capacidad por defecto, el índice no reduce el tiempo total: su beneficio es que el costo no crece con `--cache-size`.
+- El desalojo sigue siendo O(k) en el peor caso cuando casi todas las fichas están protegidas; si `protegidas_saltadas` mostrara que domina, la alternativa de dos listas queda documentada arriba.
+- Solo se admiten claves de texto o enteras.
+- Una función hash inyectada no se puede guardar con la partida; existe solo para pruebas.
+- La tabla no se reduce al vaciarse.
+- Si los enemigos vivos de tipos distintos superan `--cache-size`, no se puede cumplir a la vez el tope y la protección: la partida se detiene con `CacheFichasLlenaError`. Permitir que la caché exceda temporalmente su tope sería otra decisión.
+- La lectura de disco para fichas rechazadas se repite en cada consulta mientras no haya espacio en memoria.
 
 ## Registro de cambio de especificación
 

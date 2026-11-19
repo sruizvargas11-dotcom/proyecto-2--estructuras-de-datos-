@@ -209,8 +209,7 @@ def test_rs_e21_ciclo_considera_todas_las_ubicaciones_de_la_llave():
         ciclo.llaves for ciclo in resultado.ciclos
     ) == (
         ("key-a", "key-b", "key-a"),
-        ("key-a", "key-b", "key-a"),
-    )
+    )  # FR-012: el ciclo compartido por key-a y key-b se reporta una vez
 
 
 def test_rs_e22_generador_entrega_tamanos_deterministas_para_bench():

@@ -236,6 +236,14 @@ description: "Tareas de implementación para la verificación de resolubilidad"
 - US3: T025 y T026 son secuenciales porque ambos afectan el flujo de `--forzar`; el primero cubre consola/controlador y el segundo GUI.
 - Cierre: T029 y T030 pueden avanzar en paralelo una vez terminadas sus dependencias.
 
+## Fase 8: Ajustes tras validación con criptas oficiales
+
+- [X] T032 [US1] Mostrar la ubicación de la llave en cada puerta de la frontera y reportar una sola vez cada ciclo compartido en `vista/formato_resolubilidad.py` y `modelo/verificador_resolubilidad.py`.
+  - **Atiende**: FR-012, FR-013; RS-E06, RS-E28.
+  - **Criterio**: `python -m pytest -q tests/test_formato_resolubilidad.py tests/test_resolubilidad_e28_e29.py tests/test_resolubilidad_e01_e09.py` y `python -m pytest -q -k resolubilidad` pasan. Las pruebas verifican las ubicaciones de llaves en la frontera, las llaves inexistentes y que un ciclo compartido se reporte una sola vez. La observación de `cripta-05` se conserva como evidencia puntual, no como requisito offline reproducible, porque sus datos no están incluidos en el repositorio.
+  - **Dependencias**: T018, T019; enmienda de spec del 2026-11-18.
+  - **Resultado de esta ejecución**: 2026-11-18, sobre `main` 7655ecb: 106 pruebas de resolubilidad pasan (incluida una prueba nueva de formato de frontera); la verificación puntual de `cripta-05` dio NO RESOLUBLE (código 1), con `ubicaciones=[sala:24]`/`[sala:23]` en la frontera y el ciclo `itm_llave_hierro -> itm_llave_negra -> itm_llave_hierro` una sola vez. Esa salida se obtuvo en un entorno con los datos oficiales disponibles; no puede regenerarse con `--offline` desde una copia limpia, que solo incluye los datos locales de `cripta-01`.
+
 ## Ejemplos de ejecución en paralelo
 
 ```text

@@ -295,6 +295,13 @@ def _crear_ciclos(llaves_inobtenibles):
         ))
 
     ordenar(ciclos, _comparar_ciclos)
+    # FR-012: un ciclo compartido por varias llaves se reporta una sola vez.
+    # Tras ordenar, los ciclos idénticos quedan contiguos.
+    unicos = Vector()
+    for ciclo in ciclos:
+        if len(unicos) == 0 or unicos.obtenerValor(len(unicos) - 1) != ciclo:
+            unicos.agregarValor(ciclo)
+    ciclos = unicos
     participantes = TablaHash(capacidad_inicial=max(1, len(llaves_inobtenibles)))
     for ciclo in ciclos:
         for indice in range(len(ciclo.llaves) - 1):
