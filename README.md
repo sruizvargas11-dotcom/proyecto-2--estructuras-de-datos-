@@ -30,6 +30,7 @@ Clona el repositorio y crea un entorno virtual desde su raíz.
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### Linux o macOS
@@ -64,6 +65,26 @@ python main.py --offline --gui
 
 La consola acepta `N`, `S`, `E`, `O` para moverse, `A [n]` para atacar, `W` para esperar, `R [n]` para recoger, `T [n]` para soltar, `U [n]` para usar objetos, `EQ [n]` para equipar, `AB <dirección>` para abrir una puerta y `Q` para salir. `H` muestra la ayuda completa durante la partida.
 
+### Controles de Pygame
+
+| Teclas | Acción |
+| --- | --- |
+| Flechas o `W`, `A`, `S`, `D` | Moverse. |
+| `Shift` + dirección | Intentar abrir la puerta en esa dirección. |
+| `Espacio` | Atacar al objetivo seleccionado. |
+| `X` | Esperar. |
+| `R`, `F`, `U`, `C` | Recoger, soltar, usar o equipar un objeto. |
+| `P` | Usar el pergamino de retroceso. |
+| `G`, `L` | Guardar o cargar con la ruta predeterminada. |
+| `I` | Abrir el inventario. |
+| `F1` | Mostrar la ayuda. |
+| `F2` | Escribir un comando; pulsa `Enter` para enviarlo o `Esc` para cancelar. |
+| `F5` | Mostrar u ocultar el minimapa. |
+| `Esc` | Abrir la pausa. |
+| `F11` | Alternar pantalla completa. |
+
+En los menús, usa las flechas para cambiar la selección y `Enter` para confirmar.
+
 ## Opciones principales
 
 Consulta todas las opciones con `python main.py --help`.
@@ -91,6 +112,39 @@ Consulta todas las opciones con `python main.py --help`.
 
 `--gui`, `--replay` y `--bench` tienen restricciones de combinación; el programa las informa si los argumentos no son válidos. Los modos de verificación, replay y benchmark no abren una vista gráfica.
 
+## Ejemplos habituales
+
+Verificar una cripta local sin iniciar una partida:
+
+```console
+python main.py --offline --verificar cripta-01
+```
+
+La verificación también muestra por qué `cripta-05` no es resoluble. Para permitir iniciar esa cripta en consola, se puede indicar `--forzar`:
+
+```console
+python main.py --offline --cripta cripta-05 --forzar
+```
+
+Para jugar con los datos del servicio HTTP, omite `--offline`:
+
+```console
+python main.py --cripta cripta-02
+```
+
+Reproducir una bitácora hasta el tiempo virtual 100, mostrando solo el resumen:
+
+```console
+python main.py --offline --replay partidas/bitacoras/ARCHIVO.log --hasta 100 --silencioso
+```
+
+Medir solo niebla y viaje, o ejecutar la suite completa y guardar los reportes locales:
+
+```console
+python main.py --bench --bench-caso niebla-viaje --salida bench/resultados/niebla-viaje-local.json
+python main.py --bench --salida bench/resultados/terreno-cazador-local.json
+```
+
 ## Partida, guardado y línea de tiempo
 
 El tiempo es virtual. Una acción válida programa el siguiente evento según el costo de la acción y la velocidad del actor. Los enemigos y efectos que vencen durante ese intervalo se procesan antes de la siguiente decisión del jugador. Las acciones rechazadas no consumen tiempo.
@@ -111,6 +165,10 @@ Los mapas offline están bajo `datos_offline/`. Cada cripta mantiene su propio e
 
 El modo online consulta el servicio HTTP configurado por los adaptadores. La aplicación aplica un presupuesto de solicitudes, caché persistente y validación de versiones. Los benchmarks locales no hacen solicitudes HTTP.
 
+### Si la API no está disponible
+
+El modo online no cambia silenciosamente a offline. Si el servicio o la conexión no responden, revisa la conectividad y vuelve a intentarlo. Para continuar sin depender del servicio, inicia explícitamente una cripta local con `--offline`, por ejemplo `python main.py --offline --cripta cripta-01`. Los datos offline tienen sus propias versiones y se guardan en `datos_offline/`.
+
 ## Arquitectura
 
 El código separa el modelo del juego, la coordinación de acciones, las vistas y las fuentes de datos.
@@ -127,6 +185,12 @@ El código separa el modelo del juego, la coordinación de acciones, las vistas 
 | `bench/` | Casos y herramientas de medición. |
 | `tests/` | Pruebas unitarias, de integración y aceptación. |
 | `specs/` | Requisitos, decisiones de diseño, contratos y tareas por capacidad. |
+
+## Flujo de trabajo con Spec Kit y asistentes de IA
+
+Durante el trabajo de especificación e implementación se utilizaron GitHub Copilot y Claude en distintas partes del proyecto. La selección dependió de la disponibilidad de planes gratuitos y de los límites de uso, créditos o tokens de cada servicio para los integrantes. Esto permitió avanzar con las herramientas disponibles sin exigir una suscripción paga a todo el equipo.
+
+El agente podía variar, pero el flujo común se mantuvo en los artefactos versionados: Constitución, especificación, aclaraciones, plan, tareas, análisis y, después de revisar esos documentos, implementación. Las decisiones funcionales y técnicas se contrastaron con los requisitos, las pruebas y las mediciones; el asistente no sustituye esa revisión. La bitácora [PROMPTS_LLM.md](docs/PROMPTS_LLM.md) registra los prompts y las herramientas utilizadas por cada integrante.
 
 ## Pruebas y benchmarks
 
