@@ -51,7 +51,7 @@
 
 **Decision**: Crear la partida temporal aislada y restaurar el punto elegido; nunca aplicar deltas sobre la partida real. Implementar y medir dos variantes antes de escoger la usada: (a) simular hacia adelante desde el punto anterior; (b) invertir cambios desde el estado actual si la distancia es menor de `K` acciones. El replay hasta un instante reutiliza esta reconstrucción y no crea vista.
 
-**Rationale**: La primera variante parte de un estado explícito; la segunda puede reducir trabajo cuando el estado actual está cerca, pero exige un registro permanente e invertible. El conocimiento del mapa que mantiene Niebla (José) debe estar en el punto. La reproducción debe respetar los movimientos y costos de Terreno (Daniel), manteniendo la paridad con la partida original.
+**Rationale**: La primera variante parte de un estado explícito; la segunda puede reducir trabajo cuando el estado actual está cerca, pero exige un registro permanente e invertible. El conocimiento del mapa de la capacidad Niebla debe incluirse en el punto. La reproducción debe respetar los movimientos y costos de la capacidad Terreno, manteniendo la paridad con la partida original.
 
 **Alternatives considered**: Elegir una variante sin comparar mediciones se descarta; las mediciones planificadas decidirán cuál ofrece mejor resultado manteniendo la paridad de estado.
 

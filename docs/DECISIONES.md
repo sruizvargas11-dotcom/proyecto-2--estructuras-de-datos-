@@ -2,28 +2,19 @@
 ## CRIPTA
 
 
-**Curso:** Estructuras de datos
-
 **Tipo de documento:** Registro de decisiones tomadas en el proyecto.
 
-**Fecha:** 18 de octubre de 2026.
-
-## Autores
-
-- Jose Daniel Morales Moreno
-- Sebastián Ruiz Vargas
-- Daniel Centeno Gutiérrez
-- Jose Fabio Barrantes Ramírez
+**Actualizado:** 18 de noviembre de 2026.
 
 ## Repositorio
 
-https://github.com/sruizvargas11-dotcom/proyecto-1-estructuras-de-datos-
+https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-
 
 ## Resumen
 
-Este documento reúne las decisiones técnicas que tomamos para resolver los problemas de la sección 4 del enunciado. Para cada problema se explica qué operaciones ejecuta realmente el juego y con qué frecuencia, qué alternativas consideramos y por qué se descartaron, qué estructura y estrategia implementamos, su complejidad, la evidencia que la respalda (mediciones con --bench y pruebas) y los límites en los que la decisión deja de ser apropiada, según la sección 8 del enunciado. Cada entrada la redacta un rol y la revisa otro, y sirve como base para explicar y defender cualquier decisión durante la revisión del proyecto.
+Este documento registra las decisiones técnicas del proyecto y su evidencia. Cada sección describe las operaciones relevantes del juego, las alternativas evaluadas, la estrategia elegida, su complejidad, las pruebas y mediciones que la respaldan, y sus límites conocidos. Las decisiones vigentes y sus resultados se enlazan con las especificaciones y los reportes reproducibles.
 
-El anexo de [decisiones consolidadas de la Parte II](entrega/CRIPTA-II-decisiones-consolidadas.md) reúne material de revisión para las capacidades nuevas. Las decisiones vigentes y sus resultados medidos siguen registrados en este documento y en las evidencias enlazadas por cada sección.
+El anexo histórico de [decisiones consolidadas de la Parte II](entrega/CRIPTA-II-decisiones-consolidadas.md) reúne material de revisión para las capacidades nuevas. Las decisiones vigentes y sus resultados medidos siguen registrados en este documento y en las evidencias enlazadas por cada sección.
 
 ### Problemas a resolver
 
@@ -46,7 +37,6 @@ El anexo de [decisiones consolidadas de la Parte II](entrega/CRIPTA-II-decisione
 
 ## 4.1 Agenda de eventos
 
-*Redacta: Rol 3 · Revisa: Rol 2*
 
 ### Problema
 
@@ -67,7 +57,7 @@ Frecuencia medida: en `bench.ciclo` (escala 1: 200 salas, 200 enemigos activos y
 | --- | --- | --- | --- |
 | Vector sin ordenar | Barato | O(n): hay que recorrer todo | Descartada |
 | Vector ordenado | O(n) por desplazamientos | O(1) | Descartada |
-| Heap propio | O(log n) | O(log n) | **Elegida**: equilibra inserción y extracción; se conserva la implementación del compañero |
+| Heap propio | O(log n) | O(log n) | **Elegida**: equilibra inserción y extracción; se conserva la implementación existente |
 
 ### Decisión
 
@@ -140,7 +130,6 @@ Equipo: Windows 10 (10.0.19045), Intel Core i7-8750H @ 2.20 GHz (12 núcleos ló
 
 ## 4.2 Precarga de contenido
 
-*Redacta: Rol 4 · Revisa: Rol 1*
 
 ### Problema
 
@@ -322,7 +311,6 @@ En cripta-01 (6 salas, camino 1-2-3-4-3-2-5), la estrategia elegida, mapa comple
 
 ## 4.3 Resolución de referencias del catálogo
 
-*Redacta: Rol 2 · Revisa: Rol 4*
 
 ### Problema
 
@@ -397,7 +385,6 @@ La diferencia de aciertos se explica porque la lista plana puede conservar las 4
 
 ## 4.4 Reutilización y caché persistente
 
-*Redacta: Rol 1 · Revisa: Rol 2*
 
 ### Problema
 
@@ -475,7 +462,6 @@ Equipo: Windows 10 (10.0.19045), Intel Core i7-8750H @ 2.20 GHz (12 núcleos ló
 
 ## 4.5 Inventario
 
-*Redacta: Rol 2 · Revisa: Rol 3*
 
 ### Problema
 
@@ -555,7 +541,6 @@ Las frecuencias y la configuración de la ruta de ensayo están en `docs/evidenc
 
 ## 4.6 Retroceso e historial reversible
 
-*Redacta: Rol 3 · Revisa: Rol 4*
 
 ### Problema
 
@@ -650,7 +635,6 @@ Equipo: Windows 10 (10.0.19045), Intel Core i7-8750H @ 2.20 GHz (12 núcleos ló
 
 ## 4.7 Rastro del jugador
 
-*Redacta: Rol 3 · Revisa: Rol 1*
 
 ### Problema
 
@@ -707,7 +691,6 @@ Cada sala tiene que recordar la última vez que el jugador pasó por ella, para 
 
 ## 4.8 Bitácora en pantalla
 
-*Redacta: Rol 4 · Revisa: Rol 2*
 
 ### Problema
 
@@ -809,7 +792,6 @@ Equipo: Windows 10 (10.0.19045), Intel Core i7-8750H @ 2.20 GHz (12 núcleos ló
 
 ## 4.9 Ordenamiento
 
-*Redacta: Rol 2 · Revisa: Rol 1*
 
 ### Problema
 
@@ -895,7 +877,6 @@ Corrida de confirmación, en milisegundos por ordenamiento:
 
 ## 4.10 Guardado binario
 
-*Redacta: Rol 1 · Revisa: Rol 3*
 
 ### Problema
 
@@ -1023,7 +1004,6 @@ Notación: S = salas, R = registros codificados, B = bytes del archivo, b = byte
 
 ## 4.11 Bitácora de partida y reproducción
 
-*Redacta: Rol 1 · Revisa: Rol 4*
 
 ### Problema
 
@@ -1147,7 +1127,6 @@ El tamaño crece unos 18 B por acción (en Windows cada línea termina en `\r\n`
 
 ## 4.12 Efectos temporales (veneno, velocidad, antorcha, regeneración)
 
-*Redacta: Rol 2 · Revisa: Rol 3*
 
 ### Problema
 
@@ -1333,7 +1312,6 @@ Al verificar `cripta-05` (oficial, NO RESOLUBLE por el ciclo `itm_llave_hierro -
 
 ## 4.14 Índice hash de la caché de fichas
 
-*Redacta: Daniel Centeno*
 
 ### Problema
 
@@ -1360,7 +1338,7 @@ Al verificar `cripta-05` (oficial, NO RESOLUBLE por el ciclo `itm_llave_hierro -
 | | **Tabla que crece, pero la LRU la crea ya dimensionada** | **Elegida.** En partida no crece; el crecimiento se prueba en la tabla aislada. |
 | Protección al desalojar | Dos listas (libres y protegidas), desalojo O(1) | Al liberar una ficha se pierde su recencia real o vuelve a costar O(k); cambia qué se desaloja y rompe pruebas existentes. |
 | | **Mantener el recorrido desde el fondo y medirlo** | **Elegida.** No cambia el orden de desalojo; el contador `protegidas_saltadas` mide el costo real. |
-| Guardados previos | Subir `ESQUEMA_ESTADO` y rechazar guardados viejos | Obliga a coordinar el esquema con otros roles. |
+| Guardados previos | Subir `ESQUEMA_ESTADO` y rechazar guardados viejos | Obliga a coordinar el esquema con los módulos que guardan y cargan la partida. |
 | | Excluir el índice del guardado | Requiere modificar el codificador (otro rol). |
 | | **Reconstruir el índice la primera vez que se use** | **Elegida.** O(k) una sola vez, sin tocar el esquema. |
 | Comparación con búsqueda lineal | Copiar la clase anterior en `bench/` | Las dos versiones se separan con el tiempo. |
@@ -1459,7 +1437,7 @@ Calcular FNV-1a cuesta O(L), con L = longitud del id; los ids del catálogo son 
 - **Capacidades mayores:** la ventaja se hace clara. El tiempo con hash se mantiene casi constante, mientras que el lineal crece con la capacidad.
 - **Reporte de red de una partida offline (capacidad 25):** 64 cubetas, carga 0.172, cadena máxima 2, 1 colisión, 0 crecimientos y 0.511 comparaciones por búsqueda.
 
-Equipo: entorno Linux de desarrollo, Python 3. Fecha: 05-11-2026. Los tiempos deben repetirse en el equipo del grupo para la versión final.
+Entorno de medición: Linux y Python 3. Fecha: 5 de noviembre de 2026. Los resultados son propios de ese entorno y deben compararse usando las mismas condiciones.
 
 **Comandos para verificar** (PowerShell, desde la raíz del repositorio):
 

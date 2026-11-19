@@ -1,4 +1,4 @@
-# Revisión de persistencia — rama base/sebastian
+# Revisión de persistencia (línea base histórica)
 
 Fecha: 2026-11-05 · Commit: 4333261 +sin commit
 
@@ -6,7 +6,7 @@ Fecha: 2026-11-05 · Commit: 4333261 +sin commit
 
 ## Nota previa: `guardado.py` no existe
 
-El usuario mencionó `persistencia/guardado.py`; ese archivo no existe en la rama.
+La revisión inicial se refería a `persistencia/guardado.py`, archivo que no existe en esta revisión.
 El guardado de la partida está distribuido entre:
 
 | Archivo | Responsabilidad |

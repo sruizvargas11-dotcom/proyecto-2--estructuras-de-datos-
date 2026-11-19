@@ -1,16 +1,15 @@
-# Línea base — rama base/sebastian
+# Línea base de persistencia (histórica)
 
 ## 1. Identificación
 
 | Campo   | Valor                                      |
 |---------|--------------------------------------------|
 | Fecha   | 2026-11-05                                 |
-| Rama    | base/sebastian                             |
+| Rama    | base histórica                             |
 | Commit  | 43332618244334b81f247ff12fb3d531fb821316   |
 
-La rama ya incluye el commit `4333261` de Daniel Centeno
-(`origin/Hash-Table`, "Se implementa Hash Table para manejo de la caché").
-La revisión inicial del equipo —antes de ese cambio— reportó **1 088 pruebas**.
+La base ya incluye el commit `4333261` de `origin/Hash-Table`, que integra la tabla hash para la caché.
+El registro previo a ese cambio reportó **1 088 pruebas**.
 
 ## 2. Entorno
 
@@ -45,7 +44,7 @@ La revisión inicial del equipo —antes de ese cambio— reportó **1 088 prueb
 **1 149 pruebas**, todas pasan. Tiempo total: **125.41 s**.
 
 La diferencia respecto a las 1 088 pruebas de la revisión inicial se explica
-por el commit de la tabla hash de Centeno (`4333261`), que agregó pruebas al
+por el commit de la tabla hash (`4333261`), que agregó pruebas al
 incorporarse en esta rama.
 
 ## 4. Salida completa de `main.py --bench`

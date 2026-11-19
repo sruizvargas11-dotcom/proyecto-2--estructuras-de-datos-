@@ -1,6 +1,6 @@
 # Validación de la capacidad 002
 
-Fecha: 2026-11-12. Rama: `spec/jose`. Base: `e5bd543`. Especificación: `c2c5528`.
+Fecha: 2026-11-12. Base: `e5bd543`. Especificación: `c2c5528`.
 Plan y tareas: `8524838`. Las mediciones incluyen la implementación local.
 
 | Verificación | Resultado |
@@ -8,7 +8,7 @@ Plan y tareas: `8524838`. Las mediciones incluyen la implementación local.
 | Niebla, antorcha, viaje, guardado, retroceso y replay | 38 aprobadas |
 | Niebla más contrato del benchmark | 42 aprobadas |
 | Niebla, benchmark y regresiones focalizadas de vistas | 69 aprobadas |
-| Suite de consola y Pygame en Antigravity | 288 aprobadas |
+| Suite de consola y Pygame | 288 aprobadas |
 | Regresión del proyecto sin la marca rendimiento | 1218 aprobadas, 3 deseleccionadas, 275,04 s |
 
 La regresión se ejecutó en una copia local escribible. En el entorno de ejecución,

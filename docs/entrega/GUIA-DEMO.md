@@ -1,45 +1,44 @@
-# Guía de demostración de CRIPTA II
+# Guía de uso y demostración
 
-Ejecutá los comandos desde la raíz del repositorio.
+Ejecuta los comandos desde la raíz del repositorio y con Python 3.12.
 
-## Cómo demostrar la Parte II
+## Instalar y ejecutar
 
-```powershell
+```console
 python -m pip install -r requirements.txt
 python main.py --offline --cripta cripta-01
 python main.py --offline --gui --cripta cripta-01
 python main.py --offline --verificar cripta-01
-python main.py --cripta cripta-06 --checkpoint-cada 200
+```
+
+Para iniciar desde la API, omite `--offline`; se requiere conectividad y disponibilidad del servicio.
+
+## Recorrido recomendado
+
+Durante una partida, prueba los comandos `MAPA`, `IR A <id>`, `HISTORIA <t>` y `HISTORIA #<k>`. En consola, `H` muestra la ayuda. En Pygame, F2 permite escribir un comando, F5 muestra u oculta el minimapa y Esc abre la pausa.
+
+Para guardar y continuar una partida, usa `G [ruta]` y `L [ruta]`. Para reproducir una bitácora existente:
+
+```console
 python main.py --offline --replay partidas/bitacoras/ARCHIVO.log --hasta 100
+```
+
+Para probar la verificación y las mediciones:
+
+```console
+python -m pytest -q
 python main.py --bench --bench-caso niebla-viaje --salida niebla.json
 python main.py --bench --salida terreno-y-resolubilidad.json
 ```
 
-| Comando de juego | Uso |
-|---|---|
-| `MAPA` o `M` | Muestra lo explorado y señala las salas avistadas sin revelar sus nombres. |
-| `IR A <id>` | Viaja hacia un destino explorado. Cada paso consume lo que cuesta el movimiento normal. El juego explica el motivo de parada. |
-| `HISTORIA <t>` / `HISTORIA #<k>` | Consulta el reloj virtual o el estado previo a una acción, sin avanzar la partida. |
+La suite completa de benchmarks incluye varios casos extensos y puede tardar varios minutos.
 
-En Pygame, presioná **F2**, escribí el comando y presioná Enter. Esc cancela. F5 muestra u oculta el minimapa. El reporte de resolubilidad aparece al iniciar. `--forzar` permite continuar ante un veredicto no resoluble o no verificable. No permite ignorar datos inválidos. La cripta offline incluye el cazador. Usá la caché por defecto para la demo. Una caché de una sola ficha puede impedir incorporar una sala con enemigos cuando la única ficha está protegida.
+## Evidencia reproducible
 
-## Pruebas desde la raíz
+La victoria offline con semilla 354 se conserva en [`CRIPTA-II-victoria-semilla-354.replay`](CRIPTA-II-victoria-semilla-354.replay). Se reproduce desde la raíz con:
 
-```powershell
-python -m pytest -q tests/test_terreno_cazador.py tests/test_bench_terreno_cazador.py
-python -m pytest -q tests/test_niebla_viaje.py tests/test_bench_niebla_viaje.py
-python -m pytest -q -k resolubilidad
-python -m pytest -q tests/test_linea_tiempo_integraciones.py tests/test_linea_tiempo_limites_modelo.py tests/test_linea_tiempo_g22.py tests/test_linea_tiempo_guardado.py
-python -m pytest -q
-```
-
-El equipo usó la configuración Spec Kit 1.2.6.dev0 con Copilot y Antigravity. Las correcciones de cierre siguen los requisitos existentes de las specs 001–004. La versión consta en los manifiestos incluidos en el repositorio. Para jugar y ejecutar las pruebas basta con las dependencias de Python.
-
-
-## Demostración reproducible
-
-La partida offline de la semilla 354 se completó con 30 puntos de vida iniciales, en ocho acciones y con un punto de vida al llegar a la salida. La bitácora adjunta se puede reproducir desde la raíz del proyecto:
-
-```powershell
+```console
 python main.py --offline --replay docs/entrega/CRIPTA-II-victoria-semilla-354.replay
 ```
+
+El reporte de pruebas online y sus límites están descritos en [la evidencia de integración de cripta-02](../evidencia/2026-11-18-cripta-02-integracion-api.md). Los comandos, parámetros y resultados actuales se mantienen en el [README principal](../../README.md) y el [Documento de Decisiones](../DECISIONES.md).

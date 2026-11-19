@@ -1,6 +1,5 @@
 # Plan de implementación: Terreno y cazador
 
-**Rama Git**: `feature/spec-kit-copilot` | **Feature**: `001-terreno-cazador` | **Fecha**: 2026-11-04 | **Especificación**: [spec.md](./spec.md)
 
 **Entrada**: Requisitos funcionales FR-001–FR-014 y escenarios AB-01–AB-30.
 

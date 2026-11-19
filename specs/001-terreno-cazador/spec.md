@@ -1,6 +1,5 @@
 # Feature Specification: Terreno y cazador
 
-**Feature Branch**: `feature/spec-kit-copilot`
 
 **Created**: 2026-11-04
 

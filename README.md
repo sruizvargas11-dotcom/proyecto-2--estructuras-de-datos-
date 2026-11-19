@@ -1,583 +1,160 @@
 # CRIPTA
 
-CRIPTA es un juego de exploración por consola y Pygame desarrollado para el curso de Estructuras de Datos. El jugador recorre salas, combate guardianes, errantes, rastreadores y cazadores, recoge objetos y busca la salida de una cripta. El costo de las salidas determina el tiempo de movimiento; el cazador persigue por rutas de costo mínimo y solo ataca al compartir sala con el jugador.
+CRIPTA es un juego de exploración de mazmorras para consola y Pygame. El jugador recorre salas, administra objetos, combate enemigos y busca la salida mientras el reloj del juego procesa acciones y efectos en orden determinista.
 
-El proyecto utiliza estructuras de datos propias para resolver problemas del juego: una agenda de eventos con heap mínimo, un inventario con lista doble, una caché LRU para el catálogo y un historial de cambios que permite deshacer acciones. Puede obtener los datos desde un servicio HTTP o trabajar con los archivos locales incluidos en el repositorio.
+El proyecto está construido en Python y utiliza estructuras de datos implementadas dentro del repositorio. Puede cargar datos desde una API HTTP o desde las criptas incluidas para jugar sin conexión.
 
-## Contenido
+## Funcionalidades
 
-- [Instalación](#instalación)
-- [Primera partida](#primera-partida)
-- [Comandos del juego](#comandos-del-juego)
-- [Opciones de ejecución](#opciones-de-ejecución)
-- [Guardado y reproducción](#guardado-y-reproducción)
-- [Datos, caché y solicitudes](#datos-caché-y-solicitudes)
-- [Arquitectura](#arquitectura)
-- [Pruebas y mediciones](#pruebas-y-mediciones)
-- [Evidencias](#evidencias)
-- [Problemas frecuentes](#problemas-frecuentes)
-- [Estado del proyecto](#estado-del-proyecto)
-- [Trabajo en el repositorio](#trabajo-en-el-repositorio)
+- Partidas por consola o con interfaz gráfica Pygame.
+- Seis criptas disponibles en el paquete offline.
+- Movimiento con costos variables, puertas, objetos, llaves, trampas y enemigos.
+- Cazadores que eligen rutas de costo mínimo y atacan al compartir sala con el jugador.
+- Mapa conocido, antorcha y viaje automático por rutas exploradas.
+- Guardado, carga, replay determinista y consultas históricas.
+- Verificación de resolubilidad antes de iniciar una partida.
+- Pruebas automatizadas y benchmarks reproducibles.
+
+## Requisitos
+
+- Python 3.12.
+- Dependencias de [requirements.txt](requirements.txt).
+- Pygame se necesita solo para `--gui`; `requests` se usa para el acceso HTTP.
 
 ## Instalación
 
-El entorno de referencia es **Python 3.12**. La última ejecución local de benchmarks se realizó con Python 3.12.10 en Windows 11. Las dependencias están en [requirements.txt](requirements.txt): `requests` para el acceso HTTP, `pytest` para las pruebas y `pygame` para la vista gráfica (`--gui`). No hace falta configurar una base de datos.
+Clona el repositorio y crea un entorno virtual desde su raíz.
 
-Clona el repositorio y entra en su carpeta:
-
-```console
-git clone https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-.git
-cd proyecto-2--estructuras-de-datos-
-```
-
-En Windows, desde PowerShell:
+### Windows PowerShell
 
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe main.py --offline
 ```
 
-Puedes usar el intérprete del entorno directamente, como en el ejemplo, sin activar scripts de PowerShell. Si ya tienes el entorno activado, los comandos siguientes funcionan con `python`.
-
-En Linux o macOS, con Python 3.12 instalado:
+### Linux o macOS
 
 ```sh
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+```
+
+## Iniciar una partida
+
+Para abrir el juego con datos offline:
+
+```console
 python main.py --offline
 ```
 
-Ejecuta los comandos desde la raíz del repositorio. En PyCharm u otro editor, selecciona el intérprete de `.venv` y utiliza esa misma carpeta como directorio de trabajo.
-
-### Ejecutar el juego
-
-Desde la raíz del proyecto:
-
-**Interfaz gráfica**
-
-```powershell
-.\.venv\Scripts\python.exe main.py --gui              # en línea, con el API
-.\.venv\Scripts\python.exe main.py --gui --offline    # sin internet (seis criptas incluidas)
-```
-
-**Consola**
-
-```powershell
-.\.venv\Scripts\python.exe main.py
-.\.venv\Scripts\python.exe main.py --offline
-```
-
-## Primera partida
-
-Para empezar con la cripta incluida y sin conexión:
+Para elegir una cripta directamente:
 
 ```console
 python main.py --offline --cripta cripta-01
 ```
 
-Si omites `--cripta`, el programa muestra las disponibles. Puedes elegir una por número o identificador; Enter selecciona la primera. En modo offline solo se ofrecen criptas que tengan sus datos descargados.
+Por defecto, el juego intenta usar la API HTTP. La conexión depende de que el servicio externo esté disponible. La opción `--offline` usa los datos versionados en el repositorio.
 
-La pantalla muestra la sala actual, las salidas, los enemigos, los objetos del suelo, las trampas, el inventario y el estado del jugador. También conserva los últimos 20 mensajes. Escribe `H` para consultar la ayuda o `Q` para terminar la sesión.
-
-Se gana al llegar a la sala de salida y se pierde cuando la vida del jugador llega a cero. Para atravesar una puerta cerrada primero hay que abrirla con la llave adecuada. Los enemigos se activan al entrar en su sala; pueden ser guardianes, errantes, rastreadores o cazadores.
-
-Osario menor (`cripta-01`) incluye un cazador de rango 200 en la sala opcional 5, tras la puerta que requiere la llave de bronce. Sus salidas usan costo 100, el valor predeterminado cuando el dato no está declarado.
-
-### Cómo avanza el tiempo
-
-El tiempo del juego es virtual: pensar un comando o esperar una descarga no consume turnos. Una acción válida programa la siguiente intervención del actor con este intervalo:
-
-```text
-intervalo = max(1, costo × 100 // velocidad)
-```
-
-Con velocidad 100, una acción de costo 100 tarda 100 unidades. Con velocidad 150, tarda 66. Los enemigos y los efectos que vencen durante ese intervalo se procesan antes de la próxima decisión del jugador. Si dos eventos coinciden en el tiempo, se respeta su secuencia de inserción.
-
-Los comandos rechazados, como recoger con el inventario lleno o intentar abrir una puerta sin llave, no consumen tiempo virtual.
-
-## Comandos del juego
-
-Los comandos aceptan mayúsculas y minúsculas. Los índices empiezan en 1; si un comando admite `[n]` y no lo indicas, utiliza el primer elemento.
-
-| Comando | Acción | Costo base |
-| --- | --- | --- |
-| `N`, `S`, `E`, `O` | Moverse en la dirección indicada | 100 |
-| `A [n]` | Atacar al enemigo número n | 100 |
-| `W` | Esperar | 100 |
-| `R [n]` | Recoger el objeto número n del suelo | 25 |
-| `T [n]` | Soltar el objeto número n del inventario | 25 |
-| `U [n]` | Usar un objeto del inventario | 50 |
-| `EQ [n]` | Equipar un arma o una armadura | 50 |
-| `AB <dirección>` | Abrir una puerta con la llave correspondiente | 50 |
-| `P` | Consumir un pergamino para deshacer el último intervalo | Sin costo adicional |
-| `I` | Consultar el inventario en su orden real | Sin costo |
-| `I peso`, `I valor`, `I nombre` | Mostrar una vista ordenada del inventario | Sin costo |
-| `IS`, `IA`, `IC` | Avanzar, retroceder o consultar la selección del inventario | Sin costo |
-| `G [ruta]` | Guardar la partida | Sin costo |
-| `L [ruta]` | Cargar una partida compatible | Sin costo |
-| `H` o `?` | Mostrar la ayuda | Sin costo |
-| `Q` | Salir de la sesión | Sin costo |
-
-`E` significa **este**; para equipar se utiliza `EQ`. Las vistas ordenadas conservan los números del inventario real, que son los que reciben `U`, `EQ` y `T`.
-
-El pergamino puede revertir los cambios del jugador, enemigos y efectos incluidos en el último intervalo registrado. El historial conserva hasta cinco intervalos. El propio pergamino se consume de forma irreversible y no genera una nueva acción que pueda deshacerse.
-
-### Consultar el pasado (línea de tiempo)
-
-| Comando | Qué muestra |
-| --- | --- |
-| `HISTORIA <t>` | El estado de la partida en el tiempo virtual t. |
-| `HISTORIA #<k>` | El estado justo antes de la acción número k (se cuenta desde 1). |
-
-- Las consultas no modifican la partida, no consumen tiempo y no cuentan como acción.
-- Un tiempo futuro o una acción que no existe se rechazan con un mensaje.
-- Si usas un pergamino de retroceso, la historia posterior al punto revertido se descarta.
-- El intervalo entre puntos de control se cambia con `--checkpoint-cada K`. La justificación de K = 200 está en `docs/DECISIONES.md` (4.14).
-
-Pruebas de esta capacidad:
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q tests -k "linea_tiempo or historia"
-```
-## Vista gráfica (Pygame)
+La interfaz gráfica se inicia con:
 
 ```console
-python main.py --gui
 python main.py --offline --gui
 ```
 
-El primer comando consulta la API; el segundo usa los datos descargados.
+La consola acepta `N`, `S`, `E`, `O` para moverse, `A [n]` para atacar, `W` para esperar, `R [n]` para recoger, `T [n]` para soltar, `U [n]` para usar objetos, `EQ [n]` para equipar, `AB <dirección>` para abrir una puerta y `Q` para salir. `H` muestra la ayuda completa durante la partida.
 
-`--gui` reemplaza la consola por una ventana Pygame (1280×720, 60 FPS); el resto
-de las opciones (`--offline`, `--cache-dir`, `--cache-size`, `--partidas-dir`...) se
-aplican igual. `--gui` no se puede combinar con `--replay`, `--bench` ni
-`--solo-mapa`: esos modos nunca cargan pygame (ver [vista_pygame/](vista_pygame/) y
-[ANALISIS_ARQUITECTURA.md](ANALISIS_ARQUITECTURA.md)).
+## Opciones principales
 
-El modelo del juego es exactamente el mismo que usa la consola: corre en un hilo de
-fondo detrás de un controlador que traduce las teclas a los mismos comandos de texto
-(`N`, `A`, `W`...), así que una partida jugada desde la GUI genera la misma bitácora y
-se puede reproducir con `--replay` igual que una de consola.
+Consulta todas las opciones con `python main.py --help`.
 
-### Portada (selección de cripta)
-
-La pantalla inicial ofrece crear una partida, cargar una guardada o salir.
-Al crear una partida, se solicita un nombre y se muestran las criptas que devuelve
-la fuente de datos, con desplazamiento si no caben. Los recursos de la portada
-están en `assets/ui/portada/`. El fondo original `portada.png` se conserva como
-respaldo si no puede cargarse la portada animada.
-
-| Tecla / acción | Efecto |
+| Opción | Descripción |
 | --- | --- |
-| Escribir / Retroceso | Edita el nombre del jugador (máx. 20 caracteres) cuando tiene el foco |
-| Tab / Shift+Tab | Siguiente/anterior elemento: nombre → criptas → nombre |
-| Flechas ↑ / ↓ | Moverse entre criptas |
-| Enter / clic sobre una cripta | Inicia la partida con esa cripta y el nombre escrito |
-| Enter sobre el nombre | Pasa el foco a la primera cripta |
-| R | Reintentar la consulta de criptas si falló |
-| Esc | Volver al inicio desde la selección de cripta; salir desde el inicio |
-
-Al volver desde el fin de una partida, se regresa al inicio. Las partidas guardadas
-se seleccionan desde «Cargar partida».
-
-| Tecla | Acción |
-| --- | --- |
-| Flechas / WASD | Moverse (N/S/E/O) |
-| Shift + flecha/WASD | Abrir la puerta en esa dirección |
-| Espacio | Atacar al enemigo seleccionado |
-| Tab | Cambiar la selección de objetivo |
-| X | Esperar |
-| R | Recoger (primer objeto del suelo) |
-| F | Soltar (primer objeto del inventario) |
-| U | Usar (primer objeto del inventario) |
-| C | Equipar (primer objeto del inventario) |
-| P | Pergamino de retroceso |
-| G / L | Guardar / cargar (ruta por defecto) |
-| I | Abrir el inventario |
-| Esc | Pausa |
-| F1 | Ayuda |
-| F5 | Mostrar u ocultar el minimapa |
-
-La interfaz incluye portada animada, inventario integrado con botones y vistas
-ordenadas, animaciones de combate y trampas, y pantallas de victoria, derrota y
-estadísticas. El panel de efectos muestra veneno, cambios temporales de velocidad
-y antorchas encendidas. Los últimos 20 mensajes se recorren con la rueda sobre su
-panel o con RePág/AvPág. El sonido sigue usando `GestorAudioTemporal`, que es silencioso.
-
-Los recursos están agrupados en `assets/ui/portada/`, `assets/escenarios/<tema>/`,
-`assets/sprites/` y `assets/fuentes/`. La fuente conserva su licencia junto al archivo
-TTF. Los PNG se comprimen sin pérdida, conservando los píxeles y la transparencia.
-
-## Opciones de ejecución
-
-La ayuda disponible en el programa se consulta con:
-
-```console
-python main.py --help
-```
-
-| Opción | Uso |
-| --- | --- |
-| `--offline` | Leer los datos locales. Sin esta opción se usa HTTP. |
-| `--gui` | Abrir la interfaz gráfica (Pygame). No se combina con `--replay`, `--bench` ni `--solo-mapa`. |
-| `--offline-dir CARPETA` | Elegir otra carpeta de datos; requiere `--offline`. |
-| `--cripta ID` | Elegir una cripta sin pasar por el menú. |
-| `--verificar ID` | Verificar una cripta e imprimir el reporte sin iniciar partida ni crear la vista. |
-| `--forzar` | Permitir iniciar una partida no resoluble o no verificable; no permite ignorar errores de datos. |
-| `--solo-mapa` | Cargar y verificar el mapa sin iniciar una partida. Sin ID explícito usa la primera cripta. |
-| `--cache-size N` | Fijar la capacidad de la LRU del catálogo; el valor predeterminado es 25. |
-| `--cache-dir CARPETA` | Elegir dónde guardar la caché persistente. |
-| `--hilos` | Precargar salas en segundo plano durante una partida nueva. |
-| `--partidas-dir CARPETA` | Cambiar la carpeta de bitácoras, la ruta predeterminada del guardado y la tabla de puntajes. |
-| `--replay LOG` | Reproducir las acciones de una bitácora sin pedir comandos. |
-| `--hasta T` | Con `--replay`, reproducir solo hasta el tiempo virtual T y mostrar el estado histórico en ese instante. |
-| `--checkpoint-cada K` | Guardar un punto de control cada K acciones para las consultas `HISTORIA` (por defecto 200; K debe ser positivo). |
-| `--silencioso` | Omitir el detalle de acciones durante el replay. |
-| `--reportes ARCHIVO` | Cambiar el archivo del historial de reportes de red. |
-| `--bench` | Ejecutar la suite completa de mediciones: estructuras, persistencia, resolubilidad, niebla y viaje, y terreno y cazador. La parte de terreno es extensa. |
+| `--offline` | Usar datos locales en lugar de la API. |
+| `--offline-dir RUTA` | Seleccionar otra carpeta de datos offline; requiere `--offline`. |
+| `--cripta ID` | Elegir una cripta directamente. |
+| `--gui` | Usar la interfaz Pygame. |
+| `--verificar ID` | Informar si una cripta es resoluble sin iniciar partida. |
+| `--forzar` | Permitir una partida cuyo estado sea no resoluble o no verificable; no ignora datos inválidos. |
+| `--solo-mapa` | Cargar y verificar el mapa sin iniciar partida. |
+| `--cache-size N` | Fijar la capacidad de la caché LRU del catálogo (predeterminado: 25). |
+| `--cache-dir RUTA` | Cambiar la ubicación de la caché persistente. |
+| `--hilos` | Precargar contenido en segundo plano durante una partida nueva. |
+| `--partidas-dir RUTA` | Cambiar la ubicación de guardados, bitácoras y puntajes. |
+| `--replay ARCHIVO` | Reproducir una bitácora sin entrada interactiva. |
+| `--hasta T` | Detener un replay en el tiempo virtual indicado. |
+| `--silencioso` | Mostrar el resumen del replay sin listar cada acción. |
+| `--checkpoint-cada K` | Fijar el intervalo de puntos de control de la línea de tiempo (predeterminado: 200). |
+| `--bench` | Ejecutar la suite completa de benchmarks locales. |
 | `--bench-caso niebla-viaje` | Ejecutar solo las mediciones de niebla y viaje; requiere `--bench`. |
-| `--salida RUTA` | En la suite completa, guardar en esa ruta el reporte detallado de terreno y cazador. Con `--bench-caso niebla-viaje`, guardar el reporte JSON de ese caso. |
-| `--gui` | Jugar con la vista Pygame en vez de la consola. No se combina con `--replay`, `--bench` ni `--solo-mapa`. |
+| `--salida RUTA` | Guardar el reporte detallado del benchmark en la ruta indicada. |
 
-`--bench` y `--replay` son modos excluyentes. La suite completa ejecuta los casos registrados en `bench/casos`, añade las mediciones de niebla/viaje y el benchmark contractual de terreno/cazador. Este último conserva sus ocho escenarios y la referencia de `cripta-06`, e incluye además una comparación diagnóstica de uno y veinte cazadores que se reporta por separado y no altera el umbral contractual. Guarda un JSON general y los reportes detallados de niebla y terreno en `bench/resultados/`; `--salida` fija la ruta del reporte detallado de terreno. El caso puntual de niebla conserva su reporte en la ruta indicada por `--salida`. La suite completa puede tardar varios minutos por las repeticiones del benchmark de terreno. Los benchmarks utilizan sus propios datos y tamaños; las opciones de partida, como `--cache-size`, no configuran sus casos. La opción `--hilos` de `main.py` se aplica a partidas nuevas; los ensayos de replay con latencias se ejecutan mediante la herramienta de determinismo.
+`--gui`, `--replay` y `--bench` tienen restricciones de combinación; el programa las informa si los argumentos no son válidos. Los modos de verificación, replay y benchmark no abren una vista gráfica.
 
-Ejemplos:
+## Partida, guardado y línea de tiempo
 
-```console
-python main.py --offline --verificar cripta-01
-python main.py --offline --cripta cripta-01 --hilos
-python main.py --offline --cripta cripta-01 --forzar
-python main.py --offline --gui --cripta cripta-01 --forzar
-python main.py --offline --solo-mapa
-python main.py --offline --cache-size 50 --cache-dir partidas/cache-prueba
-python main.py --offline --partidas-dir partidas/ensayo --reportes partidas/ensayo/reportes.txt
-python main.py --offline --cripta cripta-01 --checkpoint-cada 100
-python main.py --offline --replay partidas/bitacoras/ARCHIVO.log --hasta 500
-```
+El tiempo es virtual. Una acción válida programa el siguiente evento según el costo de la acción y la velocidad del actor. Los enemigos y efectos que vencen durante ese intervalo se procesan antes de la siguiente decisión del jugador. Las acciones rechazadas no consumen tiempo.
 
-`--verificar ID` no inicia una partida ni crea la vista: devuelve 0 si es resoluble,
-1 si no lo es y 2 ante datos inválidos, fallos de red o estado no verificable. Al
-iniciar una partida, el reporte se muestra siempre. `--forzar` permite continuar
-ante un resultado no resoluble o no verificable, también con `--gui`; un error de
-datos sigue bloqueando. `--verificar` no se combina con `--replay` ni `--bench` e
-ignora `--forzar`.
+Durante la partida, `G [ruta]` guarda y `L [ruta]` carga. Los archivos incluyen las versiones de cripta y catálogo; se rechaza una carga incompatible antes de sustituir la sesión activa.
 
-## Guardado y reproducción
-
-### Guardar y cargar
-
-Durante una partida, `G` guarda en `partidas/partida.sav` y `L` carga esa ruta. Puedes indicar otra, incluso entre comillas si contiene espacios:
-
-```text
-G partidas/mi_partida.sav
-L partidas/mi_partida.sav
-```
-
-La carga exige que coincidan la cripta y las versiones de cripta y catálogo. Primero se reconstruye y valida una sesión independiente; después se sustituye la actual. Se conserva el historial reversible y se abre una nueva bitácora para continuar, sin truncar la anterior.
-
-El formato de [PartidaBinaria](persistencia/PartidaBinaria.py) contiene un encabezado, un índice por identificador de sala, el estado global y los bloques de cada sala. Los bloques usan JSON dentro del contenedor binario. El índice permite localizar una sala mediante búsqueda binaria en disco, sin leer los demás bloques. La sesión completa conserva las referencias entre entidades, eventos y deltas.
-
-### Reproducir una bitácora
-
-Cada partida nueva genera automáticamente una semilla y escribe un log en:
-
-```text
-partidas/bitacoras/<cripta>_<semilla>.log
-```
-
-El log contiene las versiones, la semilla y las acciones aceptadas con su tiempo virtual. Al terminar de forma controlada, agrega el resultado y las líneas del estado observable que utiliza el replay para comparar la partida.
-
-Para reproducirlo, sustituye `ARCHIVO.log` por una bitácora que exista:
+Cada partida nueva genera una bitácora bajo `partidas/bitacoras/`. Puedes reproducirla con:
 
 ```console
 python main.py --offline --replay partidas/bitacoras/ARCHIVO.log
-python main.py --offline --replay partidas/bitacoras/ARCHIVO.log --silencioso
 ```
 
-La reproducción comprueba las versiones antes de ejecutar acciones. Luego valida sus tiempos, detecta rechazos inesperados y compara el estado final con el registrado.
+`HISTORIA <t>` consulta el estado en un tiempo virtual y `HISTORIA #<k>` consulta el estado justo antes de la acción número `k`. Las consultas no cambian la partida. Un retroceso elimina de la historia consultable los cambios posteriores al punto restaurado.
 
-| Código de salida | Significado |
-| --- | --- |
-| `0` | Ejecución terminada sin errores. En replay, el estado final se verifica solo si el log tiene cierre. |
-| `1` | Error al cargar los datos o ejecutar la sesión. |
-| `2` | Versiones incompatibles durante el replay; argparse también usa este código para argumentos inválidos. |
-| `3` | El replay difiere de las acciones, tiempos o estado registrados. |
+## Datos offline y API
 
-Si el log no tiene cierre, el programa informa que reprodujo las acciones pero no pudo verificar el estado final. El estado comparado es el que expone [estado_final.py](controlador/estado_final.py), no una serialización de todos los detalles internos del motor.
+Los mapas offline están bajo `datos_offline/`. Cada cripta mantiene su propio esqueleto, contenido y versión de catálogo. Entre los datos disponibles están `cripta-01` a `cripta-06`; `cripta-05` conserva su clasificación de no resoluble y requiere `--forzar` para jugar.
 
-## Datos, caché y solicitudes
-
-[FuenteDeDatos](adaptadores/fuente_datos.py) define las consultas comunes a las fuentes: listado de criptas, datos generales, mapa paginado, contenido de salas, catálogo y versiones.
-
-- **DatosHTTP** consulta el servicio configurado en `adaptadores/datos_http.py`. Identifica al cliente mediante `X-Cripta-Client-Id`, cuenta los intentos y respeta el presupuesto de solicitudes recibido para la cripta. Ante HTTP 429 espera el tiempo indicado y reintenta mientras quede presupuesto. Las esperas pueden cancelarse al cerrar la ventana; no avanzan el reloj virtual. Un límite adicional de reintentos es opcional para usos de diagnóstico.
-- **DatosOffline** responde a las mismas consultas leyendo archivos JSON. La ruta predeterminada es `datos_offline/`.
-- **DatosSimulado** envuelve una fuente y añade demoras reproducibles para las pruebas. No altera el reloj virtual ni el generador aleatorio de la partida.
-
-La carga distingue el mapa de las salas de su contenido. El contenido y las fichas se solicitan en lotes de hasta 10. La precarga anticipa salas vecinas y vecinas de vecinas; un buffer conserva el orden de incorporación aunque las respuestas lleguen en otro orden.
-
-### Archivos de datos y caché
-
-Los datos offline se organizan de esta forma:
-
-```text
-datos_offline/
-├── criptas.json
-├── catalogo_version.json
-├── catalogo/                    # Una ficha JSON por tipo
-└── cripta-01/
-    ├── general.json
-    ├── version.json
-    ├── salas_p1.json            # Más páginas cuando la cripta las necesite
-    └── contenido/              # Un JSON por sala
-```
-
-La caché persistente se guarda por defecto en `partidas/cache/`. Las versiones de cripta y catálogo determinan si se puede reutilizar. En memoria, la LRU conserva las fichas consultadas recientemente y protege las que están en uso. Si todas las entradas están protegidas, no se puede liberar espacio retirando una de ellas.
-
-`--partidas-dir` cambia la ubicación de guardados, bitácoras y la tabla de puntajes. Para mover también la caché y los reportes, usa explícitamente `--cache-dir` y `--reportes`.
-
-### Descargar y comparar datos
-
-Estas herramientas consultan el servicio real y consumen solicitudes:
-
-```console
-python -m herramientas.descargar_offline cripta-01
-python -m herramientas.comparar_online_offline cripta-01
-```
-
-La descarga escribe o actualiza los archivos correspondientes en `datos_offline/`. La comparación revisa los datos locales frente al servicio e informa de las diferencias. `verificar.py` sirve como diagnóstico manual del acceso al API; no forma parte de la suite offline.
-
-### Tabla de puntajes
-
-Cuando una partida termina en victoria o derrota, [puntajes.py](persistencia/puntajes.py) la registra en `partidas/puntajes.json` con el nombre del jugador, el id y la versión de la cripta, las acciones del jugador, los enemigos derrotados, el tiempo final del reloj virtual y el resultado. Salir sin terminar no registra puntaje, y el replay tampoco. El registro ocurre en `ControladorJuego`, así que funciona igual en consola y en Pygame. En Pygame, `ControladorPygame.tabla_puntajes()` entrega las filas ya ordenadas, con la partida recién terminada marcada.
-
-La tabla se mantiene ordenada en un `Vector`:
-
-1. Las victorias van antes que las derrotas.
-2. Más enemigos derrotados va antes.
-3. Entre victorias, gana el menor tiempo final; entre derrotas, el mayor (sobrevivió más).
-4. Con lo anterior empatado, gana el que usó menos acciones. En un empate total queda primero el registro más antiguo.
-
-Cada registro nuevo se agrega al final y se ordena con InsertionSort. Como el resto de la tabla ya está ordenado, solo el nuevo puede estar fuera de lugar, así que el costo es O(n). Si el archivo de puntajes está dañado, se informa y no se sobrescribe.
-
-### Reporte de red
-
-Al terminar una partida o un replay, se muestra un reporte y se conserva en `partidas/reportes_red.txt`. Incluye solicitudes realizadas, presupuesto, uso de la caché, aciertos y fallos de la LRU y esperas de precarga. Una pila propia conserva los 50 reportes más recientes, con el último al principio.
-
-Al terminar, `--bench` también registra un reporte de mediciones locales; no realiza solicitudes HTTP.
+El modo online consulta el servicio HTTP configurado por los adaptadores. La aplicación aplica un presupuesto de solicitudes, caché persistente y validación de versiones. Los benchmarks locales no hacen solicitudes HTTP.
 
 ## Arquitectura
 
-La consola recibe los comandos; el controlador los valida y coordina el trabajo del modelo. El modelo mantiene el mundo, las entidades, el reloj y el historial. Los adaptadores resuelven el acceso a los datos y la persistencia se encarga de los archivos.
+El código separa el modelo del juego, la coordinación de acciones, las vistas y las fuentes de datos.
 
-```text
-main.py
-├── vista/          Entrada por consola y presentación del estado
-├── vista_pygame/   Escenas, renderizado y entrada de la interfaz gráfica
-├── controlador/    Controladores de consola/gráfico, carga, replay, guardado y reportes
-├── modelo/         Mundo, entidades, reloj, efectos e historial
-├── estructuras/    Implementaciones propias de los tipos de datos
-├── adaptadores/    Fuentes HTTP, offline y con latencia simulada
-├── persistencia/   Caché versionada, formato binario de partida y tabla de puntajes
-├── bench/          Casos de medición y calibración del ordenamiento
-├── herramientas/   Descarga, comparación y ensayos reproducibles
-├── tests/          Pruebas unitarias, de integración y de regresión
-│   └── vista/      Pruebas de vista_pygame (SDL_VIDEODRIVER/AUDIODRIVER=dummy)
-├── datos_offline/  Datos incluidos para jugar sin conexión
-└── docs/           Decisiones técnicas, informes y evidencias
-```
-
-La vista Pygame no toca el modelo directamente: `controlador/controlador_pygame.py`
-corre el mismo `ControladorJuego` de la consola en un hilo de fondo (una "vista"
-suya más, con el mismo protocolo) y publica fotos de solo lectura del estado para que
-la ventana las dibuje. El diseño completo, con sus condiciones de seguridad entre
-hilos, está en [ANALISIS_ARQUITECTURA.md](ANALISIS_ARQUITECTURA.md) y
-[CONTRATOS.md](CONTRATOS.md).
-
-### Estructuras y dónde se usan
-
-| Estructura | Uso principal |
+| Carpeta | Responsabilidad |
 | --- | --- |
-| Vector dinámico | Colecciones de salas y datos; base de otras estructuras. |
-| Lista simple | Salidas, objetos del suelo, enemigos y trampas de una sala. |
-| Lista doble | Inventario con cursor y soporte de la LRU y la pila. |
-| Pila limitada | Historial de retroceso y reportes recientes. |
-| Cola | Salas pendientes de precarga. |
-| Array circular | Últimos 20 mensajes de la consola. |
-| Array ordenado | Índices de claves y posiciones, incluido el guardado. |
-| Heap mínimo | Agenda de eventos ordenada por tiempo y secuencia. |
-| Lista LRU | Fichas del catálogo con protección por referencias activas. |
-| InsertionSort y MergeSort | Ordenamiento de vectores e inventario; InsertionSort en la tabla de puntajes. |
+| `modelo/` | Estado de la partida, actores, reloj, rutas, conocimiento y reglas. |
+| `controlador/` | Procesamiento de comandos, sesiones, guardado, replay e integración de vistas. |
+| `vista/` | Interfaz de consola. |
+| `vista_pygame/` | Interfaz gráfica, escenas, renderizado y audio. |
+| `adaptadores/` | Integración con fuentes HTTP y offline. |
+| `estructuras/` | Vectores, listas, heaps, colas y estructuras auxiliares propias. |
+| `persistencia/` | Serialización, caché y almacenamiento de partidas. |
+| `bench/` | Casos y herramientas de medición. |
+| `tests/` | Pruebas unitarias, de integración y aceptación. |
+| `specs/` | Requisitos, decisiones de diseño, contratos y tareas por capacidad. |
 
-Las estructuras son implementaciones propias. Las listas de Python se usan como almacenamiento cuando corresponde; los diccionarios de transporte JSON no sustituyen a los TDAs. Los ordenamientos del proyecto no delegan en `sorted()` ni `list.sort()`, y la agenda no utiliza `heapq`.
+## Pruebas y benchmarks
 
-### Reloj, efectos y retroceso
-
-El controlador consulta el evento mínimo, ejecuta la acción del jugador, del enemigo o del entorno y programa la siguiente intervención cuando corresponde. Cancelar un evento marca su entrada como inválida; el heap la retira al llegar a la raíz.
-
-Los efectos incluyen veneno, regeneración, cambios temporales de velocidad, antorchas, rearme de trampas y cierre de puertas. El historial registra cambios puntuales mediante deltas, en lugar de copiar el estado completo en cada acción. El reloj y las entidades comparten el mismo historial, y las decisiones aleatorias utilizan el generador de la partida.
-
-El detalle del ciclo y de las reglas reversibles está en [ROL3_BLOQUE3.md](docs/ROL3_BLOQUE3.md).
-
-## Pruebas y mediciones
-
-### Suite automatizada
+Ejecuta la suite completa desde la raíz:
 
 ```console
 python -m pytest -q
 ```
 
-La suite bloquea las solicitudes HTTP reales y usa datos locales, fuentes simuladas y carpetas temporales. Incluye pruebas de estructuras, validación de datos, persistencia, combate, efectos, inventario, retroceso, comandos, caché, replay y determinismo.
-
-Para las pruebas focalizadas de resolubilidad, CLI, inicio forzado y restricciones:
-
-```console
-python -m pytest tests/test_resolubilidad_g14.py tests/test_resolubilidad_g15.py tests/test_resolubilidad_g16.py tests/test_resolubilidad_g17.py tests/test_cli_resolubilidad.py tests/test_inicio_forzar_resolubilidad.py tests/test_resolubilidad_restricciones.py -q
-```
-
-[tests/vista/](tests/vista/) prueba la vista Pygame: el controlador en su hilo de
-fondo, el mapeo de teclas, el render de sala/enemigos, la paridad con la consola
-(misma semilla y acciones → mismo estado final y mismo `.log`) y que `--replay`/
-`--bench` nunca cargan pygame. `tests/vista/conftest.py` fija
-`SDL_VIDEODRIVER=dummy` y `SDL_AUDIODRIVER=dummy` automáticamente: no hace falta
-pantalla ni audio real, ni configurarlo a mano.
-
-Para ejecutar solo las pruebas del cierre del rol 2:
-
-```console
-python -m pytest tests/test_rol2_bloque4.py -q
-```
-
-La validación local del 16 de octubre de 2026 completó **665 pruebas**. Ese resultado corresponde al código y al entorno de esa revisión, no sustituye la ejecución de las pruebas después de hacer cambios.
-
-### Benchmarks
+Para medir el rendimiento:
 
 ```console
 python main.py --bench
-python main.py --bench --salida docs/evidencia/terreno.json
+python main.py --bench --salida docs/evidencia/terreno-cazador-benchmark.json
 ```
 
-Se comparan la agenda con heap y búsqueda lineal, la LRU y una lista plana, la recuperación de fichas desde memoria y disco, las operaciones de inventario, el retroceso con deltas y copias, los ordenamientos, el guardado binario frente a JSON, la verificación incremental de resolubilidad, niebla/viaje y terreno/cazador. Cada ejecución completa incluye esos casos y guarda sus reportes especializados, tanto con `--salida` como sin ella.
+La suite completa incluye mediciones de estructuras, persistencia, resolubilidad, niebla y viaje, y terreno y cazador. El benchmark contractual de terreno mantiene ocho escenarios, 30 repeticiones por escenario y la referencia `cripta-06`. Puede tardar varios minutos.
 
-Las alternativas pueden tener condiciones distintas: por ejemplo, la lista plana del ensayo de caché conserva todas las claves, mientras que la LRU tiene capacidad limitada. Hay que leer los resultados junto con la configuración del caso, especialmente antes de comparar aciertos o concluir que una estructura es más rápida.
+La última revalidación completa registrada se ejecutó con Python 3.12.10: pasaron 1403 pruebas. El benchmark tuvo cero discrepancias y cumplió el umbral de 20 ms; su máximo sintético fue 18.8242 ms. El resultado está en [el reporte de revalidación](docs/evidencia/2026-11-18-revalidacion-entrega-terreno-cazador-intento-2.json). Se conserva una corrida anterior que excedió el umbral en [su reporte histórico](docs/evidencia/2026-11-18-revalidacion-entrega-terreno-cazador.json).
 
-Los comandos focalizados, el protocolo y los resultados de resolubilidad están en
-[specs/003-resolubilidad/quickstart.md](specs/003-resolubilidad/quickstart.md).
+## Documentación y evidencias
 
-Para medir los algoritmos reales de ordenamiento y guardar el resultado:
+- [Documento de decisiones técnicas](docs/DECISIONES.md): alternativas, decisiones y mediciones.
+- [Análisis de arquitectura](docs/ANALISIS_ARQUITECTURA.md): componentes y relaciones entre módulos.
+- [Guía de demostración](docs/entrega/GUIA-DEMO.md): recorrido y comandos de prueba.
+- [Índice de materiales complementarios](docs/entrega/README.md).
+- [Trazabilidad y validación de niebla y viaje](docs/evidencia/2026-11-12-niebla-viaje-trazabilidad.md).
+- [Integración de la API con `cripta-02`](docs/evidencia/2026-11-18-cripta-02-integracion-api.md).
+- [Bitácora de uso de modelos de lenguaje](docs/PROMPTS_LLM.md): conserva los nombres y el registro de autoría requerido.
 
-```console
-python -m bench.calibrar_ordenamiento --salida docs/evidencia/ordenamiento-local.json
-```
-
-Esta calibración utiliza datos aleatorios y casi ordenados, semillas fijas, calentamiento y siete repeticiones. El umbral actual es **50**. Su justificación y sus límites están en [la decisión de ordenamiento](docs/decisiones/4.09.txt).
-
-### Determinismo con latencias
-
-```console
-python -m herramientas.verificar_determinismo --cripta cripta-01 --guion docs/evidencia/guion-rol2.json --ensayo --salida docs/evidencia/determinismo-local.json
-```
-
-La herramienta ejecuta el mismo guion en modo offline y con diez patrones de latencia, cada uno con una caché vacía. Después reproduce cada log con otro patrón. Compara los bytes del estado, los mensajes y los logs entre ejecuciones equivalentes, y guarda sumas FNV-1a de 64 bits para facilitar su revisión.
-
-`--ensayo` fija la vida máxima en 300 únicamente en memoria, tanto en la partida como en el replay, para completar la ruta de prueba. No modifica los JSON oficiales. Para probar otros datos, usa `--offline-dir CARPETA`, el identificador correspondiente y un guion adecuado; omite `--ensayo` si quieres conservar sus estadísticas originales.
-
-Los mensajes de la partida y del replay se comparan con sus respectivas referencias. Pueden diferir entre esos dos grupos porque la bitácora solo registra las acciones aceptadas y omite los comandos rechazados.
-
-### Ciclo de 20 ms y perfilado
-
-```console
-python -m herramientas.perfilar_ciclo                     # escalas x1, x10 y x50, 1000 ciclos
-python -m herramientas.perfilar_ciclo --escala 1 --perfil # agrega el informe de cProfile
-python -m herramientas.perfilar_ciclo --sospechosos       # un escenario por cada sospechoso del plan
-python -m herramientas.perfilar_ciclo --guardar           # deja la tabla en docs/evidencia/
-```
-
-Un ciclo va desde que el jugador confirma una acción hasta que el modelo queda listo para la siguiente decisión, incluidos los eventos de enemigos y efectos de ese intervalo y la escritura del log. Red y render quedan fuera: la cripta es sintética y vive en memoria (`FuenteSintetica`, mismo contrato que el API), y la vista no dibuja. Con semilla fija se reportan mínimo, mediana, percentil 95 y máximo, ordenados con el ordenamiento propio. Para medir también el ciclo completo con bitácora y GC normal: `python -m bench.ciclo --escalas 1 --ciclos 1000 --salida RUTA_EXTERNA/ciclos.json`.
-
-### Cripta de práctica
-
-Para probar comandos con estadísticas reforzadas y objetos adicionales:
-
-```console
-python -m herramientas.generar_cripta_prueba datos_ensayo
-python main.py --offline --offline-dir datos_ensayo --cripta cripta-prueba
-```
-
-El generador exige una carpeta nueva. Copia los datos a esa ubicación y prepara la cripta de ensayo sin modificar `datos_offline/`.
-
-## Criptas descargadas
-
-El modo offline incluye seis criptas oficiales, con catálogo y versiones por mapa. Osario menor conserva el cazador de rango 200 en la sala opcional 5. Cripta sellada (`cripta-05`) se bloquea por el veredicto NO RESOLUBLE; usa `--forzar` para iniciar una partida de prueba. La [regresión de los seis mapas](docs/entrega/CRIPTAS-OFFLINE.json) registra carga, consulta histórica y movimiento.
-
-## Evidencias
-
-El paquete [docs/entrega](docs/entrega/README.md) reúne una guía de demostración, una partida reproducible, la revisión de cierre y mediciones complementarias. La evidencia vigente del benchmark de terreno sigue siendo [la iteración 6](docs/evidencia/terreno-cazador-benchmark-iteracion-6.json); los reportes de cierre anteriores se conservan como antecedentes.
-
-[docs/evidencia](docs/evidencia/) conserva resultados de mediciones y el guion que permite repetir una partida. Los JSON son archivos de datos; las explicaciones y conclusiones están en [docs/decisiones](docs/decisiones/).
-
-| Archivo | Qué contiene y de dónde sale |
-| --- | --- |
-| `2026-10-16-ordenamiento.json` | Primera medición de InsertionSort y MergeSort sobre Vector, generada por `bench.calibrar_ordenamiento`. |
-| `2026-10-16-ordenamiento-confirmacion.json` | Segunda medición, que agrega los tamaños 60 y 75 para precisar el cruce entre algoritmos. |
-| `2026-10-16-determinismo.json` | Resultados, contadores y sumas de verificación de las once partidas y sus replays, generados por `herramientas.verificar_determinismo`. |
-| `2026-10-16-catalogo-inventario.json` | Resultados de `bench.casos.lru.correr()` y `bench.casos.inventario.correr()`, guardados mediante un script puntual durante la revisión. `--bench` vuelve a medir esos casos, pero no exporta este JSON automáticamente. |
-| `guion-rol2.json` | Entrada del ensayo: lista de comandos. No es un resultado de rendimiento. |
-
-Por ejemplo, un registro de ordenamiento con `n: 50` y `ms: 0.299` indica una mediana de aproximadamente 0.299 milisegundos por ordenamiento de 50 elementos. Las semillas permiten repetir las entradas, pero los tiempos pueden cambiar según la máquina y su carga.
-
-El informe [ROL2_BLOQUE4.md](docs/ROL2_BLOQUE4.md) relaciona las pruebas con los casos borde del plan. Las decisiones [4.3](docs/decisiones/4.03.txt), [4.5](docs/decisiones/4.05.txt) y [4.9](docs/decisiones/4.09.txt) explican el catálogo, el inventario y el ordenamiento. [DECISIONES.md](docs/DECISIONES.md) identifica el documento y sus autores; las secciones detalladas se mantienen por separado.
-
-## Problemas frecuentes
-
-| Situación | Qué revisar |
-| --- | --- |
-| Python no encuentra `requests` o `pytest` | Instala `requirements.txt` con el mismo intérprete que ejecuta el proyecto. |
-| No aparece una cripta en modo offline | Comprueba que exista su carpeta y `general.json`, o utiliza `--offline-dir` con los datos correctos. |
-| Falta una sala o una ficha local | Revisa el archivo indicado por el error. Si vas a descargar de nuevo, la herramienta actualizará los datos locales. |
-| El servicio está ocupado o no responde | Revisa la conexión y el mensaje HTTP. Para trabajar sin depender del servicio, usa `--offline`. |
-| Se agotó el presupuesto | Consulta el reporte de solicitudes. Revisa la reutilización de caché y las versiones antes de repetir la partida. |
-| El guardado o replay tiene otra versión | Usa los datos de cripta y catálogo con los que se creó; modificar el encabezado no restaura la compatibilidad. |
-| Una ficha no cabe en la LRU | Revisa si todas las entradas están protegidas y si la capacidad elegida es suficiente. |
-| Las tildes se ven mal al redirigir la salida en PowerShell | Ejecuta `$env:PYTHONIOENCODING='utf-8'` antes del comando. |
-
-## Estado del proyecto
-
-La versión actual permite jugar por consola, guardar y cargar una sesión, reproducir bitácoras y ejecutar los benchmarks. También incluye pruebas de los ocho casos borde del rol 2 y ensayos de determinismo con latencias.
-
-Quedan aspectos del cierre del plan que deben validarse o integrarse con el equipo:
-
-- Se validó en vivo una partida completa de `cripta-02`, cargada desde HTTP antes de incorporarla al catálogo offline: terminó en victoria tras 39 acciones y 7 enemigos derrotados; recorrió llaves, una puerta cerrada, combates, una trampa y objetos. El reporte registró 10 de 23 solicitudes, 20 salas incorporadas y ninguna espera bloqueante ni error de precarga. No se forzaron fallos de red, respuestas malformadas, incompatibilidad de versiones, agotamiento del presupuesto ni recuperación desde caché poblada; esos casos requieren pruebas controladas del adaptador. Los detalles están en [la evidencia de integración con cripta-02](docs/evidencia/2026-11-18-cripta-02-integracion-api.md).
-- La medición exploratoria de 100 ciclos por escala (x1, x10 y x50) registró máximos de 25.272, 467.599 y 2519.470 ms, respectivamente. El ciclo de 20 ms no se cumple en esas condiciones; el detalle está en [el reporte de escalado](docs/evidencia/2026-11-18-ciclo-20ms.json).
-- La revalidación final del 2026-11-18 en Python 3.12.10 pasó **1403 pruebas**. Se corrigieron dos expectativas de pruebas históricas que pedían revelar IDs de salas avistadas, contrario a FR-003; la implementación conserva la privacidad. El benchmark integrado tuvo cero discrepancias y `cumple_umbral=true`: el máximo fue 18.8242 ms en rango pequeño, modo compartido y cambio de puerta cada 100 ciclos; `cripta-06` llegó a 1.8333 ms. La evidencia está en [el reporte final de revalidación](docs/evidencia/2026-11-18-revalidacion-entrega-terreno-cazador-intento-2.json). Se conserva [la corrida anterior que excedió el límite](docs/evidencia/2026-11-18-revalidacion-entrega-terreno-cazador.json) con su resultado original (`cumple_umbral=false`). La iteración 6 también se conserva como antecedente.
-- El reporte de iteración 6 también compara uno y veinte cazadores en 30 000 ciclos por grupo, con cero discrepancias. Es una medición diagnóstica separada que no modifica el umbral contractual.
-- El reporte de red ya está integrado en `--bench`; repetir las mediciones en los equipos del grupo.
-- La pantalla gráfica de puntajes está implementada: muestra el resumen y la clasificación filtrada por cripta y versión, resalta la partida actual y permite recorrer la lista. Las pruebas focalizadas de cierre, transición y tabla de puntajes pasaron (22 pruebas con Python 3.12.10 y Pygame 2.6.1).
-- Revisar y consolidar entre los roles las secciones del Documento de Decisiones.
-
-La calibración de ordenamiento llega hasta 500 elementos y no cubre comparadores costosos. Los tiempos publicados corresponden al equipo de la medición. Los resultados recientes corresponden a Windows 11 con Python 3.12.10; las instrucciones para otros sistemas no representan una validación adicional de la suite en ellos.
-
-## Trabajo en el repositorio
-
-Para desarrollar una función o corregir un error:
-
-1. Crea una rama para el cambio y revisa las decisiones del módulo afectado.
-2. Mantén las reglas del juego en el modelo, la coordinación en el controlador y la entrada/salida en la vista o los adaptadores.
-3. Añade una prueba cuando cambie el comportamiento o se corrija un caso que pueda volver a fallar.
-4. Ejecuta `python -m pytest -q` y comprueba los comandos afectados antes de integrar el cambio.
-5. Si modifica el rendimiento, repite la medición y documenta sus condiciones. Si cambia el uso del programa, actualiza este README.
-
-Los comentarios deben explicar una regla, una limitación o una decisión que no sea evidente al leer el código. Las notas históricas sobre lo que se agregó o corrigió pertenecen a la descripción del cambio, no a instrucciones permanentes dentro del módulo.
-
-Según el [Documento de Decisiones](docs/DECISIONES.md), el equipo está formado por Jose Daniel Morales Moreno, Sebastián Ruiz Vargas, Daniel Centeno y Jose Fabio.
-
-## Preparación de Spec Kit para CRIPTA II
-
-El equipo acordó usar **Spec Kit `1.2.6.dev0`**, la versión que declaran los archivos de la rama de Daniel. Para reproducir la instalación del CLI, queda pendiente registrar la referencia exacta de origen que usó Daniel. José tiene instalado `1.2.3` y Windows bloquea la ejecución de su `specify.exe`. Para la fase C, Antigravity ya reconoce los skills de la versión acordada que están en este proyecto.
-
-José utiliza **Antigravity**, con **Claude Opus 5.5 Low** seleccionado al preparar esta rama. Daniel preparó la base con la integración Copilot. Los skills del proyecto para Antigravity están en `.agents/skills/`; Copilot se conserva en `.github/skills/`. La adaptación de Antigravity se realizó mediante archivos, sin ejecutar el instalador bloqueado. Su descubrimiento en la aplicación fue verificado; aún no se ha ejecutado el flujo de la capacidad de José.
-
-En el chat de Antigravity, con este proyecto seleccionado, el flujo por capacidad usa `/speckit-specify`, `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`, `/speckit-analyze` y, después de revisión y de confirmar los documentos en Git, `/speckit-implement`. La constitución compartida ya existe: no reinicializar ni regenerarla por integrante.
-
-La fase B de José y sus pendientes están en [la revisión de preparación](docs/equipo/FASE_B_JOSE.md). La entrada para su futura especificación está en [el borrador de niebla e ir a](docs/equipo/BORRADOR_NIEBLA_VIAJE_JOSE.md). Estos documentos no indican que la fase B del equipo esté integrada o aprobada por todos.
+Las mediciones siempre deben interpretarse junto con su fixture, entorno y fecha; los reportes históricos se conservan como fueron generados.

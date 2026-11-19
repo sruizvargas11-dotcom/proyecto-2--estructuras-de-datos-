@@ -1,18 +1,18 @@
-# CRIPTA II · Decisiones de diseño para revisión
+# CRIPTA II · Registro histórico de decisiones de diseño
 
 ## Revisión integrada del 18 de noviembre de 2026
 
-Resultado final del código integrado: **1.401 pruebas aprobadas**, cero fallos y cero errores. Ver [revisión actual](REVISION-MAIN-ACTUAL.md).
+Este documento conserva las decisiones y mediciones del snapshot integrado en `cierre-entrega` sobre `main` `87e166d`. No representa el estado actual de `rama-version-prefinal`; consulta [la validación histórica](CRIPTA-II-validacion-cierre.md) y el [README principal](../../README.md) para los resultados correspondientes a cada versión.
 
-Se incorporó main `7655ecb` a cierre-entrega. Se conservaron las optimizaciones actuales de terreno/cazador y sus estructuras, y las correcciones de historial, interfaz y catálogo offline. Se combinaron las pruebas de caché de capacidad uno y dos. Se retiraron marcas de conflicto del documento de decisiones conservando ambos apartados.
+El snapshot incorporó `main` `7655ecb` a `cierre-entrega`, conservó las optimizaciones de terreno/cazador y añadió correcciones de historial, interfaz y catálogo offline. También combinó las pruebas de caché para capacidades uno y dos y resolvió marcas de conflicto en el documento de decisiones.
 
-La evidencia vigente de terreno/cazador es [iteración 5](../evidencia/terreno-cazador-benchmark-iteracion-5.json). Se comprobaron sus 270.000 muestras, cero discrepancias y máximos bajo 20 ms. El máximo global es 12,8721 ms y el de cripta-06 es 2,0696 ms. El código del buscador, índice de salas, salidas, heap y benchmark coincide con esa actualización de main. Estos resultados pertenecen al equipo y condiciones registrados en ese JSON.
+La evidencia de terreno/cazador de ese snapshot está en [iteración 5](../evidencia/terreno-cazador-benchmark-iteracion-5.json). Sus 270.000 muestras tuvieron cero discrepancias; el máximo sintético fue 12,8721 ms y el de cripta-06 fue 2,0696 ms. Los resultados aplican al código y las condiciones registrados en ese JSON.
 
 La [regresión sobre seis mapas](REGRESION-MAIN-INTEGRADO.json) comprobó movimiento, MAPA, HISTORIA 0, guardado y carga, incluyendo las 300 salas de cripta-06. Cripta sellada conserva su veredicto NO RESOLUBLE y requiere forzar para esta prueba.
 
 Las secciones siguientes conservan las mediciones y revisiones anteriores con su base de código. Los resultados previos de 43,1008 y 57,204 ms corresponden a la versión anterior de terreno/cazador.
 
-Propuesta de cierre basada en `main` `87e166d` y las correcciones locales del 17 de noviembre. Este documento complementa el [Documento de Decisiones existente](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/docs/DECISIONES.md). Cada responsable puede comprobar su sección antes de integrarla.
+El registro complementa el [Documento de Decisiones de ese snapshot](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/docs/DECISIONES.md). Las decisiones vigentes se mantienen en `docs/DECISIONES.md` de la rama actual.
 
 ## §5.1 · Rutas de terreno y cazador (001)
 [Spec](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/specs/001-terreno-cazador/spec.md) · [Plan](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/specs/001-terreno-cazador/plan.md)
@@ -23,7 +23,7 @@ Las aristas tienen costos positivos y variables. BFS minimiza pasos, mientras qu
 La caché evita recalcular cuando el jugador sigue en la misma sala y las puertas conservan su estado. Recalcular siempre evita mantener estado, pero desperdicia búsquedas con puertas estables. La decisión del plan se conserva. Comparar puertas cuesta O(E) incluso al acertar. Al cambiar la sala objetivo o las puertas se rehacen las aristas inversas y las distancias. La evidencia de terreno/cazador compara uso compartido e individual con cambios cada 1 y 100 ciclos, y comprueba decisiones contra la referencia. Los costos varían por topología, accesibilidad y frecuencia de invalidación.
 
 ## §5.3 · Mapa conocido (002)
-Ver [sección de José](CRIPTA-II-decisiones-002-Jose-cierre.md). La ruta usa el subgrafo conocido y comparte la estructura de prioridad con la 001. La evidencia de cierre usa las 300 salas de la cripta oficial de referencia.
+Ver [decisiones de la capacidad 002](CRIPTA-II-decisiones-002-cierre.md). La ruta usa el subgrafo conocido y comparte la estructura de prioridad con la 001. La evidencia de cierre usa las 300 salas de la cripta oficial de referencia.
 
 ## §5.4 · Resolubilidad (003)
 [Spec](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/specs/003-resolubilidad/spec.md) · [Plan](https://github.com/sruizvargas11-dotcom/proyecto-2--estructuras-de-datos-/blob/87e166d/specs/003-resolubilidad/plan.md)
@@ -53,4 +53,4 @@ Con la carga II, el p95 está por debajo de 20 ms, pero el máximo lo supera. Lo
 
 ## Repetición contractual de terreno y cazador
 
-La repetición contractual en el equipo de cierre completó 8 escenarios, 30 repeticiones por escenario y 240.000 ciclos. Las decisiones coincidieron con la referencia. Hubo 5 ciclos por encima de 20 ms y el máximo fue 43,1008 ms. Este equipo no reprodujo el cumplimiento del máximo obtenido en el informe original. [JSON de cierre](CRIPTA-II-terreno-benchmark-entrega.json).
+La repetición contractual de ese entorno completó ocho escenarios, 30 repeticiones por escenario y 240 000 ciclos. Las decisiones coincidieron con la referencia, pero cinco ciclos excedieron 20 ms y el máximo fue 43,1008 ms. El resultado no cumplió el umbral. Se conserva en el [JSON de cierre](CRIPTA-II-terreno-benchmark-entrega.json).

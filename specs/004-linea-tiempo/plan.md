@@ -1,6 +1,6 @@
 # Plan de implementación: Línea de tiempo de CRIPTA
 
-**Branch**: `spec/sebastian` | **Date**: 2026-11-09 | **Spec**: [spec.md](spec.md)
+**Date**: 2026-11-09 | **Spec**: [spec.md](spec.md)
 
 **Input**: `specs/004-linea-tiempo/spec.md` y decisiones de diseño proporcionadas para esta planificación.
 
@@ -40,7 +40,7 @@ Implementar consultas históricas sin alterar la partida activa, usando un regis
 
 **Scale/Scope**: Historia fija de al menos 5.000 acciones; al menos 30 consultas distribuidas por la historia, 30 repeticiones por consulta; almacenamiento de acciones, cambios y puntos de control desde el inicio de la línea de tiempo vigente.
 
-**Integrations/Dependencies — decisiones de implementación**: Se propone incluir el conocimiento del mapa de Niebla (José) en los puntos de control y validar en pruebas que los movimientos y costos de Terreno (Daniel) se reconstruyan igual que en la partida original. Son detalles de integración para satisfacer los requisitos aplicables de `spec.md`, no criterios de aceptación nuevos.
+**Integrations/Dependencies — decisiones de implementación**: Se propone incluir el conocimiento del mapa de la capacidad Niebla en los puntos de control y validar en pruebas que los movimientos y costos de la capacidad Terreno se reconstruyan igual que en la partida original. Son detalles de integración para satisfacer los requisitos aplicables de `spec.md`, no criterios de aceptación nuevos.
 
 ## Constitution Check
 

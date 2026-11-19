@@ -1,6 +1,5 @@
 # Feature Specification: Verificación de resolubilidad de la cripta
 
-**Feature Branch**: `003-resolubilidad`
 
 **Created**: 2026-11-12
 

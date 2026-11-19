@@ -1,18 +1,18 @@
 # Feature Specification: Niebla de guerra, antorcha e ir a
 
-**Feature Branch**: `spec/jose`
+
 
 **Created**: 2026-11-11
 
 **Status**: Draft
 
-**Input**: Capacidad «Niebla de guerra y viaje automático»: conocimiento del jugador sobre salas y puertas, antorcha y orden `ir a <sala>`. Fuente: `docs/equipo/BORRADOR_NIEBLA_VIAJE_JOSE.md` (enunciado CRIPTA Parte II §3.3, §3.4, §5.3, §6.1, §6.3, §7.3 y Apéndice B), la constitución 1.0.0 y la capacidad `001-terreno-cazador` integrada en la base `e5bd543`.
+**Input**: Capacidad «Niebla de guerra y viaje automático»: conocimiento del jugador sobre salas y puertas, antorcha y orden `ir a <sala>`. Fuentes: requisitos de CRIPTA II §3.3, §3.4, §5.3, §6.1, §6.3, §7.3 y Apéndice B, la constitución 1.0.0 y la capacidad `001-terreno-cazador` integrada en la base `e5bd543`. El contexto de preparación se conserva en `docs/historico/ESPECIFICACION_002_ORIGEN.md`.
 
 ## Clarifications
 
 ### Session 2026-11-11
 
-> Estado: las seis decisiones de esta sesión fueron revisadas y aprobadas por Daniel el
+> Estado: las seis decisiones de esta sesión fueron revisadas y aprobadas el
 > 2026-11-18. Si una revisión posterior cambia alguna, se corrige primero esta spec en un
 > commit separado (constitución VII).
 
@@ -302,15 +302,14 @@ comprobar que la vista muestra solo información conocida y la causa.
 - La cripta de referencia para FR-017 es la indicada por el enunciado; si existe enmienda
   oficial, prevalece.
 - Las seis decisiones de la sesión de clarificación del 2026-11-11 fueron revisadas y aprobadas
-  por Daniel el 2026-11-18. El alcance del mapa conocido se traza en NV-03; los casos adicionales
+  el 2026-11-18. El alcance del mapa conocido se traza en NV-03; los casos adicionales
   corresponden a NV-30..NV-34.
 - Los identificadores NV son locales a esta capacidad; no se asignan números globales G sin
-  coordinarlos con la matriz del equipo.
+  coordinarlos con la matriz de trazabilidad.
 - Las estructuras, algoritmos, clases y módulos se definen en `plan.md` (fase D) respetando la
   constitución: estructuras propias sin `dict`/`set` como índice, determinismo, `--replay` y
   `--bench` sin vista, y presupuesto de solicitudes.
-- Coordinación prevista: contrato de ruta con Daniel; cambios reversibles, persistencia e
-  historia con Sebastián; caché/precarga sin revelar conocimiento con Centeno.
+- Integración: contrato de ruta, cambios reversibles, persistencia, historia y caché/precarga`r`n  deben preservar la separación entre el mapa real y el conocimiento del jugador.
 
 ## Apéndice B — Escenarios de aceptación
 

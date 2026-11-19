@@ -1,6 +1,6 @@
 # Feature Specification: Línea de tiempo de CRIPTA
 
-**Feature Branch**: `spec/sebastian`
+
 
 **Created**: 2026-11-09
 

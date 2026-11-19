@@ -1,6 +1,6 @@
 # Implementation Plan: Niebla de guerra, antorcha e ir a
 
-**Branch**: `spec/jose` | **Date**: 2026-11-11 | **Spec**: [spec.md](spec.md)
+**Date**: 2026-11-11 | **Spec**: [spec.md](spec.md)
 **Input**: `specs/002-niebla-viaje/spec.md` (commit `c2c5528`), base `e5bd543`.
 
 > [!NOTE]
@@ -79,7 +79,7 @@ docs/evidencia/                   # resultados reales y trazabilidad
   tiempo ≤ t. Dependencia 004: la consulta histórica de interfaz/red es de la capacidad 004; aquí
   solo se ofrece la reconstrucción del modelo.
 - **Decisión R5 – Ruta**: Dijkstra inverso desde el destino sobre aristas conocidas (origen y
-  destino explorados, recuerdo abierto) con `ColaPrioridadRuta` de Daniel; primer paso = vecina
+  destino explorados, recuerdo abierto) con `ColaPrioridadRuta` propia; primer paso = vecina
   de menor ID con `costo + dist = d`, igual regla observable que FR-007 de 001. Marcas por
   llamada evitan reiniciar O(n). No se modifica `buscador_rutas.py` (cazador intacto).
 - **Decisión R6 – Viaje**: estado transitorio del controlador (no se guarda); en cada turno del

@@ -1,6 +1,6 @@
 # Trazabilidad de niebla de guerra y viaje automático
 
-Capacidad 002, rama `spec/jose`. Especificación `c2c5528` y plan/tareas `8524838`.
+Capacidad 002. Especificación `c2c5528` y plan/tareas `8524838`.
 
 | Caso | Requisitos | Prueba |
 |---|---|---|
