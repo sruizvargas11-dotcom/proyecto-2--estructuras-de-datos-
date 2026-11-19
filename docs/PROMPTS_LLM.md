@@ -92,6 +92,239 @@ Escribe el documento en español.
 **Uso registrado:** Se le solicitó al agente implementar el esqueleto del proyecto.
 
 Se utilizó Github Copilot, utilizando el modelo GPT Luna 6.
+### 17 de noviembre de 2026 — Optimización de terreno y cazador con Copilot
+
+**Herramienta/modelo:** GitHub Copilot en VS Code con Spec Kit; el modelo no quedó registrado.
+
+Se conservan a continuación los textos de los prompts entregados al agente. Se agrupan por fecha porque la bitácora no registra la hora de cada envío.
+
+#### 1. Benchmark del cazador en la cripta de referencia
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Revisa la capacidad `001-terreno-cazador` y completa la extensión del benchmark de referencia que quedó documentada en `specs/001-terreno-cazador/`.
+>
+> Empieza ejecutando `/speckit-analyze` sobre la especificación, el plan, las tareas y sus contratos. Si encuentras contradicciones o decisiones sin resolver, corrige primero la documentación y detente antes de modificar código; explícame qué quedó pendiente. Si los documentos son coherentes, continúa con `/speckit-implement` para completar T028–T033.
+>
+> La decisión ya tomada es conservar los ocho escenarios sintéticos existentes y **añadir** una validación independiente con `cripta-06`. No cambies el fixture comparativo de 20 cazadores, el reparto de rangos 10/10 ni sus escenarios.
+>
+> Para la validación adicional, respeta el contrato actualizado:
+>
+> - Usa un snapshot externo y reproducible de `cripta-06`, versión `f9ed9afa683d`, y catálogo `4b9e75a42be5`.
+> - El mapa tiene 300 salas y 25 instancias `ent_sabueso_oseo`; activa las 25 en sus salas de origen. La ficha publicada indica rango 600.
+> - Fija semilla 42, acción `W`, 30 repeticiones de 1000 ciclos y el estado inicial descrito en FR-014.
+> - El benchmark debe cargar el snapshot antes de medir. Dentro de los ciclos cronometrados no debe consultar la API, importar o crear vistas ni iniciar Pygame.
+> - Guarda versiones, ubicaciones y SHA-256 del snapshot en `bench/datos/manifest.json`. Respeta el presupuesto de 63 solicitudes al obtener los datos iniciales.
+> - Conserva el reporte antiguo sin modificar. El reporte nuevo debe añadir `validacion_referencia` y guardar el resultado en `docs/evidencia/terreno-cazador-benchmark-completo.json`.
+>
+> Implementa primero las pruebas de T028 y luego completa T029–T033. Mantén las restricciones de la Constitución: estructuras propias y ninguna dependencia prohibida; los datos específicos de `cripta-06` deben quedarse en fixtures de benchmark, nunca en la lógica de producción.
+>
+> Ejecuta el benchmark y las pruebas indicadas en las tareas. Si hay discrepancias o cualquier ciclo supera 20 ms, conserva los resultados reales, deja `cumple_umbral=false` y no marques la tarea como aprobada. No cambies los requisitos ni reduzcas el umbral para hacer pasar el resultado; si descubres que la especificación debe cambiar, detente y explica la propuesta antes de tocar el comportamiento.
+>
+> Al terminar, resume los archivos modificados, pruebas ejecutadas, máximos medidos, discrepancias, cumplimiento del umbral y tareas que sigan pendientes. No hagas `git add`, commit ni push.
+- **Uso:** Solicitar analizar y añadir al contrato de benchmark la referencia de cripta-06, conservando los ocho escenarios sintéticos.
+
+#### 2. Diagnóstico de rendimiento del cazador
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Antes de optimizar, identifica con mediciones dónde se consume el tiempo en los ciclos del cazador. Por ahora haz solo un diagnóstico: no modifiques código, pruebas, especificaciones, tareas ni reportes contractuales, y no cambies el umbral de 20 ms.
+>
+> Revisa especialmente:
+>
+> - `CacheDistanciasCazador.obtener`, `_construir_entrantes` y `_distancias_hacia_jugador` en `modelo/buscador_rutas.py`.
+> - `_decidir_cazador_individual` y `decidir_cazador` en ese mismo módulo.
+> - `_correr_escenario` y `_correr_referencia` en `bench/terreno_cazador.py`.
+> - La ejecución y programación de turnos en `modelo/partida.py` y `modelo/reloj.py`.
+> - Las búsquedas de actores y el registro de observaciones que ocurren dentro del intervalo cronometrado.
+>
+> Perfila tres casos representativos: rango grande en modo individual, modo compartido con cambios de puerta cada ciclo y la referencia `cripta-06`. Separa, cuando sea posible, el costo de buscar rutas, validar o reconstruir la caché, procesar turnos y ejecutar instrumentación propia del benchmark. Distingue el primer ciclo de los ciclos siguientes para detectar costos de arranque.
+>
+> Usa Python 3.12 y realiza el perfilado diagnóstico por separado del benchmark contractual. El perfilador altera los tiempos: sus cifras sirven para comparar dónde se va el trabajo, no como evidencia para el límite de 20 ms. No ejecutes las 30 repeticiones completas mientras perfiles y no sobrescribas `docs/evidencia/terreno-cazador-benchmark-completo.json`.
+>
+> Devuélveme un resumen con:
+> 1. Los puntos de mayor costo, con número de llamadas y tiempo propio/acumulado si la herramienta lo permite.
+> 2. Diferencias entre el primer ciclo y los siguientes.
+> 3. Qué costo pertenece al juego y cuál al arnés de medición.
+> 4. Las causas más probables, ordenadas por impacto y respaldadas por datos.
+> 5. Una propuesta de optimización que preserve las reglas del juego, los ocho escenarios, la comparación individual/compartida y el cálculo ponderado correcto.
+>
+> No implementes todavía las optimizaciones ni marques tareas como completadas.
+- **Uso:** Pedir un diagnóstico medido de las fases que encarecen las búsquedas y los ciclos del cazador antes de optimizar.
+
+#### 3. Instrucción para actualizar Plan y Tasks
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Usa el diagnóstico de rendimiento reciente para actualizar el Plan y las Tasks de esta feature antes de implementar. No cambies código ni reportes todavía y no alteres los requisitos funcionales ni el límite de 20 ms.
+>
+> Prioriza las tareas así:
+>
+> 1. Reducir las búsquedas repetidas de `_buscar` durante la construcción y recorrido de distancias compartidas, usando las estructuras permitidas por la Constitución del proyecto. El perfil contabilizó 2.498 millones de llamadas y 4.345 s acumulados en esa función. Conserva el cálculo ponderado con Dijkstra, las conexiones dirigidas, el desempate de rutas y las decisiones actuales.
+> 2. Revisar si la caché puede detectar cambios reales de jugador y puertas sin escanear todas las salidas en cada consulta. Considera todas las formas de cambiar o restaurar puertas —incluidos historial, replay y carga— antes de proponer una revisión incremental. Aclara en la tarea que si una puerta cambia cada ciclo, el recálculo de distancias sigue siendo necesario.
+> 3. Quitar del intervalo cronometrado el trabajo auxiliar del benchmark que no pertenece al ciclo real, especialmente `enemigos.index(...)` y las búsquedas posteriores por identificador. Precalcula la asociación entre actor e índice fuera del cronómetro. No excluyas ejecución de turnos, decisiones, movimiento ni reprogramación reales.
+> 4. Mantener separados los modos individual y compartido. No reemplaces el modo individual por la caché compartida para mejorar artificialmente su resultado.
+>
+> Para cada optimización, agrega criterios verificables y pruebas de regresión que comparen las decisiones con el cálculo de referencia en mapas ponderados, puertas abiertas y cerradas, conexiones unidireccionales, límites de rango y salas sin ruta. Respeta la Constitución y no introduzcas `dict`, `set`, bibliotecas o índices prohibidos.
+>
+> Mantén la validación contractual existente: ocho escenarios sintéticos más `cripta-06`, 30 repeticiones de 1000 ciclos, cero discrepancias y máximo de 20 ms. No uses las cifras del perfilador como evidencia contractual, no cambies el umbral y no marques T031 como cumplida hasta validar el reporte contractual final.
+>
+> Actualiza `plan.md` y `tasks.md` con el orden y las dependencias. Revisa que no dupliquen tareas existentes ni contradigan la especificación. Al terminar, informa qué archivos cambiaste y presenta el Plan/Tasks resultantes para revisión; espera esa revisión antes de implementar código.
+- **Uso:** Trasladar los hallazgos de perfilado al Plan y Tasks, delimitando la invalidación de caché, el costo de búsqueda y la instrumentación del benchmark.
+
+#### 4. Instrucción para planear la siguiente optimización
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Continúa el trabajo de rendimiento siguiendo la Constitución y el flujo de Spec Kit. Antes de modificar código, revisa el reporte final actual, las tareas T034–T039 y los cambios implementados.
+>
+> La evidencia guardada muestra cero discrepancias y `cripta-06` con máximo de 4.7583 ms, pero cinco escenarios sintéticos superan 20 ms. El máximo sintético es 35.9268 ms; los cuatro escenarios de rango grande fallan y también falla el escenario de rango pequeño con puertas cambiando cada ciclo y cálculo compartido. No cambies el umbral, los mapas, los rangos, el protocolo ni la comparación individual/compartida.
+>
+> En `bench/terreno_cazador.py` ya hay un cambio local pendiente de validar: `_asignar_indices_benchmark` asigna `_indice_benchmark` antes de iniciar los ciclos y el índice se lee directamente durante la medición. Conserva ese cambio. No reintroduzcas búsquedas de actores por ID dentro del cronómetro ni uses `dict` o `set` como índice o caché.
+>
+> Por ahora, actualiza solamente `plan.md` y `tasks.md` con una iteración nueva y trazable de diagnóstico y optimización. Enfócala en los escenarios sintéticos que todavía fallan. Pide medir por separado, fuera del benchmark contractual, el costo de las rutas individuales de rango grande, la reconstrucción de distancias cuando cambia una puerta y el procesamiento real de turnos. Separa el primer ciclo de los siguientes y usa perfilado solo para localizar costos, nunca como evidencia contractual.
+>
+> Incluye pruebas que preserven Dijkstra ponderado, conexiones dirigidas, costos, rango, desempates y equivalencia con la referencia. Mantén los modos individual y compartido con su significado actual y las restricciones de estructuras propias del proyecto.
+>
+> No sobrescribas `docs/evidencia/terreno-cazador-benchmark-final.json`, porque conserva el intento fallido actual. Define en Tasks una ruta nueva para la siguiente evidencia y exige documentar el resultado previo y el nuevo en `docs/DECISIONES.md`. El cierre requiere cero discrepancias y máximos de 20 ms o menos en los ocho escenarios y `cripta-06`; si vuelve a fallar, conserva el reporte y deja pendientes las tareas de aceptación.
+>
+> No marques T039 como completada, no ejecutes el benchmark contractual y no implementes todavía. Presenta los cambios del Plan y Tasks para revisión antes de pasar a implementación.
+- **Uso:** Definir una nueva iteración documentada de diagnóstico y optimización sin alterar los criterios contractuales.
+
+#### 5. Instrucción para implementar la segunda iteración
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Implementa las tareas T040–T046 de la segunda iteración de diagnóstico y optimización de `specs/001-terreno-cazador/tasks.md`, respetando el orden y las dependencias descritas allí.
+>
+> Antes de modificar código, revisa la Constitución y confirma que la versión vigente de Plan y Tasks está registrada en un commit separado anterior a los cambios de código. Si no lo está, no modifiques archivos de código: informa que falta ese paso y espera. No ejecutes `git add`, commit ni push; esos los haré yo.
+>
+> Conserva el cambio local de `bench/terreno_cazador.py`: `_asignar_indices_benchmark` asigna `_indice_benchmark` antes de los ciclos medidos, y el ciclo lee ese índice directamente. No reintroduzcas búsquedas por ID dentro del cronómetro.
+>
+> Trabaja en este orden:
+>
+> 1. Completa los perfiles T040–T042 por separado, fuera del benchmark contractual. Distingue el primer ciclo de los siguientes y registra las funciones y fases que más trabajo consumen. Usa comandos o archivos temporales independientes; no escribas sobre los reportes existentes ni uses tiempos perfilados como evidencia de aceptación.
+> 2. Con esos resultados, completa T043 con pruebas de regresión que protejan las rutas ponderadas, los cambios de puertas, las conexiones dirigidas, los límites de rango, los empates y la equivalencia con la referencia.
+> 3. Implementa en T044 solo optimizaciones respaldadas por el perfil y las pruebas. Conserva Dijkstra ponderado, el comportamiento individual y el compartido, las estructuras propias permitidas, los desempates y la invalidación segura de caché por cambios de jugador o puertas.
+> 4. En T045 ejecuta las pruebas focalizadas, regresiones de replay/carga y la suite completa con Python 3.12. Solo si pasan, ejecuta una vez el benchmark contractual con el protocolo fijado, guardándolo en `docs/evidencia/terreno-cazador-benchmark-iteracion-2.json`.
+> 5. Conserva sin modificar `terreno-cazador-benchmark-final.json`, `terreno-cazador-benchmark-completo.json` y la evidencia histórica. Si hay discrepancias o algún ciclo supera 20 ms, el reporte nuevo debe reflejar el fallo con `cumple_umbral=false`; deja T039 y T045 pendientes. No cambies el umbral ni las condiciones para obtener un resultado favorable.
+> 6. Completa T046 con los hallazgos y resultados reales en `docs/DECISIONES.md`. Marca T039, T045 y T046 como completadas solo si el reporte nuevo tiene cero discrepancias y todos los máximos son ≤20 ms, y las pruebas requeridas pasan. Si el benchmark falla, conserva el reporte y documenta el fallo sin afirmar cumplimiento.
+>
+> Antes de terminar, revisa los archivos modificados y reporta qué tareas quedaron completadas o pendientes, qué pruebas y mediciones ejecutaste y el máximo de cada grupo. No marques tareas como completadas sin la evidencia que exigen.
+- **Uso:** Ejecutar las tareas de perfilado, pruebas y optimización de la segunda iteración en el orden definido.
+
+#### 6. Diagnóstico puntual del ciclo que excede 20 ms
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> El benchmark de iteración 2 tiene una sola combinación que excede el límite: rango grande (1000/10000), cambio de puerta cada 100 ciclos y modo individual. Solo 2 de 30 000 ciclos exceden 20 ms; ambos son el ciclo 2 de las repeticiones 20 y 22. El máximo es 24.7046 ms. En las otras 28 repeticiones, el máximo de esa combinación quedó entre 15.8 y 18.4 ms.
+>
+> Antes de otra optimización o de repetir el benchmark contractual, determina qué ocurre en esos picos:
+>
+> - Perfilado diagnóstico, solo para esa combinación y fuera de `--bench`.
+> - Registra por ciclo el tiempo y las llamadas a `_decidir_cazador_individual`, la inicialización de sus tablas/índices y las operaciones de la cola.
+> - Detecta si hay recolección de basura durante esos ciclos y registra su duración. No desactives el recolector ni muevas su trabajo fuera del cronómetro.
+> - Compara ciclos iniciales normales con los de las repeticiones 20 y 22. Separa el costo estable de la ruta del posible retraso puntual del proceso.
+> - Conserva el modo individual como cálculo independiente, Dijkstra ponderado, los desempates y las restricciones constitucionales. No uses BFS, no conviertas el modo individual en compartido y no cambies el umbral ni el protocolo.
+> - No ejecutes otro benchmark contractual, no sobrescribas reportes y no marques T031, T039 o T045 como completadas.
+>
+> Entrega primero la causa respaldada por el perfil y una optimización concreta que reduzca el costo estable del ciclo con margen por debajo de 20 ms. Después de revisar ese diagnóstico decidiremos qué implementación conviene hacer y cuándo repetir la medición contractual.
+- **Uso:** Aislar y medir el pico del ciclo 2 en modo individual, distinguiendo costo estable de pausas puntuales.
+
+#### 7. Optimización del índice de salas para rutas individuales
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Trabaja esta optimización con Spec Kit y respeta la Constitución del repositorio.
+>
+> ## Primero: documentar el cambio
+>
+> Revisa el `plan.md`, `tasks.md`, el código actual y el diagnóstico. La causa medida es que el ciclo 2 del escenario de rango grande, cambio de puerta cada 100 ciclos y cálculo individual hace 39 decisiones y 39 inicializaciones de tablas. El diagnóstico atribuye aproximadamente 5.3 ms perfilados a reconstruir el índice de salas en cada búsqueda.
+>
+> Ese es el escenario que falla. Corrige también en `docs/DECISIONES.md` la descripción que lo identifica erróneamente como cambio de puerta cada ciclo.
+>
+> Añade al Plan y a Tasks una optimización acotada: construir una vez por cripta un índice propio e inmutable que relacione el ID de sala con su posición en el vector ordenado de salas, y reutilizarlo en las búsquedas individuales. El estado de distancias, predecesores y cola de prioridad debe seguir siendo independiente para cada búsqueda. No se deben reutilizar resultados de ruta ni convertir el modo individual en compartido.
+>
+> Define una alternativa segura para IDs dispersos o muy grandes, sin asignar memoria proporcional al ID máximo. Mantén las estructuras permitidas por la Constitución; no uses `dict`, `set` ni bibliotecas externas. Incluye pruebas para mapas densos, dispersos y de IDs grandes, criptas distintas, costos ponderados, conexiones dirigidas, puertas, límites de rango, empates y salas sin ruta. Exige igualdad de decisiones con el cálculo independiente y que las búsquedas no compartan estado mutable.
+>
+> Si esta tarea aún no está en una versión comprometida de Plan y Tasks, actualiza solo esos documentos y `docs/DECISIONES.md`, presenta los cambios y detente para que yo haga el commit documental. No modifiques código ni hagas commits. La Constitución exige que la planificación se confirme antes del código. Cuando confirme el commit, continúa con la implementación de esta misma tarea.
+>
+> ## Después del commit documental: implementar
+>
+> - Conserva la optimización local de `bench/terreno_cazador.py` que asigna `_indice_benchmark` antes del cronómetro.
+> - Implementa el índice por cripta sin apuntar el índice estático a registros mutables de Dijkstra. Cada búsqueda individual debe conservar sus propias distancias, predecesores y cola.
+> - Mantén Dijkstra ponderado, aristas dirigidas, rango, costos, desempates, historial, replay y comportamiento actual. No cambies el modo compartido ni ocultes trabajo dentro del benchmark.
+> - Ejecuta primero las pruebas focalizadas nuevas y existentes. Si pasan, ejecuta la suite completa con Python 3.12 y una sola medición contractual final, con los ocho escenarios y `cripta-06`, 30 repeticiones de 1000 ciclos, cero discrepancias y máximo de 20 ms o menos.
+> - Guarda el nuevo resultado en `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`. No sobrescribas los reportes anteriores. Si hay discrepancias o algún ciclo supera 20 ms, conserva el reporte, deja pendientes las tareas de aceptación y documenta el resultado sin cambiar el umbral.
+> - Actualiza `docs/DECISIONES.md` con las pruebas y mediciones reales. No marques tareas completas sin la evidencia correspondiente.
+>
+> No ejecutes `git add`, commit ni push; los haré yo.
+- **Uso:** Incorporar al Plan y Tasks una optimización reutilizable por cripta, con estado de búsqueda independiente y pruebas de equivalencia.
+
+#### 8. Aclaraciones finales antes de implementar
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Ajusta `specs/001-terreno-cazador/plan.md` y `tasks.md` antes de implementar. No modifiques código ni reportes, no ejecutes pruebas o benchmark y no hagas commits.
+>
+> 1. **Aclara cómo completar T031 con una medición posterior.** El reporte `docs/evidencia/terreno-cazador-benchmark-final.json` conserva un resultado fallido y debe permanecer intacto. La tercera iteración generará un reporte nuevo en `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`. Modifica la redacción de T031, el Plan y T052 para que, si ese reporte nuevo cumple el protocolo contractual completo —ambos grupos, 30 repeticiones × 1000 ciclos, cero discrepancias y todos los máximos ≤20 ms—, pueda usarse como evidencia para completar T031 sin reemplazar el reporte fallido anterior.
+>
+>    En ese caso, T052 debe marcar T031, T039, T051 y T052 como completadas, siempre que también pasen todas las pruebas requeridas. Si el benchmark excede el umbral o presenta discrepancias, T031, T039 y T051 permanecen pendientes; T052 puede completarse documentando el resultado fallido real. Conserva `cumple_umbral=false` en el nuevo reporte y no cambies el criterio de aceptación.
+>
+> 2. **Precisa la medición de las inicializaciones del índice.** El diagnóstico indica que el ciclo 2 realiza 39 decisiones individuales y que las 39 inicializaciones de tablas, en conjunto, consumen aproximadamente 5.3 ms perfilados dentro de ese ciclo. Redacta el Plan para que esos 5.3 ms no se interpreten como costo de cada llamada individual. Conserva la cifra como diagnóstico, no como evidencia contractual.
+>
+> Asegúrate de que el Plan, T031, T051 y T052 expresen la misma ruta de evidencia y la misma regla de cierre. Presenta los cambios documentales para revisión; no implementes hasta que los apruebe.
+- **Uso:** Precisar qué reporte puede cerrar T031 y cómo interpretar el costo agregado de inicialización antes de implementar.
+
+#### 9. Implementar índice inmutable por cripta
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Implementa las tareas T047–T052 de `specs/001-terreno-cazador/tasks.md` en orden y según sus dependencias. Antes de tocar código, confirma que el Plan y Tasks vigentes ya están confirmados en un commit separado anterior a esta implementación. Si no es así, detente y avísame; no hagas ese commit por mí.
+>
+> Conserva los cambios locales existentes, incluido `_asignar_indices_benchmark` y el uso de `_indice_benchmark` antes del cronómetro. No hagas `git add`, commit ni push.
+>
+> El objetivo de T049–T050 es construir una sola vez por cripta un índice propio e inmutable que relacione el ID de sala con su posición en las salas ordenadas, y reutilizarlo en las búsquedas individuales. Mantén distancias, predecesores y cola de prioridad independientes para cada búsqueda. El índice nunca debe apuntar a registros mutables de Dijkstra ni guardar resultados de rutas.
+>
+> Respeta las restricciones del proyecto:
+>
+> - Usa acceso directo propio solo cuando el ID permita una representación compacta segura; para IDs dispersos o muy grandes, usa la alternativa propia prevista. No asignes memoria proporcional al ID máximo.
+> - No uses `dict`, `set`, `heapq`, `bisect`, `collections` ni bibliotecas de grafos o rutas.
+> - Conserva Dijkstra ponderado, conexiones dirigidas, costos, puertas, rango, desempates y semántica individual/compartida. No cambies el modo individual por el compartido ni uses BFS.
+> - Evita búsquedas auxiliares por actor dentro del cronómetro del benchmark.
+>
+> Completa primero T047–T048 y comprueba equivalencia con el cálculo independiente en mapas densos, dispersos y de IDs grandes, criptas distintas, rutas ponderadas y dirigidas, puertas abiertas/cerradas, límites de rango, empates y salas sin ruta. Verifica también que búsquedas consecutivas no compartan estado mutable. Después implementa T049–T050.
+>
+> En T051, ejecuta las pruebas focalizadas, replay/carga y la suite completa con Python 3.12. Solo si pasan, ejecuta **una vez** el benchmark contractual y guarda el resultado nuevo en `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`. Conserva sin modificar todos los reportes anteriores.
+>
+> Completa T052 y actualiza `docs/DECISIONES.md` con resultados reales. Marca T031, T039, T051 y T052 completadas solo si las pruebas pasan, el reporte tiene cero discrepancias y ningún ciclo supera 20 ms. Si falla cualquier condición, conserva el reporte, deja pendientes las tareas de aceptación correspondientes y documenta el resultado sin cambiar el umbral. Al terminar, informa los archivos modificados, las pruebas ejecutadas y el máximo medido por escenario y en `cripta-06`.
+- **Uso:** Implementar T047–T052: índice inmutable por cripta, pruebas de equivalencia, benchmark contractual y documentación.
+
+#### 10. Siguiente optimización de cazadores
+
+- **Fecha:** 2026-11-17
+- **Herramienta:** GitHub Copilot en VS Code (Spec Kit)
+- **Prompt:**
+> Continúa la optimización del cazador enfocándote en el cálculo individual de rutas con rango grande. El reporte de iteración 3 muestra que el ciclo 2 supera los 20 ms en 29 de 30 repeticiones cuando las puertas cambian cada ciclo y en 27 de 30 cuando cambian cada 100 ciclos. El índice inmutable por cripta ya está implementado; busca qué trabajo restante hace costoso ese recálculo.
+>
+> Primero perfila ese ciclo con mediciones diagnósticas, sin perfilador dentro del benchmark contractual. Identifica si el costo está en recorrer aristas, inicializar registros, insertar o extraer elementos de la cola, o en otra fase. Después implementa una optimización concreta, respetando la Constitución, el Plan, las tareas, la API y las restricciones de estructuras de datos.
+>
+> Conserva exactamente las decisiones del cazador, los costos ponderados, las conexiones dirigidas, los límites de rango y los desempates. No reutilices resultados entre búsquedas si eso cambia el modo individual definido por el proyecto. Añade pruebas de regresión y equivalencia para el caso optimizado.
+>
+> Ejecuta primero las pruebas focalizadas y la suite completa con Python 3.12. Si pasan, ejecuta una sola vez el benchmark contractual indicado por T051 y guarda el resultado en `docs/evidencia/terreno-cazador-benchmark-iteracion-3.json`, respetando el protocolo. No sobrescribas reportes anteriores. Si algún ciclo supera 20 ms o aparece una discrepancia, deja T031, T039 y T051 pendientes, conserva `cumple_umbral=false` y documenta el resultado real. No marques tareas como aprobadas sin cumplir sus criterios. No hagas `git add`, commit ni push.
+- **Uso:** Perfilar el ciclo de rango grande, optimizar el costo restante de cálculo individual y medir la iteración 3 bajo el contrato.
+
+**Uso registrado:** las instrucciones guiaron la extensión del benchmark, el perfilado y la optimización incremental de las búsquedas del cazador, manteniendo los criterios de rendimiento, las decisiones del juego y la trazabilidad de las tareas.
+
 ---
 
 ## Daniel Centeno
@@ -911,11 +1144,11 @@ Cuando un prompt incluía código, archivos o salidas de consola, ese contenido 
 
 ### Herramientas utilizadas
 
-Claude (claude.ai) para análisis, diseño y redacción de prompts; Claude Code para implementación, pruebas y auditorías sobre el repositorio.
+Claude (claude.ai) para análisis, diseño y redacción de prompts; Claude Code para implementación, pruebas y auditorías sobre el repositorio. En la Parte II, GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna) para especificar, planificar e implementar la spec 004 (línea de tiempo); sus prompts se extrajeron textualmente del historial local de Copilot.
 
 ### Resumen de los prompts
 
-Se registran los prompts enviados entre septiembre y el 18 de octubre de 2026 que contribuyeron de forma directa al proyecto. Los prompts se copian tal como se escribieron, con sus errores de ortografía, para dejar el registro real. Por su carácter se agrupan así:
+Se registran los prompts enviados entre septiembre y el 18 de noviembre de 2026 (Parte I: entradas 1 a 15; Parte II: entradas 16 a 24) que contribuyeron de forma directa al proyecto. Los prompts se copian tal como se escribieron, con sus errores de ortografía, para dejar el registro real. Por su carácter se agrupan así:
 
 - **Implementación guiada:** se indican los requerimientos y las decisiones de diseño y se pide implementar sobre ellos: adaptadores de red y offline, bitácora de partida y migración de la vista a Pygame (1, 4, 5, 6).
 - **Organización del trabajo:** división del proyecto en roles y bloques, pruebas por bloque y reparto del trabajo de Pygame entre dos integrantes (2, 3, 7).
@@ -929,6 +1162,8 @@ Se registran los prompts enviados entre septiembre y el 18 de octubre de 2026 qu
 Cuando un prompt incluía imágenes o salidas de consola, ese contenido se indica entre corchetes en lugar de copiarlo. Las horas están en hora de Costa Rica (UTC−06:00).
 
 ### Bitácora completa de prompts
+
+### Prompts del primer proyecto (Parte I)
 
 #### 1
 - **Fecha:** septiembre de 2026 (inicio del proyecto, aproximada)
@@ -1237,6 +1472,8 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
   > Ok, quiero que mantengamos la portada, o sea, la misma portada, que mantengamos el mismo personaje. Que eso es como, ok, el concepto quiero que sea como tipo en El Señor de los Anillos, cuando van a entrar a las minas de Moria y ya la cripta como tal, el concepto de la cripta sean como las minas de Moria. Entonces quiero que la portada se mantenga igual, que se vea como el personaje. Entonces cuando ya entramos a la cripta es que entramos como a las minas. Entonces que adentro sea el mismo concepto, nada más mantener igual, entonces solo cambiar como esa parte.
 - **Uso:** Generar arte conceptual en pixel art del interior de la cripta (ambientación de minas de diseño propio) para el compañero, conservando la portada original.
 
+
+
 #### 11
 - **Fecha:** 2026-10-17, 17:01 – 18:17
 - **Herramienta:** Claude
@@ -1245,6 +1482,7 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
 
   > Haz el prompt agrégale que verifique todo lo de pergamino de retroceso etc
 - **Uso:** Preparar el documento de QA para un compañero: verificación por fases de pruebas, API, modo offline, reglas y pergamino de retroceso.
+
 
 #### 12
 - **Fecha:** 2026-10-18, 10:24 – 10:26
@@ -1283,6 +1521,441 @@ has los pytest y agregalos en en el paquete test agrega demas test para demas fl
 
   > usa estos prompts para sebastia y algunos de los que estan ahi
 - **Uso:** Redactar `docs/ARQUITECTURA_PYGAME.md` y completar esta sección de la bitácora.
+
+### Prompts del segundo proyecto (Parte II)
+
+Prompts de la spec 004 (línea de tiempo), del 9 al 18 de noviembre de 2026. Los de GitHub Copilot CLI se copiaron textualmente de su historial local; las horas están en hora de Costa Rica (UTC−06:00).
+
+#### 16
+- **Fecha:** 2026-11-09, 15:45 – 18:10
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**15:45**
+
+~~~text
+/speckit-specify
+~~~
+
+**15:51**
+
+~~~text
+/speckit-specify No crees ni cambies de rama de Git: ya estoy en spec/sebastian.
+Trabaja exclusivamente en SPECIFY_FEATURE_DIRECTORY=specs/004-linea-tiempo.
+No modifiques otras capacidades ni la constitución.
+
+CAPACIDAD
+  Línea de tiempo del juego CRIPTA (Parte II, §3.6).
+
+OBJETIVO
+  El jugador puede consultar cómo estaba la partida en cualquier instante
+  pasado, desde el inicio, sin modificar la partida actual.
+
+REGLAS
+  1. Estado en el instante t: después de ejecutar todos los eventos con
+     tiempo menor o igual que t; si a t le corresponde una decisión del
+     jugador, justo antes de tomarla.
+  2. "historia t" muestra el estado en el instante t del reloj virtual.
+  3. "historia #k" muestra el estado justo antes de la acción número k del
+     jugador.
+  4. El resumen muestra como mínimo: reloj, sala del jugador, vida y
+     estadísticas, inventario, efectos activos, enemigos de esa sala con su
+     vida y el mapa conocido en ese momento.
+  5. La consulta no consume tiempo, no se registra como acción y no altera
+     el estado del juego ni el historial del pergamino.
+  6. El pergamino sigue limitado a 5 acciones y es independiente.
+  7. Las acciones revertidas con pergamino dejan de existir en la línea de
+     tiempo.
+  8. No se guarda más de una copia completa del estado cada K acciones del
+     jugador; K se configura con --checkpoint-cada K y su valor por defecto
+     se justifica con mediciones.
+  9. Fuera de esas copias solo se guarda la información necesaria para
+     reconstruir los cambios.
+  10. Una consulta no puede requerir aplicar ni deshacer cambios de más de K
+      acciones del jugador.
+  11. La consulta no realiza solicitudes de red.
+  12. "--replay partida.log --hasta t" imprime el mismo resumen sin abrir la
+      interfaz; si la partida termina antes de t, muestra el estado final e
+      informa que terminó antes.
+  13. Guardar y cargar conserva la historia completa y el mapa conocido.
+  14. Los archivos de partida de la Parte I se migran explícitamente o se
+      rechazan con un mensaje; nunca se cargan en silencio.
+
+CASOS OBLIGATORIOS (escenarios de aceptación)
+  - G18: t posterior al reloj se rechaza.
+  - G19: las acciones revertidas quedan excluidas.
+  - G20: eventos simultáneos en t.
+  - G21: la consulta no altera nada.
+  - G22: --hasta posterior al final muestra el estado final y un aviso.
+  - G23: archivo de la Parte I con migración o incompatibilidad explícita.
+
+RENDIMIENTO
+  Consulta menor a 50 ms con al menos 5000 acciones y el K por defecto.
+
+FORMATO
+  - Usa "Historia de usuario N" (no "Historia N").
+  - Requisitos FR-NNN.
+  - Criterios de éxito SC-NNN medibles.
+  - Tabla de trazabilidad G18–G23 → escenario → FR.
+  - NO incluyas estructuras de datos, algoritmos, clases ni módulos.
+~~~
+
+**15:58**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo/spec.md. Haz solo estos dos cambios:
+1. Elimina el criterio SC-006 (prueba de uso con participantes): no lo pide el enunciado.
+2. En el escenario 1 de la Historia de usuario 1, la consulta muestra un estado, no una lista de eventos. Cambia el "Then" a: "se muestra el estado resultante de todos los eventos con tiempo menor o igual que t, justo antes de esa decisión".
+No cambies nada más.
+~~~
+
+**16:31**
+
+~~~text
+/speckit-clarify Revisa solo specs/004-linea-tiempo/spec.md. Asegúrate de
+resolver al menos estas dudas, además de las que encuentres:
+1. Si en el mismo instante t hay eventos de enemigos programados después de
+   la decisión del jugador (mayor número de secuencia), ¿se incluyen?
+2. ¿historia #k con k igual a la cantidad de acciones realizadas muestra el
+   estado actual o se rechaza?
+3. ¿Los archivos de la Parte I se migran o se rechazan? Elige una opción.
+4. ¿Qué texto mínimo muestra el aviso cuando --hasta supera el final?
+5. ¿El valor por defecto de K se fija en la especificación o en el plan?
+Registra preguntas y respuestas en la sección Clarifications y actualiza los
+requisitos afectados. No inventes reglas que no estén en el enunciado. No
+programes.
+~~~
+
+**16:33**
+
+~~~text
+Resuelve también estas dudas en specs/004-linea-tiempo/spec.md: (a) SC-002: ¿el K por defecto es el mayor que cumpla SC-001? (b) SC-001: ¿los 50 ms se exigen sobre el máximo de todas las mediciones o sobre el p95, con el máximo documentado? (c) ¿la numeración de acciones empieza en 1? (d) FR-013 y Assumptions deben quedar coherentes con la decisión sobre archivos de la Parte I. Registra todo en Clarifications y actualiza los requisitos afectados. No cambies otros archivos.
+~~~
+
+**16:37**
+
+~~~text
+/speckit-plan Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama ni modifiques otras specs o la constitución. Respeta la constitución y el código actual. Produce plan.md, research.md, data-model.md, quickstart.md y contracts/. No agregues reglas que no estén en spec.md. No programes.
+
+DECISIONES DE DISEÑO
+- Registro permanente de acciones del jugador: arreglo propio con número de acción e instante del reloj, separado del historial del pergamino (que consume sus deltas y se limita a 5; ver docs/equipo/revision_persistencia.md).
+- Puntos de control: uno cada K acciones, en un arreglo ordenado por tiempo. Deben incluir el estado del random.Random (getstate) y la agenda de eventos; NO deben incluir la caché LRU ni el historial del pergamino.
+- historia t: búsqueda binaria propia (sin bisect) del último punto de control con tiempo menor o igual que t. historia #k: acceso directo al punto k // K.
+- Reconstrucción en una partida temporal aislada, nunca sobre la real. Evaluar dos variantes y elegir con mediciones: (a) re-simular hacia adelante desde el punto de control anterior; (b) invertir cambios hacia atrás desde el estado actual cuando esté a menos de K acciones. Para (b) hace falta un registro permanente de cambios, porque los deltas actuales solo guardan el valor anterior y se consumen.
+- Pergamino: cortar el final del registro de acciones y los puntos de control posteriores al punto revertido.
+- --replay --hasta reutiliza la misma reconstrucción sin vista.
+
+ALTERNATIVAS PARA research.md
+BST simple (degenera con tiempos crecientes); AVL (funciona, pero agrega rotaciones innecesarias porque todo se agrega y se corta al final); tabla hash (no resuelve "el último menor o igual que t"); búsqueda lineal (referencia de medición); sin puntos de control (viola el límite de K).
+
+MEDICIONES PLANIFICADAS (--bench)
+Consulta con al menos 5000 acciones y K = 10, 50, 100 y otros: tiempo (mediana, p95, máximo) y memoria; búsqueda binaria vs. lineal; re-simular vs. invertir; tiempo de carga de un punto de control.
+
+RIESGO CONOCIDO
+La carga completa del formato binario actual tarda alrededor de 72 ms con 5000 salas (ver revision_persistencia.md), más que el límite de 50 ms. El plan debe proponer cómo serializar los puntos de control para cumplirlo, sin dar cifras que no se hayan medido.
+
+DEPENDENCIAS
+Niebla (José): su conocimiento debe entrar en el punto de control. Terreno (Daniel): costos y movimientos deben reconstruirse igual.
+~~~
+
+**16:43**
+
+~~~text
+No borres plan.md. Explícame por qué querías borrarlo y qué ibas a hacer después. Si necesitas cambiarlo, edítalo en lugar de borrarlo.
+~~~
+
+**16:46**
+
+~~~text
+/speckit-tasks Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Divide el plan en tareas pequeñas con identificador estable, responsable (Sebastián), dependencias, requisito FR o SC que atiende y comando o prueba de cierre. Separa: componentes, integración con otras capacidades, mediciones y documentación. Incluye una tarea de prueba por cada caso G18 a G23 y una prueba de historia #k en los múltiplos de K. No ejecutes las tareas.
+~~~
+
+**16:57**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (tasks.md y, si hace falta, plan.md). No cambies de rama ni programes. Corrige:
+1. MVC: la búsqueda binaria, la selección (k - 1) // K, la reconstrucción y la construcción del resumen como datos van en el modelo (modelo/). El controlador solo recibe "historia t" / "historia #k" y llama al modelo; la vista solo muestra el resumen. Así --replay --hasta (FR-011) obtiene el mismo resumen sin instanciar la vista. Ajusta T009, T010 y T011.
+2. Verifica con git ls-files que existan los archivos mencionados (persistencia/PartidaBinaria.py, controlador/guardado.py, controlador/controlador_replay.py, vista/consola.py); usa los nombres reales o indica que son archivos nuevos.
+3. Agrega una tarea de prueba que verifique que ninguna consulta reconstruye más de K acciones del jugador (FR-010).
+4. Marca como "integración (turno de integración)" las tareas que editan controlador/controlador_juego.py, main.py o el guardado común.
+5. Agrega la tarea que crea tests/test_linea_tiempo_rendimiento.py antes de T026.
+Mantén los IDs existentes; agrega las nuevas al final de su fase.
+~~~
+
+**17:08**
+
+~~~text
+/speckit-analyze Trabaja exclusivamente en specs/004-linea-tiempo. Comprueba la consistencia entre la constitución, spec.md, plan.md y tasks.md. Reporta: requisitos sin tarea, tareas sin requisito, reglas del plan que no estén en la spec, estructuras de datos mencionadas en spec.md, casos G18 a G23 sin escenario o sin prueba, violaciones de la separación MVC y uso de bibliotecas prohibidas. No programes ni modifiques archivos.
+~~~
+
+**17:24**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (plan.md, research.md y tasks.md). No cambies de rama ni programes. Corrige los hallazgos del análisis:
+1. heapq: indica en plan.md que la agenda de eventos usa el HeapMinimo propio del proyecto y que heapq, bisect y collections están prohibidos por la constitución.
+2. Agrega a tasks.md: (a) una tarea, antes de la primera tarea de código, que verifique que spec.md, plan.md y tasks.md tienen commit antes de cualquier cambio de código; (b) una tarea final que documente las decisiones, alternativas y mediciones de la línea de tiempo en el archivo DECISIONES.md que use el proyecto.
+3. La cifra de ~72 ms viene de docs/equipo/revision_persistencia.md, que está en main (commit 1e21b9a) pero no en esta rama. En plan.md y research.md cítala como "medición de la línea base del 2026-11-05 en main (commit 1e21b9a), pendiente de volver a medir en T024/T025", sin presentarla como verificada aquí.
+4. Agrega una tarea de integración (turno de integración) que implemente la bandera --checkpoint-cada K en main.py, con validación de K positivo (FR-009, FR-014).
+5. Agrega una tarea, después de T025, que integre en el modelo la estrategia de reconstrucción elegida según las mediciones (FR-010).
+6. En T021, indica que --replay --hasta usa el mismo constructor de resumen del modelo que historia t, sin instanciar la vista (FR-011).
+Mantén los IDs existentes; las nuevas van al final de su fase.
+~~~
+
+**17:31**
+
+[/speckit-analyze ejecutado de nuevo con el mismo texto de las 17:08 (segunda ronda de análisis).]
+
+**17:45**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo/spec.md. No cambies de rama. Aplica solo la sugerencia 3: deja FR-005 como única regla sobre consultas a instantes futuros, quita esa condición de FR-003 y actualiza la trazabilidad de G18 para que cite FR-005 y FR-006 (no FR-003). No modifiques plan.md ni tasks.md todavía.
+~~~
+
+**17:48**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (plan.md y tasks.md). No cambies de rama ni programes. Aplica:
+1. Saca T031 de la lista de tareas y crea al inicio de tasks.md una sección "Precondiciones (gates)" que diga, citando el principio VII de la constitución, que spec.md, plan.md y tasks.md deben tener commit antes de cualquier cambio de código. No asignes un FR inventado.
+2. Amplía T024 para que incluya una prueba en tests/test_separacion_mvc.py que verifique que --bench no instancia la vista (principio III).
+3. En T006 y donde corresponda, reemplaza la referencia a FR-003 por FR-005 para el rechazo de instantes futuros, coherente con spec.md.
+4. En plan.md, presenta la búsqueda binaria, la fórmula (k - 1) // K, la restauración sin cargar el grafo completo y las integraciones con Niebla y Terreno como decisiones de implementación, no como criterios de aceptación. La memoria es una métrica informativa.
+Mantén los IDs existentes.
+~~~
+
+**18:00**
+
+[/speckit-analyze ejecutado de nuevo con el mismo texto de las 17:08 (tercera ronda de análisis).]
+
+**18:10**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo/spec.md. Aplica solo A1: en SC-002 precisa que el "volumen conservado" son los bytes persistidos de los registros y puntos de control para cada K evaluado. No modifiques plan.md ni tasks.md.
+~~~
+
+**18:10**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo (plan.md y tasks.md). Aplica: (A1) amplía T024 para medir e informar los bytes persistidos de registros y puntos de control para cada K, manteniendo la memoria de ejecución como dato informativo; (P1) en plan.md y T015 describe la preservación de la caché LRU como detalle interno de la reconstrucción aislada vinculado a FR-006, no como criterio nuevo; (P2) etiqueta la comparación hacia adelante/inversa y los valores K = 10, 50, 100 como protocolo exploratorio de benchmark; el criterio formal sigue siendo comparar al menos tres valores positivos y elegir el mayor que cumpla SC-001. Mantén los IDs. No cambies spec.md.
+~~~
+
+- **Uso:** Escribir y aclarar la especificación de la spec 004 (línea de tiempo), producir el plan, research, data-model, contratos y tareas, analizar su consistencia en tres rondas y corregir los hallazgos (MVC, `(k − 1) // K`, prohibición de heapq/bisect/collections, cita de los ~72 ms como medición pendiente, precondición de commit, tarea de `--checkpoint-cada` y tarea de DECISIONES.md). El índice `k // K` del prompt del plan se corrigió en estas mismas rondas.
+
+#### 17
+- **Fecha:** 2026-11-10, 13:57 – 20:06
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**13:57**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta solo las tareas T001 a T005 de tasks.md (preparación y componentes base). Respeta la constitución y los contratos: estructuras propias, sin dict como índice o caché, sin heapq, bisect, collections ni sorted, y toda la lógica en el modelo. No edites archivos de otros integrantes ni las tareas marcadas como integración. Escribe primero las pruebas y cita en cada una el requisito que verifica. Usa .\.venv\Scripts\python.exe para ejecutar pytest. Al terminar muéstrame el diff, el resultado de pytest y marca en tasks.md solo las tareas completadas. No hagas commit.
+~~~
+
+**15:44**
+
+~~~text
+En modelo/punto_control.py la línea 65 usa un dict como memo de copy.deepcopy para excluir el historial del pergamino. La constitución prohíbe dict como índice o tabla de búsqueda. Reemplázalo por otra forma de excluir el historial y la caché LRU del punto de control (por ejemplo, separarlos temporalmente de la partida antes de copiar y volver a asignarlos después, o reutilizar el codificador de persistencia/estado_partida.py con exclusiones). Explica la opción elegida, mantén las pruebas pasando y no toques otros archivos. Usa .\.venv\Scripts\python.exe. No hagas commit.
+~~~
+
+**16:20**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta solo las tareas T006 a T008 de tasks.md (pruebas de la Historia de usuario 1: G18, G20 y historia #k en los múltiplos de K). Escribe solo las pruebas, no el código que las hace pasar: es normal que fallen por ahora. Cita en cada prueba el requisito que verifica. Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. No edites archivos de otros integrantes. Usa .\.venv\Scripts\python.exe. Al terminar muéstrame el diff, el resultado de pytest para esas pruebas y marca en tasks.md solo las tareas completadas. No hagas commit.
+~~~
+
+**18:10**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta solo la parte del modelo de las tareas T009 a T011: la búsqueda binaria propia del último punto de control con tiempo menor o igual que t, la selección del punto con (k - 1) // K y la construcción del resumen histórico como datos. No toques controlador/controlador_juego.py, main.py ni la vista: eso es del turno de integración.
+Las pruebas T006 a T008 son de punta a punta (pasan por el controlador y una vista falsa), así que seguirán fallando hasta la integración: no las modifiques. En su lugar, agrega pruebas unitarias del modelo que verifiquen directamente: (1) la búsqueda del punto de control, incluido t igual al tiempo de un punto, t entre dos puntos y t anterior al inicio; (2) que historia #k use (k - 1) // K, en especial k = K y k = 2K; (3) que una consulta futura se rechace; (4) que el resumen tenga los campos de FR-004. Cita el requisito en cada prueba.
+Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe. Al terminar muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**19:37**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta las tareas T012, T013 y T015 (pruebas de G19 y G21, y la reconstrucción aislada que no altera partida, pergamino ni caché). Si alguna prueba de aceptación necesita el controlador, déjala como prueba de punta a punta pendiente de integración y no la fuerces; agrega además pruebas unitarias del modelo que verifiquen: (1) que después de una consulta el reloj, el estado, el conteo de acciones y el historial del pergamino son idénticos; (2) que cortar la historia desde la acción m elimina el registro y los puntos de control posteriores. No toques controlador/controlador_juego.py, main.py ni la vista (T014 es de integración). Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**19:57**
+
+[El mismo /speckit-implement de T012, T013 y T015 de las 19:37 se envió de nuevo con el mismo texto.]
+
+**19:59**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta las tareas T016 a T018 (pruebas de G22, G23 y guardado/carga) y la tarea de prueba de que ninguna consulta reconstruye más de K acciones. Las pruebas que necesiten el controlador, main.py o el guardado común quedan como pruebas de punta a punta pendientes de integración: no las fuerces. Agrega además pruebas unitarias del modelo que verifiquen: (1) que el número de acciones re-simuladas en cualquier consulta es menor o igual que K, incluido justo antes de un punto de control; (2) que la detección de un archivo de la Parte I produce un rechazo explícito con mensaje (si puede hacerse en el modelo o la persistencia sin tocar el guardado común). No toques controlador/controlador_juego.py, controlador/guardado.py, main.py ni la vista. Respeta la constitución: sin dict como índice, sin heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**20:06**
+
+~~~text
+Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama ni modifiques código de producción. Escribe solo las pruebas de aceptación de punta a punta que faltan, aunque fallen por ahora porque dependen de la integración:
+1. T016: tests/test_linea_tiempo_g22.py — --replay partida.log --hasta t produce el mismo resumen que historia t sin instanciar la vista, y con t posterior al final muestra el estado final y un aviso (FR-011, G22).
+2. T017: tests/test_linea_tiempo_g23.py — cargar un archivo de partida de la Parte I se rechaza con un mensaje explícito, nunca en silencio (FR-013, G23).
+3. T018: tests/test_linea_tiempo_guardado.py — guardar y cargar conserva la historia completa y el mapa conocido, y las consultas dan lo mismo antes y después (FR-012, SC-005).
+Usa las interfaces que definen los contratos en specs/004-linea-tiempo/contracts/. Cita el requisito en cada prueba. Sin dict como índice, heapq, bisect, collections ni sorted. Usa .\.venv\Scripts\python.exe y muéstrame que fallan por la razón correcta (no por errores de sintaxis o de importación de archivos existentes). No marques las tareas como completas en tasks.md. No hagas commit.
+~~~
+
+- **Uso:** Implementar por tandas los componentes del modelo (registro de acciones, puntos de control, búsqueda binaria, selección con `(k − 1) // K`, resumen histórico y reconstrucción aislada) y escribir las pruebas G18–G23 y del límite K; eliminar el `dict` usado como memo en `punto_control.py`.
+
+#### 18
+- **Fecha:** 2026-11-14, 20:09 – 2026-11-16, 14:34
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**14/11 20:09**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ahora es el turno de integración de la línea de tiempo: Niebla (002), Terreno (001) y Resolubilidad (003) ya están en main. Completa la parte de integración de T009 a T011: el controlador recibe "historia t" e "historia #k", llama al modelo (modelo/historia.py, modelo/resumen_historico.py) y la vista solo muestra el resumen. No muevas lógica al controlador ni a la vista. Objetivo: que pasen las pruebas de aceptación G18, G20 y historia #k en múltiplos de K sin modificarlas. Respeta la constitución. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y el resultado de pytest. No hagas commit.
+~~~
+
+**14/11 20:32**
+
+~~~text
+Revisé tu integración y no puedo aceptarla así. Guardar un ResumenHistorico en cada evento y cada decisión viola FR-008/FR-009 (fuera de los puntos de control solo se guarda lo necesario para reconstruir) y evita usar los puntos de control y el reconstructor (FR-010). Rehazlo así:
+1. Elimina self.resumenes, RegistroResumen y registrar_resumen. No guardes resúmenes por evento ni por decisión.
+2. Conserva: el comando HISTORIA en interpretar, la rama del bucle que consulta al modelo y llama a vista.mostrar_resumen_historico, el registro de acciones en registrar_accion y el método de la vista.
+3. Los puntos de control completos se toman cada K acciones con modelo/punto_control.py (estado, random y agenda). K no puede estar fijo en 1 dentro del controlador: debe venir de la configuración (valor por defecto del modelo, preparado para --checkpoint-cada).
+4. Para responder historia t o historia #k: elegir el punto con la búsqueda binaria o con (k - 1) // K, restaurarlo en una partida temporal con modelo/reconstructor_historia.py y re-simular como máximo K acciones registradas (y los eventos hasta t, cortando antes de la decisión del jugador si corresponde), sin vista. Revisa si controlador/controlador_replay.py ya permite ejecutar acciones registradas sobre una partida sin vista y reutilízalo. Luego construye el resumen con ResumenHistorico.desde_partida sobre la partida temporal.
+5. Revierte el cambio en controlador/narrador_eventos.py, salvo que sea indispensable; si lo es, explícame por qué.
+Objetivo: que G18, G20 y historia #k pasen sin modificar las pruebas, y que sigan pasando las pruebas del modelo y del límite de K. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y pytest. No hagas commit.
+~~~
+
+**14/11 20:50**
+
+~~~text
+/speckit-implement
+Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Completa la integración de T014 y T015: al revertir con el pergamino, la historia debe cortarse desde la acción revertida, eliminando el registro de acciones, el registro de cambios y los puntos de control posteriores, sin recorrer toda la historia; el pergamino conserva su límite de 5 acciones y no se modifica por las consultas. No guardes resúmenes por evento: la consulta sigue reconstruyendo desde los puntos de control. Objetivo: que pase G19 sin modificarla, y que sigan pasando G18, G20, G21, historia #k y las pruebas existentes del pergamino y del historial. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y pytest. No hagas commit.
+~~~
+
+**15/11 17:44**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Completa T019, T020, T021 y la tarea de la bandera --checkpoint-cada K:
+1. Guardar y cargar la partida debe conservar la historia completa (registro de acciones y puntos de control) y el mapa conocido, subiendo la versión del formato y rechazando con mensaje explícito los archivos de la Parte I. Al cargar, la historia debe continuar desde la acción 1 de la partida, no solo desde el inicio de la sesión: ajusta o elimina _acciones_historia_base si ya no hace falta. Si la serialización de Historia dentro de Partida falló antes, resuélvelo en el formato de guardado, no excluyendo la historia.
+2. "--replay partida.log --hasta t" usa la misma reconstrucción y el mismo resumen del modelo que historia t, sin instanciar la vista ni hacer solicitudes de red; si la partida termina antes de t, muestra el estado final e informa que terminó antes.
+3. La bandera --checkpoint-cada K configura el K de la historia, con K por defecto del modelo y rechazo de valores no positivos.
+No guardes resúmenes por evento. Objetivo: que pasen G22, G23 y la prueba de guardado sin modificarlas, y que sigan pasando todas las demás. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y pytest. No hagas commit.
+~~~
+
+**15/11 18:24**
+
+~~~text
+Sobre bitacora_partida.py: explícame por qué agregaste datos_jugador al encabezado. Si solo hacía falta para que el replay funcionara sin red, y ya revertimos el --offline forzado, quítalo. Si es necesario por otra razón, confirma que una bitácora vieja (sin esos campos) se sigue leyendo y reproduciendo igual, y agrega una prueba que lo verifique.
+~~~
+
+**15/11 18:28**
+
+~~~text
+En main.py revierte el cambio que fuerza --offline en todo --replay: --replay debe usar la misma fuente de datos que antes (caché local y API respetando el presupuesto, u offline solo si se pasa --offline), como exige la Parte I §4.11. La restricción sin red de FR-010 aplica a la consulta y reconstrucción de la historia, no a cargar los datos de la cripta del replay. Si la prueba G22 necesita no usar la red, que ella misma pase --offline en la línea de comandos que ejecuta, sin modificar sus aserciones.
+
+Sobre bitacora_partida.py: explícame por qué agregaste datos_jugador al encabezado. Si solo hacía falta para que el replay funcionara sin red, quítalo. Si es necesario por otra razón, confirma que una bitácora vieja (sin esos campos) se sigue leyendo y reproduciendo igual, y agrega una prueba que lo verifique.
+
+Usa .\.venv\Scripts\python.exe y corre la suite completa. Muéstrame el diff y el resultado. No hagas commit.
+~~~
+
+**15/11 18:36**
+
+[En el mensaje original este texto aparece pegado tres veces seguidas; se copia una sola vez.]
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta T022 y T023: escribe primero pruebas de integración que verifiquen (1) que historia t muestra el mapa conocido de ese momento, no el actual, incluidas las salas reveladas por la antorcha; (2) que después de viajar con "ir a", guardar, cargar y usar el pergamino, la historia sigue mostrando el mapa conocido correcto en cada instante; (3) que los movimientos con costos de salida y las acciones de los cazadores se reconstruyen igual que en la partida original. Luego haz la integración mínima necesaria en modelo/punto_control.py y modelo/reconstructor_historia.py. No modifiques el código de la niebla ni del terreno: si hace falta un cambio ahí, explícamelo primero. No guardes resúmenes por evento. Usa .\.venv\Scripts\python.exe. Muéstrame el diff y la suite completa. No hagas commit.
+~~~
+
+**15/11 18:57**
+
+~~~text
+/speckit-implement Trabaja exclusivamente en specs/004-linea-tiempo. No cambies de rama. Ejecuta las tareas de medición (T024, T025, T026 y la que crea tests/test_linea_tiempo_rendimiento.py), usando el formato unificado de bench/medicion.py:
+1. Agrega a --bench un caso de línea de tiempo con una historia determinista de al menos 5000 acciones del jugador y al menos 30 consultas repartidas (por tiempo y por número de acción), para K = 10, 50, 100 y al menos otro valor mayor. Informa mediana, p95, máximo, acciones reconstruidas por consulta, bytes persistidos de registros y puntos de control, y memoria.
+2. Compara las alternativas: búsqueda binaria contra lineal para encontrar el punto de control; sin puntos de control (reconstruir desde el inicio) como referencia; y re-simular hacia adelante contra invertir hacia atrás si la segunda variante existe; si no existe, dilo.
+3. Agrega una prueba de que --bench no instancia la vista.
+4. Con los resultados, propón el K por defecto como el mayor que cumpla p95 < 50 ms, pero NO cambies K_POR_DEFECTO todavía: muéstrame la tabla y la propuesta.
+No modifiques los casos de bench de otros integrantes. Usa .\.venv\Scripts\python.exe. Corre --bench y pytest por separado, nunca a la vez. Muéstrame los resultados. No hagas commit.
+~~~
+
+**15/11 22:01**
+
+~~~text
+Las mediciones muestran que K = 200 es el mayor valor evaluado que cumple p95 < 50 ms (p95 20,4 ms, máximo 43,6 ms, 2,8 MiB). Cambia K_POR_DEFECTO a 200 en modelo/historia.py y marca T026 como completa. No cambies nada más. Corre la suite completa con .\.venv\Scripts\python.exe. No hagas commit.
+~~~
+
+**16/11 14:34**
+
+~~~text
+Dos cosas en bench/casos/linea_tiempo.py, sin cambiar las mediciones:
+1. El texto "K_POR_DEFECTO no se modifica" está desactualizado: K_POR_DEFECTO ya es 200. Cambia el mensaje para que informe el K por defecto actual y si coincide con la propuesta.
+2. Con K = 50, una consulta por acción tuvo un máximo de ~203 ms en dos corridas distintas, mientras su p95 es 8 ms. Sin modificar código de producción, identifica qué consulta y qué repetición producen ese máximo y explica la causa probable (por ejemplo, recolector de basura, primera consulta en frío o algún punto de control concreto). Si es el recolector de basura, indica si bench/medicion.py ya lo controla.
+Usa .\.venv\Scripts\python.exe. No hagas commit.
+~~~
+
+- **Uso:** Integrar la línea de tiempo con el controlador, el pergamino, el guardado, el replay, la niebla y el terreno; rechazar la primera integración, que guardaba un resumen por evento; revertir el `--offline` forzado en `--replay`; medir K = 10, 50, 100 y 200 con `--bench`, fijar K = 200 y analizar el máximo aislado de K = 50.
+
+#### 19
+- **Fecha:** noviembre de 2026 (fechas no registradas)
+- **Herramienta:** Claude
+- **Prompts:** no se conserva el texto literal: la conversación se resumió automáticamente durante su desarrollo. Los temas fueron el plan de fases de la Parte II, la redacción de los prompts de Spec Kit de las entradas 16 a 18, la revisión de lo que entregaba Copilot (de ahí salieron las correcciones de la entrada 18), la interpretación del benchmark y las operaciones de git.
+- **Uso:** Planificar la spec 004, preparar los prompts de Spec Kit y detectar desviaciones de la especificación en el código generado.
+
+#### 20
+- **Fecha:** 2026-11-17 (antes de las 16:00)
+- **Herramienta:** Claude
+- **Prompts:**
+  > Que falta , explícame la estructura de todo lo trabajado dame una explicación de cómo se integra todo
+
+  > Genera un md de todo esto
+
+  > En palabras sencillas y generales agrega que hace mi spec además dame los prompts de spec kit
+- **Uso:** Generar un documento de integración de la línea de tiempo (MVC, flujos y relación con el resto del equipo).
+
+#### 21
+- **Fecha:** 2026-11-17, 16:09 – 16:54
+- **Herramienta:** Claude
+- **Prompts:**
+  > Que me falta ?
+
+  > Puede claude code hacer esto ?
+
+  > a mí astra me tiró que falta esto en general: [informe de revisión de otra herramienta sobre las tareas abiertas de 003 y 004]
+- **Uso:** Ordenar las tareas pendientes y separar las propias (T027, T028, T033, T034) de las de otros integrantes.
+
+#### 22
+- **Fecha:** 2026-11-17, 21:38 – 22:12
+- **Herramienta:** Claude
+- **Prompts:**
+  > [lista de pendientes del equipo] como hago lo pendiente mio ?
+
+  > /speckit-implement Solo T033 de specs/004-linea-tiempo. Revisa tests/test_linea_tiempo_limites_modelo.py: ¿alguna prueba verifica que historia t e historia #k re-simulan como máximo K acciones, incluyendo k justo después de un punto de control y justo antes del siguiente? Si existe, corrige en tasks.md la referencia tests/test_linea_tiempo_limite_K.py por el archivo real. Si no existe, agrégala ahí sin tocar código de producción. Muéstrame el diff. esto no puedes darme los comandos exactos o como resuelvo esto ? ademas puedes darme una idea o un borrador de los documentos o deciciones tecnicas
+
+  > como hago estos?
+
+  > [salidas de consola de PowerShell, pytest y git]
+- **Uso:** Cerrar T033 (verificación del límite K y corrección de referencia), T027 (documentos de la spec con K = 200), T028 (regresiones: 1379 pruebas aprobadas) y T034 (sección 4.14 de `DECISIONES.md`); actualizar el README.
+
+#### 23
+- **Fecha:** 2026-11-17, 22:06
+- **Herramienta:** GitHub Copilot CLI con Spec Kit (Copilot Fusion (Standard) → GPT-6 Luna)
+- **Prompts:**
+
+**22:06**
+
+~~~text
+puedes darme el registro de prompts >
+~~~
+
+- **Uso:** Pedir a Copilot el registro de prompts para esta bitácora (no conservaba el texto literal; se extrajo después del historial local).
+
+#### 24
+- **Fecha:** 2026-11-18, 19:35 – 19:43
+- **Herramienta:** Claude
+- **Prompts:**
+  > como le pido a copilot que me de textualmente los prompts
+
+  > [salidas de consola de PowerShell con el historial de Copilot]
+
+  > puedes darme un solo comando para agregarlo a prompstllm md osea todo el tecto
+- **Uso:** Extraer del historial local de Copilot CLI (`~/.copilot/session-state/*/events.jsonl`) el texto literal de los prompts de las entradas 16 a 18 y 23, y agregarlos a esta bitácora.
+
 
 ## JOSE FABIO BARRANTES RAMIREZ
 
